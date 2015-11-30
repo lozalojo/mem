@@ -1,8 +1,9 @@
 Package: mem
-Title: What the Package Does (one line, title case)
-Version: 0.0.0.9000
-Authors@R: person("First", "Last", email = "first.last@example.com", role = c("aut", "cre"))
-Description: What the package does (one paragraph).
-Depends: R (>= 3.3.0)
-License: What license is it under?
-LazyData: true
+Type: Package
+Title: Moving Epidemic Method R Package
+Version: 2.0
+Date: 2015-11-30
+Authors@R: person("Lozano", "Jose E.", email = "lozalojo@gmail.com", role = c("aut", "cre"))
+Depends: R (>= 3.3.0), sm, boot
+Description: Modelization of influenza epidemics in order to monitor future activity.
+License: GPL (>= 2)
