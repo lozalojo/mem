@@ -1,0 +1,174 @@
+#' Influenza Epidemic Timing
+#'
+#' Function \code{memtiming} is used to find the optimal timing of an influenza epidemic
+#' in a set of weekly influenza surveillance rates. It provides the start and the end of
+#' the epidemic, also it returns a list of pre-epidemic and post-epidemic rates that can
+#' be used to calculate influenza baselines and thresholds.\cr
+#' The method to calculate the optimal timing of an epidemic is described as part of the
+#' \emph{Moving Epidemics Method} (MEM), used to monitor influenza activity in a weekly
+#' surveillance system.
+#'
+#' Input data is a vector of rates that represent a full influenza surveillance season.
+#' It can start and end at any week (tipically at week 40th), and rates can be expressed
+#' as per 100,000 inhabitants (or per consultations, if population is not available) or
+#' any other scale.\cr
+#' The \code{i.n.values} parameter is used to get information from the pre-epidemic and
+#' post-epidemic period. The function will extract the highest pre/post values in order
+#' to use it later to calculate other influenza indicators, such as baseline activity or
+#' threshold for influenza epidemic.
+#' Depending of the value \code{i.method}, the function will use a different method to
+#' calculate the optimum epidemic timing.
+#' \tabular{rlll}{
+#' \tab [1] \tab original method\cr
+#' \tab [2] \tab fixed criterium method\cr
+#' \tab [3] \tab slope method\cr
+#' \tab [4] \tab second derivative method\cr
+#' }
+#' All methods are based upon the MAP curve, as described in the MEM Method.\cr
+#' The \emph{original method} uses the process shown in the original paper, which describes
+#' the MEM as it was created. The \emph{fixed criterium method} is an update of the MEM
+#' that uses the slope of the MAP curve fo find the optimum, which is the point where the
+#' slope is lower than a predefined value. The \emph{slope method} also calculates the
+#' slope of the MAP curve, but the optimum is the one that matches the global/mean slope.
+#' The \emph{second derivative method} calculates the second derivative and equals to zero
+#' to search an inflexion point in the original curve.\cr
+#' Two of the four methods require an additional parameter \code{i.param}: for the
+#' \emph{fixed criterium method} is the predefined value to find the optimum, which
+#' typically is 2.5-3.0\%, and for the \emph{original method} it is needed the window
+#' parameter to smooth the map curve. A value of \code{-1} indicates it should use
+#' \code{\link{h.select}} to select the window parameter. See \code{\link{sm}} for more
+#' information about this topic.
+#'
+#' @name memtiming
+#'
+#' @aliases summary.epidemic,plot.epidemic,print.epidemic
+#'
+#' @param i.data a numeric object  (or one that can be coerced to that class).
+#' @param i.n.values a number, which indicates how many pre-epidemic values are taken from the pre-epidemic period.
+#' @param i.method a number from 1 to 4, to select which optimization method to use.
+#' @param i.param an optional parameter used by the method.
+#'
+#' @return
+#'   \code{memtiming} returns an object of class \code{epidemic}.
+#'   An object of class \code{epidemic} is a list containing at least the following components:
+#'     \item{i.data }{input data}
+#'   \item{map.curve }{MAP curve}
+#'   \item{optimum.map }{optimum}
+#'   \item{pre.epi }{pre-epidemic highest rates}
+#'   \item{post.epi }{post-epidemic highest rates}
+#'
+#' @examples
+#' # Castilla y Leon Influenza Rates data
+#' data(flucyl)
+#' # Finds the timing of the first season: 2001/2002
+#' tim<-memtiming(flucyl[1])
+#' print(tim)
+#' summary(tim)
+#' plot(tim)
+#'
+#' @author Jose E. Lozano \email{lozalojo@@gmail.com}
+#'
+#' @references
+#' Vega T., Lozano J.E. (2004) Modelling influenza epidemic - can we detect the beginning
+#' and predict the intensity and duration? International Congress Series 1263 (2004)
+#' 281-283.\cr
+#' Vega T., Lozano J.E. (2012) Influenza surveillance in Europe: establishing epidemic
+#' thresholds by the Moving Epidemic Method. Influenza and Other Respiratory Viruses,
+#' DOI:10.1111/j.1750-2659.2012.00422.x.
+#'
+#' @keywords influenza
+#'
+#' @export
+memtiming<-function(i.data,
+                    i.n.values=5,
+                    i.method=2,
+                    i.param=2.8){
+#   i.data<-flucyl[1]
+#   i.n.values<-5
+#   i.method<-2
+#   i.param<-2.8
+  datos<-as.vector(as.matrix(i.data))
+  curva.map<-calcular.map(datos)
+  optimo.map<-calcular.optimo(curva.map,i.method,i.param)
+  if (!is.na(optimo.map[4])){
+    pre.epi<-max.n.valores(datos[-(optimo.map[4]:length(datos))],i.n.values)
+  }else{
+    pre.epi<-max.n.valores(datos,i.n.values)
+  }
+  if (!is.na(optimo.map[5])){
+    post.epi<-max.n.valores(datos[-(1:optimo.map[5])],i.n.values)
+  }else{
+    post.epi<-max.n.valores(datos,i.n.values)
+  }
+  memtiming.output<-list(i.data=i.data,map.curve=curva.map,optimum.map=optimo.map,pre.epi=pre.epi,post.epi=post.epi)
+  memtiming.output$call<-match.call()
+  class(memtiming.output)<-"epidemic"
+  return(memtiming.output)
+}
+
+#' @export
+print.epidemic<- function(x, ...){
+  cat("Call:\n")
+  print(x$call)
+  cat("\nOptimum:\n")
+  print(x$optimum.map[1])
+  cat("\nTiming:\n")
+  print(x$optimum.map[4:5])
+}
+
+#' @export
+summary.epidemic<-function(object, ...){
+  cat("Call:\n")
+  print(object$call)
+  cat("\nOptimum:\n")
+  print(object$optimum.map[1:3])
+  cat("\nTiming:\n")
+  print(object$optimum.map[4:5])
+  cat("\nPre-epidemic values:\n")
+  print(object$pre.epi)
+  cat("\nPost-epidemic values:\n")
+  print(object$post.epi)
+}
+
+#' @export
+plot.epidemic<-function(x, ...){
+  opar<-par(mfrow=c(1,1))
+  par(mfrow=c(1,1))
+  x.data<-as.vector(as.matrix(x$i.data))
+  semanas<-length(x.data)
+  i.epi<-x$optimum.map[4]
+  f.epi<-x$optimum.map[5]
+  matplot(1:semanas,x.data,type="l",xlab="Week",ylab="Rate",col="#808080",lty=c(1,1),xaxt="n")
+  if (!is.null(rownames(x$i.data))){
+    axis(1,at=1:semanas,labels=rownames(x$i.data),cex.axis=1)
+  }else{
+    axis(1,at=1:semanas,labels=as.character(1:semanas),cex.axis=1)
+  }
+  if (is.na(i.epi)){
+    puntos<-x.data
+    points(1:semanas,puntos,pch=19,type="p",col="#00C000",cex=1.5)
+  }else{
+    # pre
+    puntos<-x.data
+    puntos[i.epi:semanas]<-NA
+    points(1:semanas,puntos,pch=19,type="p",col="#00C000",cex=1.5)
+    # epi
+    puntos<-x.data
+    if (i.epi>1) puntos[1:(i.epi-1)]<-NA
+    if (f.epi<semanas) puntos[(f.epi+1):semanas]<-NA
+    points(1:semanas,puntos,pch=19,type="p",col="#800080",cex=1.5)
+    # post
+    puntos<-x.data
+    puntos[1:f.epi]<-NA
+    points(1:semanas,puntos,pch=19,type="p",col="#FFB401",cex=1.5)
+  }
+
+  legend(semanas*0.70,max.fix.na(x.data)*0.99,legend=c("Crude rate","Pre-epi period","Epidemic","Post-epi period"),
+         lty=c(1,1,1,1),
+         lwd=c(1,1,1,1),
+         col=c("#808080","#C0C0C0","#C0C0C0","#C0C0C0"),
+         pch=c(NA,21,21,21),
+         pt.bg=c(NA,"#00C000","#800080","#FFB401"),
+         cex=1)
+  par(opar)
+}

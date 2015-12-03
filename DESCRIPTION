@@ -4,6 +4,14 @@ Title: Moving Epidemic Method R Package
 Version: 2.0
 Date: 2015-11-30
 Authors@R: person("Lozano", "Jose E.", email = "lozalojo@gmail.com", role = c("aut", "cre"))
-Depends: R (>= 3.3.0), sm, boot
-Description: Modelization of influenza epidemics in order to monitor future activity.
+Depends:
+    R (>= 3.3.0),
+    sm,
+    boot,
+    grDevices,
+    graphics,
+    stats
+Description: Modelization of influenza epidemics in order to monitor future
+    activity.
 License: GPL (>= 2)
+RoxygenNote: 5.0.1.9000
