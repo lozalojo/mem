@@ -304,5 +304,5 @@ memsurveillance<-function(i.current,
   )
   par(opar)
   dev.off()
-  cat("graph created:",getwd(),"/",i.output,"/",graph.name,".tiff","\n",sep="")
+  cat("graph created: ",getwd(),"/",i.output,"/",graph.name,".tiff","\n",sep="")
 }
