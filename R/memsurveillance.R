@@ -2,7 +2,7 @@
 #'
 #' Function \code{memsurveillance} creates a surveillance graph for the current season.
 #'
-#' Input data must be the current season and an object of class \code{flu}. The output
+#' Input data must be the current season and an object of class \code{mem}. The output
 #' graph contains the weekly rates series along with the epidemic and intensity threshols
 #' located at the exact situation where the epidemic started. If there is no epidemic yet,
 #' only the epidemic threshold is placed.
@@ -10,7 +10,7 @@
 #' @name memsurveillance
 #'
 #' @param i.current Current season weekly rates.
-#' @param i.flu Object of class \code{flu} used to calculate thresholds.
+#' @param i.flu Object of class \code{mem} used to calculate thresholds.
 #' @param i.output Directory where graph is saved.
 #' @param i.graph.name Name of the graph.
 #' @param i.week.report Week to use in the report.
