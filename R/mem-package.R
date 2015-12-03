@@ -11,7 +11,7 @@
 #' Date: \tab 2014-07-10\cr
 #' Author: \tab Jose E. Lozano Alonso <lozalojo@jcyl.es>\cr
 #' Maintainer: \tab Jose E. Lozano Alonso <lozalojo@jcyl.es>\cr
-#' Depends: \tab R (>= 3.1.0)\cr
+#' Depends: \tab R (>= 3.2.0)\cr
 #' Description: \tab Modelization of influenza epidemics in order to monitor future
 #' activity.\cr
 #' License: \tab GPL (>= 2)\cr
