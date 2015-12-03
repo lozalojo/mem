@@ -13,7 +13,7 @@ memsurveillance(i.current, i.flu, i.output = ".", i.graph.name = "",
 \arguments{
 \item{i.current}{Current season weekly rates.}
 
-\item{i.flu}{Object of class \code{flu} used to calculate thresholds.}
+\item{i.flu}{Object of class \code{mem} used to calculate thresholds.}
 
 \item{i.output}{Directory where graph is saved.}
 
@@ -48,7 +48,7 @@ memsurveillance(i.current, i.flu, i.output = ".", i.graph.name = "",
 Function \code{memsurveillance} creates a surveillance graph for the current season.
 }
 \details{
-Input data must be the current season and an object of class \code{flu}. The output
+Input data must be the current season and an object of class \code{mem}. The output
 graph contains the weekly rates series along with the epidemic and intensity threshols
 located at the exact situation where the epidemic started. If there is no epidemic yet,
 only the epidemic threshold is placed.

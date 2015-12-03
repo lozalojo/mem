@@ -48,8 +48,8 @@ memmodel(i.data, i.seasons = 10, i.type.threshold = 5,
 \item{i.iter.boot}{Number of bootstrap iterations.}
 }
 \value{
-\code{memmodel} returns an object of class \code{flu}.
-An object of class \code{flu} is a list containing at least the following components:
+\code{memmodel} returns an object of class \code{mem}.
+An object of class \code{mem} is a list containing at least the following components:
   \item{i.data }{input data}
   \item{pre.post.intervals }{Pre/post confidence intervals (Threhold is the upper limit
   of the confidence interval).}
