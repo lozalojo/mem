@@ -87,7 +87,7 @@ memtiming<-function(i.data,
 #   i.n.values<-5
 #   i.method<-2
 #   i.param<-2.8
-  if(is.matrix(i.data)) stop('Incorrect use of this function. Use memtiming() with a single season.')
+  if(ncol(i.data)!=1) stop('Incorrect use of this function. Use memtiming() with a single season.')
 
   datos<-as.vector(as.matrix(i.data))
   curva.map<-calcular.map(datos)
