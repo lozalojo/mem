@@ -305,4 +305,22 @@ memsurveillance<-function(i.current,
   par(opar)
   dev.off()
   cat("graph created: ",getwd(),"/",i.output,"/",graph.name,".tiff","\n",sep="")
+
+  memsurveillance.output<-list(param.current=i.current,
+                               param.flu=i.flu,
+                               param.output=i.output,
+                               param.graph.name=i.graph.name,
+                               param.week.report=i.week.report,
+                               param.equal=i.equal,
+                               param.pos.epidemic=i.pos.epidemic,
+                               param.no.epidemic=i.no.epidemic,
+                               param.no.intensity=i.no.intensity,
+                               param.epidemic.start=i.epidemic.start,
+                               param.range.x=i.range.x,
+                               param.range.x.53=i.range.x.53,
+                               param.range.y=i.range.y,
+                               param.no.labels=i.no.labels,
+                               param.start.end.marks=i.start.end.marks)
+  memsurveillance.output$call<-match.call()
+  return(memsurveillance.output)
 }

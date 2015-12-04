@@ -75,7 +75,7 @@ memtrend<-function(i.flu,
 #   datos<-i.data[temporadas.usar]
 #   datos.2<-apply(datos,2,fill.missing)
 #
-#   datos<-i.flu$i.data
+#   datos<-i.flu$param.data
 #   datos.2<-i.flu$data
 
   anios<-dim(i.flu$data)[2]
@@ -105,7 +105,7 @@ memtrend<-function(i.flu,
   colnames(trend.thresholds)<-c("Ascending Threshold","Descending Threshold")
   rownames(trend.thresholds)<-"Trend Thresholds"
   memtrend.output<-list(trend.thresholds=trend.thresholds,
-                         param.i.flu=i.flu,
+                         param.flu=i.flu,
                          param.type=i.type,
                          param.level=i.level,
                          param.type.boot=i.type.boot,

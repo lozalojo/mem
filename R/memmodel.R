@@ -337,8 +337,7 @@ memmodel<-function(i.data,
   #	lineas.basicas[i,]<-pre.post.intervalos[2,1:3]
   #}
 
-  memmodel.output<-list(i.data=i.data,
-    pre.post.intervals=pre.post.intervalos,
+  memmodel.output<-list(pre.post.intervals=pre.post.intervalos,
     ci.length=ic.duracion,
     ci.percent=ic.porcentaje,
     ci.start=ic.inicio,
@@ -360,6 +359,7 @@ memmodel<-function(i.data,
     season.scheme=esquema.temporadas,
     seasons.moving=temporadas.moviles,
     pre.post.data=pre.post.datos,
+    param.data=i.data,
     param.seasons=i.seasons,
     param.type.threshold=i.type.threshold,
     param.level.threshold=i.level.threshold,
@@ -444,10 +444,10 @@ summary.mem<-function(object, ...){
 plot.mem<-function(x,...){
   opar<-par(mfrow=c(1,2))
   # Graph 1
-  semanas<-dim(x$i.data)[1]
-  anios<-dim(x$i.data)[2]
+  semanas<-dim(x$param.data)[1]
+  anios<-dim(x$param.data)[2]
   datos.graf<-x$moving.epidemics
-  colnames(datos.graf)<-names(x$i.data)
+  colnames(datos.graf)<-names(x$param.data)
   #lab.graf<-(1:semanas)+x$mean.start[2]-x$mean.start[1]
   lab.graf<-(1:semanas)+x$ci.start[2,2]-x$ci.start[1,2]
   lab.graf[lab.graf>52]<-(lab.graf-52)[lab.graf>52]
@@ -464,10 +464,10 @@ plot.mem<-function(x,...){
   ya<-limite.superior*0.975
   if ((i.temporada-1)<=(semanas-f.temporada)){
     xa<-semanas*0.99
-    legend(x="topright",xjust=1,legend=names(x$i.data),lty=tipos,lwd=anchos,col=colores,cex=0.75)
+    legend(x="topright",xjust=1,legend=names(x$param.data),lty=tipos,lwd=anchos,col=colores,cex=0.75)
   }else{
     xa<-semanas*0.01
-    legend(x="topleft",legend=names(x$i.data),lty=tipos,lwd=anchos,col=colores,cex=0.75)
+    legend(x="topleft",legend=names(x$param.data),lty=tipos,lwd=anchos,col=colores,cex=0.75)
   }
   # Graph 2
   lineas.basicas<-rbind(matrix(rep(x$pre.post.intervals[1,1:3],i.temporada-1),ncol=3,byrow=T),

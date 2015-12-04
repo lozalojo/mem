@@ -87,7 +87,7 @@ memtiming<-function(i.data,
 #   i.n.values<-5
 #   i.method<-2
 #   i.param<-2.8
-  if(ncol(i.data)!=1) stop('Incorrect use of this function. Use memtiming() with a single season.')
+  if (!is.null(dim(i.data))) if(ncol(i.data)!=1) stop('Incorrect use of this function. Use memtiming() with a single season.')
 
   datos<-as.vector(as.matrix(i.data))
   curva.map<-calcular.map(datos)
@@ -102,7 +102,14 @@ memtiming<-function(i.data,
   }else{
     post.epi<-max.n.valores(datos,i.n.values)
   }
-  memtiming.output<-list(i.data=i.data,map.curve=curva.map,optimum.map=optimo.map,pre.epi=pre.epi,post.epi=post.epi)
+  memtiming.output<-list(map.curve=curva.map,
+                         optimum.map=optimo.map,
+                         pre.epi=pre.epi,
+                         post.epi=post.epi,
+                         param.data=i.data,
+                         param.n.values=i.n.values,
+                         param.method=i.method,
+                         param.param=i.param)
   memtiming.output$call<-match.call()
   class(memtiming.output)<-"epidemic"
   return(memtiming.output)
@@ -136,13 +143,13 @@ summary.epidemic<-function(object, ...){
 plot.epidemic<-function(x, ...){
   opar<-par(mfrow=c(1,1))
   par(mfrow=c(1,1))
-  x.data<-as.vector(as.matrix(x$i.data))
+  x.data<-as.vector(as.matrix(x$param.data))
   semanas<-length(x.data)
   i.epi<-x$optimum.map[4]
   f.epi<-x$optimum.map[5]
   matplot(1:semanas,x.data,type="l",xlab="Week",ylab="Rate",col="#808080",lty=c(1,1),xaxt="n")
-  if (!is.null(rownames(x$i.data))){
-    axis(1,at=1:semanas,labels=rownames(x$i.data),cex.axis=1)
+  if (!is.null(rownames(x$param.data))){
+    axis(1,at=1:semanas,labels=rownames(x$param.data),cex.axis=1)
   }else{
     axis(1,at=1:semanas,labels=as.character(1:semanas),cex.axis=1)
   }
