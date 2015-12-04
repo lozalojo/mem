@@ -177,7 +177,7 @@ calcular.indicadores<-function(i.current,
     for (i in 1:n.parametros){
       if (i.graph.name=="") graph.name<-paste("surveillance graph (",format(round(i.valores.parametro.deteccion[i],1),digits=3,nsmall=1),")",sep="") else graph.name<-paste(i.graph.name," (",format(round(i.valores.parametro.deteccion[i],1),digits=3,nsmall=1),")",sep="")
 
-      tiff(file=paste(i.output,"/",graph.name,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
+      tiff(filename=paste(i.output,"/",graph.name,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
            compression="lzw",bg="white",res=300,antialias="none")
       opar<-par(mar=c(4,4,1,8)+0.1,xpd=TRUE)
       #,mgp=c(3,0.5,0),xpd=T)

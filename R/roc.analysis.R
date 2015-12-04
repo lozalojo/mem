@@ -6,8 +6,30 @@
 #'
 #' @name roc.analysis
 #'
-#' @param ... same as \code{memgoodness}
+#' @param i.data Data frame of input data.
+#' @param i.seasons Maximum number of seasons to use.
+#' @param i.type.threshold Type of confidence interval to calculate the threshold.
+#' @param i.level.threshold Level of confidence interval to calculate the threshold.
+#' @param i.tails.threshold Tails for the confidence interval to calculate the threshold.
+#' @param i.type.intensity Type of confidence interval to calculate the intensity thresholds.
+#' @param i.level.intensity Levels of confidence interval to calculate the intensity thresholds.
+#' @param i.tails.intensity Tails for the confidence interval to calculate the threshold.
+#' @param i.type.curve Type of confidence interval to calculate the modelled curve.
+#' @param i.level.curve Level of confidence interval to calculate the modelled curve.
+#' @param i.type.other Type of confidence interval to calculate length, start and percentages.
+#' @param i.level.other Level of confidence interval to calculate length, start and percentages.
+#' @param i.method Method to calculate the optimal timing of the epidemic.
 #' @param i.param.values range of i.param values to test.
+#' @param i.n.max Number of pre-epidemic values used to calculate the threshold.
+#' @param i.type.boot Type of bootstrap technique.
+#' @param i.iter.boot Number of bootstrap iterations.
+#' @param i.calculation.method method of determining true/false positives and true/false negatives.
+#' @param i.goodness.method method to calculate goodness.
+#' @param i.detection.values values to use in the i.param value of \code{memtiming}.
+#' @param i.weeks.above number of weeks over the threshold to give the alert.
+#' @param i.output output directory for graphs.
+#' @param i.graph whether the graphs must be written or not.
+#' @param i.prefix prefix used for naming graphs.
 #'
 #' @return
 #' \code{roc.analysis} returns a list.
