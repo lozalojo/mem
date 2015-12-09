@@ -41,9 +41,9 @@
 #' @examples
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
-#' # Finds the timing of the first season: 2001/2002
-#' gepi<-memgoodness(flucyl,i.detection.values=seq(2.5,2.8,0.1))
-#' gepi
+#' # Goodness of fit
+#' epi.good<-memgoodness(flucyl,i.detection.values=seq(2.5,2.8,0.1))
+#' epi.good$results
 #'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'

@@ -78,9 +78,9 @@ To be written
 \examples{
 # Castilla y Leon Influenza Rates data
 data(flucyl)
-# Finds the timing of the first season: 2001/2002
-repi<-roc.analysis(flucyl,i.param.values=seq(2.5,2.8,0.1),i.detection.values=seq(2.5,2.8,0.1))
-repi
+# ROC analysis
+epi.roc<-roc.analysis(flucyl,i.param.values=seq(2.5,2.8,0.1),i.detection.values=seq(2.5,2.8,0.1))
+epi.roc$results
 
 }
 \author{

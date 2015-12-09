@@ -1,6 +1,7 @@
 #' Calculates specificity and sensitivity
 #'
 #' @keywords internal
+#' @importFrom graphics rect
 calcular.indicadores<-function(i.current,
                                i.umbral.pre,
                                i.umbral.pos=NA,
