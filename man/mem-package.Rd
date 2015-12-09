@@ -38,7 +38,7 @@ print(tim)
 summary(tim)
 plot(tim)
 # Threshold calculation
-epi<-memmodel(flucyl)
+epi<-memmodel(flucyl[1:7])
 print(epi)
 summary(epi)
 plot(epi)
@@ -48,8 +48,12 @@ intensity
 # Trend parameters
 trend<-memtrend(epi)
 trend
+# Epidemic thresholds
+e.thr<-epi$epidemic.thresholds
+# Intensity threhsolds
+i.thr<-epi$intensity.thresholds
 # Surveillance
-memsurveillance(flucyl[8],epi,i.graph.name="graph 1")
+memsurveillance(flucyl[8],e.thr,i.thr,i.graph.file=FALSE)
 }
 \author{
 Jose E. Lozano \email{lozalojo@gmail.com}

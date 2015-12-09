@@ -10,15 +10,19 @@
 #' @name memsurveillance
 #'
 #' @param i.current Current season weekly rates.
-#' @param i.flu Object of class \code{mem} used to calculate thresholds.
+#' @param i.epidemic.thresholds Pre and post epidemic threholds.
+#' @param i.intensity.thresholds Intensity thresholds.
+#' @param i.mean.length Mean length.
 #' @param i.output Directory where graph is saved.
-#' @param i.graph.name Name of the graph.
+#' @param i.graph.file Graph to a file.
+#' @param i.graph.file.name Name of the graph.
 #' @param i.week.report Week to use in the report.
 #' @param i.equal If post epidemic and preepidemic thresholds must be equal (force post epidemic to be equal to the pre epidemic threshold).
 #' @param i.pos.epidemic Print post epidemic threhsold.
 #' @param i.no.epidemic Force no start of the epidemic, print only the epidemic threshold.
 #' @param i.no.intensity Do not print intensity threholds.
 #' @param i.epidemic.start Week to force start of the epidemic.
+#' @param i.epidemic.end Week to force start of the epidemic.
 #' @param i.range.x Range of weeks.
 #' @param i.range.x.53 Is there a week 53 this season.
 #' @param i.range.y Range of graph.
@@ -35,18 +39,27 @@
 #' cur<-flucyl[8]
 #' # The model
 #' epi<-memmodel(flucyl[1:7])
+#' # Epidemic thresholds
+#' e.thr<-epi$epidemic.thresholds
+#' # Intensity threhsolds
+#' i.thr<-epi$intensity.thresholds
 #' # Set the working directory to whererever you want to store the graph file
 #' setwd(".")
 #' # The graph, default values
-#' memsurveillance(cur,epi,i.graph.name="graph 1")
+#' memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+#'      i.graph.file.name="graph 1")
 #' # No intensity levels
-#' memsurveillance(cur,epi,i.graph.name="graph 2",i.no.intensity=TRUE)
+#' memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+#'      i.graph.file.name="graph 2",i.no.intensity=TRUE)
 #' # No start/end tickmarks
-#' memsurveillance(cur,epi,i.graph.name="graph 3",i.start.end.marks=FALSE)
+#' memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+#'      i.graph.file.name="graph 3",i.start.end.marks=FALSE)
 #' # Post-epidemic threshold
-#' memsurveillance(cur,epi,i.graph.name="graph 4",i.pos.epidemic=TRUE)
+#' memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+#'      i.graph.file.name="graph 4",i.pos.epidemic=TRUE)
 #' # Report for week 2, instead of all data
-#' memsurveillance(cur,epi,i.graph.name="graph 5",i.week.report=2)
+#' memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+#'      i.graph.file.name="graph 5",i.week.report=2)
 #'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
@@ -64,23 +77,29 @@
 #' @importFrom grDevices dev.off rgb tiff
 #' @importFrom graphics abline axis legend matplot mtext par points text
 memsurveillance<-function(i.current,
-                       i.flu,
+                       i.epidemic.thresholds=NA,
+                       i.intensity.thresholds=NA,
+                       i.mean.length=10,
                        i.output=".",
-                       i.graph.name="",
+                       i.graph.file=T,
+                       i.graph.file.name="",
                        i.week.report=NA,
                        i.equal=F,
                        i.pos.epidemic=F,
                        i.no.epidemic=F,
                        i.no.intensity=F,
                        i.epidemic.start=NA,
+                       i.epidemic.end=NA,
                        i.range.x=c(40,20),
                        i.range.x.53=F,
                        i.range.y=NA,
                        i.no.labels=F,
                        i.start.end.marks=T){
 
+  if (!is.numeric(i.epidemic.thresholds) | length(i.epidemic.thresholds)==1) i.epidemic.thresholds<-rep(NA,2)
+  if (!is.numeric(i.intensity.thresholds) | length(i.intensity.thresholds)==1) i.intensity.thresholds<-rep(NA,3)
   # Esquema de las semanas
-  if (!is.numeric(i.range.x)) i.range.x<-c(40,20)
+  if (!is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-c(40,20)
   if (i.range.x.53) esquema.temporadas.1<-53 else esquema.temporadas.1<-52
   if (i.range.x[1]==i.range.x[2]) i.range.x[2]<-i.range.x[1]-1
   if (i.range.x[1]<i.range.x[2]){
@@ -112,9 +131,9 @@ memsurveillance<-function(i.current,
   }
 
   # Preparacion de datos necesarios
-  umbral.pre<-as.numeric(i.flu$pre.post.intervals[1,3])
-  if (i.equal) umbral.pos<-as.numeric(i.flu$pre.post.intervals[1,3]) else umbral.pos<-as.numeric(i.flu$pre.post.intervals[2,3])
-  duracion.media<-i.flu$mean.length
+  umbral.pre<-as.numeric(i.epidemic.thresholds[1])
+  if (i.equal) umbral.pos<-as.numeric(i.epidemic.thresholds[1]) else umbral.pos<-as.numeric(i.epidemic.thresholds[2])
+  duracion.media<-i.mean.length
 
   # Si el inicio forzado de la epidemia es posterior a la semana del informe, quitamos
   if (!is.na(i.epidemic.start)) semana.inicio.forzado<-((1:semanas)[i.epidemic.start==as.numeric(esquema.semanas$nombre.semana)])[1] else semana.inicio.forzado<-NA
@@ -145,8 +164,8 @@ memsurveillance<-function(i.current,
     semana.inicio<-NA
     semana.fin<-NA
   }
-  limites.niveles<-as.vector(i.flu$epi.intervals[,4])
-  nombres.niveles<-as.character(i.flu$epi.intervals[,1])
+  limites.niveles<-as.vector(i.intensity.thresholds)
+  #nombres.niveles<-as.character(i.flu$epi.intervals[,1])
   limites.niveles[limites.niveles<0]<-0
 
   # Datos para el grafico
@@ -187,15 +206,16 @@ memsurveillance<-function(i.current,
   intensidades<-rbind(intensidades.1,intensidades.2,intensidades.3)[1:semanas,]
   dgraf<-as.data.frame(cbind(current.season[,2],umbrales,intensidades))
   names(dgraf)<-c("Rate","Epidemic threshold",paste("Intensidad",1:3))
-  if (i.graph.name=="") graph.name="mem surveillance graph" else graph.name<-i.graph.name
+  if (i.graph.file.name=="") graph.name="mem surveillance graph" else graph.name<-i.graph.file.name
   etiquetas<-c("Weekly rates","Epidemic","Medium","High","Very high")
   tipos<-c(1,2,2,2,2)
   anchos<-c(3,2,2,2,2)
   colores<-c("#808080","#8c6bb1","#88419d","#810f7c","#4d004b")
   if (is.numeric(i.range.y)) range.y<-i.range.y else range.y<-1.05*c(0,max.fix.na(dgraf))
 
-  tiff(filename=paste(i.output,"/",graph.name,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
+  if (i.graph.file) tiff(filename=paste(i.output,"/",graph.name,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
        compression="lzw",bg="white",res=300,antialias="none")
+
   opar<-par(mar=c(4,3,1,2)+0.1,mgp=c(3,0.5,0),xpd=T)
   # Grafico principal
   matplot(1:semanas,
@@ -269,8 +289,11 @@ memsurveillance<-function(i.current,
   bg.leyenda<-c("#FFFFFF","#FFFFFF",rep(NA,5))
   quitar.columnas<-numeric()
   if (!i.start.end.marks | !is.na(semana.inicio.forzado)) quitar.columnas<-c(quitar.columnas,1:2)
-  if (!i.pos.epidemic | is.na(semana.fin)) quitar.columnas<-c(quitar.columnas,1)
+  if (!i.pos.epidemic | is.na(semana.fin) | is.na(i.epidemic.thresholds[2])) quitar.columnas<-c(quitar.columnas,1)
+  if (is.na(semana.inicio)) quitar.columnas<-c(quitar.columnas,2)
+  if (i.no.epidemic | is.na(i.epidemic.thresholds[1])) quitar.columnas<-c(quitar.columnas,4)
   if (i.no.intensity) quitar.columnas<-c(quitar.columnas,5:7)
+  quitar.columnas<-c(quitar.columnas,(5:7)[is.na(i.intensity.thresholds)])
   if (length(quitar.columnas)>0){
     etiquetas.leyenda<-etiquetas.leyenda[-quitar.columnas]
     tipos.leyenda<-tipos.leyenda[-quitar.columnas]
@@ -303,19 +326,23 @@ memsurveillance<-function(i.current,
          ncol=1
   )
   par(opar)
-  dev.off()
-  cat("graph created: ",getwd(),"/",i.output,"/",graph.name,".tiff","\n",sep="")
+  if (i.graph.file) dev.off()
+  if (i.graph.file) cat("graph created: ",getwd(),"/",i.output,"/",graph.name,".tiff","\n",sep="")
 
   memsurveillance.output<-list(param.current=i.current,
-                               param.flu=i.flu,
+                               param.epidemic.thresholds=i.epidemic.thresholds,
+                               param.intensity.thresholds=i.intensity.thresholds,
+                               param.mean.length=i.mean.length,
                                param.output=i.output,
-                               param.graph.name=i.graph.name,
+                               param.graph.file=i.graph.file,
+                               param.graph.file.name=i.graph.file.name,
                                param.week.report=i.week.report,
                                param.equal=i.equal,
                                param.pos.epidemic=i.pos.epidemic,
                                param.no.epidemic=i.no.epidemic,
                                param.no.intensity=i.no.intensity,
                                param.epidemic.start=i.epidemic.start,
+                               param.epidemic.end=i.epidemic.end,
                                param.range.x=i.range.x,
                                param.range.x.53=i.range.x.53,
                                param.range.y=i.range.y,

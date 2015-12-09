@@ -4,20 +4,28 @@
 \alias{memsurveillance}
 \title{Creates the surveillance graph of the current season}
 \usage{
-memsurveillance(i.current, i.flu, i.output = ".", i.graph.name = "",
-  i.week.report = NA, i.equal = F, i.pos.epidemic = F,
-  i.no.epidemic = F, i.no.intensity = F, i.epidemic.start = NA,
-  i.range.x = c(40, 20), i.range.x.53 = F, i.range.y = NA,
-  i.no.labels = F, i.start.end.marks = T)
+memsurveillance(i.current, i.epidemic.thresholds = NA,
+  i.intensity.thresholds = NA, i.mean.length = 10, i.output = ".",
+  i.graph.file = T, i.graph.file.name = "", i.week.report = NA,
+  i.equal = F, i.pos.epidemic = F, i.no.epidemic = F,
+  i.no.intensity = F, i.epidemic.start = NA, i.range.x = c(40, 20),
+  i.range.x.53 = F, i.range.y = NA, i.no.labels = F,
+  i.start.end.marks = T)
 }
 \arguments{
 \item{i.current}{Current season weekly rates.}
 
-\item{i.flu}{Object of class \code{mem} used to calculate thresholds.}
+\item{i.epidemic.thresholds}{Pre and post epidemic threholds.}
+
+\item{i.intensity.thresholds}{Intensity thresholds.}
+
+\item{i.mean.length}{Mean length.}
 
 \item{i.output}{Directory where graph is saved.}
 
-\item{i.graph.name}{Name of the graph.}
+\item{i.graph.file}{Graph to a file.}
+
+\item{i.graph.file.name}{Name of the graph.}
 
 \item{i.week.report}{Week to use in the report.}
 
@@ -60,18 +68,27 @@ data(flucyl)
 cur<-flucyl[8]
 # The model
 epi<-memmodel(flucyl[1:7])
+# Epidemic thresholds
+e.thr<-epi$epidemic.thresholds
+# Intensity threhsolds
+i.thr<-epi$intensity.thresholds
 # Set the working directory to whererever you want to store the graph file
 setwd(".")
 # The graph, default values
-memsurveillance(cur,epi,i.graph.name="graph 1")
+memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+     i.graph.file.name="graph 1")
 # No intensity levels
-memsurveillance(cur,epi,i.graph.name="graph 2",i.no.intensity=TRUE)
+memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+     i.graph.file.name="graph 2",i.no.intensity=TRUE)
 # No start/end tickmarks
-memsurveillance(cur,epi,i.graph.name="graph 3",i.start.end.marks=FALSE)
+memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+     i.graph.file.name="graph 3",i.start.end.marks=FALSE)
 # Post-epidemic threshold
-memsurveillance(cur,epi,i.graph.name="graph 4",i.pos.epidemic=TRUE)
+memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+     i.graph.file.name="graph 4",i.pos.epidemic=TRUE)
 # Report for week 2, instead of all data
-memsurveillance(cur,epi,i.graph.name="graph 5",i.week.report=2)
+memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+     i.graph.file.name="graph 5",i.week.report=2)
 
 }
 \author{
