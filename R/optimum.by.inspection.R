@@ -58,9 +58,9 @@ optimum.by.inspection<-function(i.data,
     itsnotok<-T
     while(itsnotok){
       cat("Click on the FIRST epidemic week of this season\nWhen done, click on FINISH (top-right corner)\n")
-      i.timing.1.1<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana)
+      i.timing.1.1<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana,n=1,plot=F)
       cat("Click on the LAST epidemic week of this season\nWhen done, click on FINISH (top-right corner)\n\n")
-      i.timing.1.2<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana)
+      i.timing.1.2<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana,n=1,plot=F)
       cat("FIRST epidemic week selected is:",nombre.semana[i.timing.1.1],"\n")
       cat("LAST epidemic week selected is:",nombre.semana[i.timing.1.2],"\n\n")
       i.timing.1.3<-readline("Is that correct? (type Y or N)\n")

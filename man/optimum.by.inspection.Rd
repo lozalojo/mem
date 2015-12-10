@@ -29,7 +29,7 @@ To be written
 \examples{
 # Castilla y Leon Influenza Rates data
 data(flucyl)
-# Inspection
+# Inspection. It runs interactively
 #opt.ins<-optimum.by.inspection(flucyl,i.detection.values=seq(2.5,2.8,0.1))
 #opt.ins$optimum.data
 
