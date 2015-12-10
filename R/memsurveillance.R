@@ -14,6 +14,7 @@
 #' @param i.intensity.thresholds Intensity thresholds.
 #' @param i.mean.length Mean length.
 #' @param i.output Directory where graph is saved.
+#' @param i.graph.title Title of the graph.
 #' @param i.graph.file Graph to a file.
 #' @param i.graph.file.name Name of the graph.
 #' @param i.week.report Week to use in the report.
@@ -81,6 +82,7 @@ memsurveillance<-function(i.current,
                        i.intensity.thresholds=NA,
                        i.mean.length=10,
                        i.output=".",
+                       i.graph.title="",
                        i.graph.file=T,
                        i.graph.file.name="",
                        i.week.report=NA,
@@ -223,7 +225,7 @@ memsurveillance<-function(i.current,
           type="l",
           lty=tipos,lwd=anchos,col=colores,
           xlab="",ylab="",axes=F,
-          ylim=range.y)
+          ylim=range.y,main=i.graph.title)
   # Puntos de la serie de tasas
   points(1:semanas,dgraf[,1],pch=19,type="p",col="#000000",cex=1)
   # Marcas de inicio y fin
@@ -334,6 +336,7 @@ memsurveillance<-function(i.current,
                                param.intensity.thresholds=i.intensity.thresholds,
                                param.mean.length=i.mean.length,
                                param.output=i.output,
+                               param.graph.title=i.graph.title,
                                param.graph.file=i.graph.file,
                                param.graph.file.name=i.graph.file.name,
                                param.week.report=i.week.report,

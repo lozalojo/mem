@@ -1,0 +1,125 @@
+#' Inspection calcultation of the optimum
+#'
+#' Function \code{optimum.by.inspection} perform an analysis of mem parameters
+#' to find the one that fits better a panel of experts inspection criterium.
+#'
+#' To be written
+#'
+#' @name optimum.by.inspection
+#'
+#' @param i.data Data frame of input data.
+#' @param i.detection.values values to use in the i.param value of \code{memtiming}.
+#'
+#' @return
+#' \code{optimum.by.inspection} returns a list.
+#' An object of class \code{mem} is a list containing at least the following components:
+#'   \item{optimum}{optimum value.}
+#'   \item{optimum.data}{Data related to the optimum value.}
+#'   \item{summary.data}{Data for all values tested.}
+#'   \item{inspection.data}{Detailed results of each iteration.}
+#'
+#' @examples
+#' # Castilla y Leon Influenza Rates data
+#' data(flucyl)
+#' # Inspection. It runs interactively
+#' #opt.ins<-optimum.by.inspection(flucyl,i.detection.values=seq(2.5,2.8,0.1))
+#' #opt.ins$optimum.data
+#'
+#' @author Jose E. Lozano \email{lozalojo@@gmail.com}
+#'
+#' @references
+#' Vega T., Lozano J.E. (2004) Modelling influenza epidemic - can we detect the beginning
+#' and predict the intensity and duration? International Congress Series 1263 (2004)
+#' 281-283.\cr
+#' Vega T., Lozano J.E. (2012) Influenza surveillance in Europe: establishing epidemic
+#' thresholds by the Moving Epidemic Method. Influenza and Other Respiratory Viruses,
+#' DOI:10.1111/j.1750-2659.2012.00422.x.
+#'
+#' @keywords influenza
+#'
+#' @export
+#' @importFrom graphics identify
+optimum.by.inspection<-function(i.data,
+                                i.detection.values=seq(2.0,3.0,0.1)){
+
+  semanas<-dim(i.data)[1]
+  anios<-dim(i.data)[2]
+  nombre.semana<-rownames(i.data)
+  nombre.anios<-colnames(i.data)
+  numero.semana<-1:semanas
+  n.values<-length(i.detection.values)
+
+  i.timing.1<-array(dim=c(anios,2))
+  resultados.i<-array(dim=c(anios,8,n.values),dimnames=c("year","indicator","parameter"))
+
+  for (i in 1:anios){
+    cur<-i.data[i]
+    memsurveillance(cur,NA,NA,i.graph.file=F,i.graph.title=nombre.anios[i])
+    itsnotok<-T
+    while(itsnotok){
+      cat("Click on the FIRST epidemic week of this season\nWhen done, click on FINISH (top-right corner)\n")
+      i.timing.1.1<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana)
+      cat("Click on the LAST epidemic week of this season\nWhen done, click on FINISH (top-right corner)\n\n")
+      i.timing.1.2<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana)
+      cat("FIRST epidemic week selected is:",nombre.semana[i.timing.1.1],"\n")
+      cat("LAST epidemic week selected is:",nombre.semana[i.timing.1.2],"\n\n")
+      i.timing.1.3<-readline("Is that correct? (type Y or N)\n")
+      if (tolower(i.timing.1.3) %in% c("y","ye","yes")) itsnotok<-F
+    }
+    i.timing.1.i<-c(i.timing.1.1,i.timing.1.2)
+    i.timing.1[i,]<-i.timing.1.i
+    curva.map<-calcular.map(as.vector(as.matrix(cur)))
+    for (j in 1:n.values){
+        i.param.deteccion<-i.detection.values[j]
+        i.param.deteccion.label<-format(round(i.param.deteccion,1),digits=3,nsmall=1)
+        i.timing.2<-calcular.optimo(curva.map,2,i.param.deteccion)[4:5]
+        resultado.j<-calcular.indicadores.2.timings(cur,i.timing.1.i,i.timing.2,i.timing.labels=c("inspection",i.param.deteccion.label),
+                                                i.graph.title="Comparing",i.graph.file=F)$indicadores
+        resultados.i[i,,j]<-as.numeric(resultado.j)
+    }
+  }
+
+  resultados<-cbind(i.detection.values,apply(resultados.i,c(3,2),sum,na.rm=T))
+  colnames(resultados)<-c("parameter",colnames(resultado.j))
+  resultados[,8]<-resultados[,4]/(resultados[,4]+resultados[,7])
+  resultados[,9]<-resultados[,6]/(resultados[,6]+resultados[,5])
+
+
+  qf<-abs(resultados[,8]-resultados[,9])
+  qe<-2-resultados[,8]-resultados[,9]
+  qs<-(1-resultados[,8])^2+(1-resultados[,9])^2
+
+  rango1<-rank(qf)
+  rango2<-rank(qe)
+  rango3<-rank(qs)
+
+  rango.t<-rango1+rango2+rango3
+
+  optimo<-resultados[(1:n.values)[min(rango.t)==rango.t][1],]
+
+  # Graph all data
+
+  for (i in 1:anios){
+    cur<-i.data[i]
+    i.timing.1.i<-i.timing.1[i,]
+    curva.map<-calcular.map(as.vector(as.matrix(cur)))
+    i.param.deteccion<-optimo[1]
+    i.param.deteccion.label<-format(round(i.param.deteccion,1),digits=3,nsmall=1)
+    i.timing.2<-calcular.optimo(curva.map,2,i.param.deteccion)[4:5]
+    dummmmyyyy<-calcular.indicadores.2.timings(cur,i.timing.1.i,i.timing.2,i.timing.labels=c("inspection",i.param.deteccion.label),
+                                                  i.graph.title=nombre.anios[i],i.graph.file=F)
+    dummmmyyyy<-readline("Press any key to continue\n")
+    }
+
+
+  resultados<-cbind(resultados,qf,qe,qs,rango1,rango2,rango3)
+
+  optimum.by.inspection.output<-list(optimum=optimo[1],
+                            optimum.data=optimo,
+                            summary.data=resultados,
+                            inspection.data=resultados,
+                            param.data=i.data,
+                            param.detection.values=i.detection.values)
+  optimum.by.inspection.output$call<-match.call()
+  return(optimum.by.inspection.output)
+}
