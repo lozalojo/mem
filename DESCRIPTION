@@ -2,7 +2,7 @@ Package: mem
 Type: Package
 Title: Moving Epidemic Method R Package
 Version: 2.0
-Date: 2015-11-30
+Date: 2015-12-16
 Authors@R: person("Lozano", "Jose E.", email = "lozalojo@gmail.com", role = c("aut", "cre"))
 Depends:
     R (>= 3.2.0),
@@ -10,7 +10,9 @@ Depends:
     boot,
     grDevices,
     graphics,
-    stats
+    stats,
+    sqldf,
+    reshape2
 Description: Modelization of influenza epidemics in order to monitor future
     activity.
 License: GPL (>= 2)

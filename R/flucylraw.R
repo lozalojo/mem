@@ -1,4 +1,4 @@
-#' Castilla y Leon influenza crude rates
+#' Castilla y Leon influenza standarised rates
 #'
 #' This data set contains \emph{Influenza Like Illness} (ILI) rates, in cases per 100,000
 #' inhabitants collected by the \emph{Influenza Surveillance Programme} of the
@@ -14,19 +14,14 @@
 #'
 #' @docType data
 #' @keywords datasets
-#' @name flucyl
-#' @usage data(flucyl)
-#' @format A data frame with 33 observations on 8 variables. Each observation is one surveillance
-#' week, and each variable is an influenza season.
+#' @name flucylraw
+#' @usage data(flucylraw)
+#' @format A data frame with 267 observations on 2 variables. Each observation is one surveillance
+#' week and rate,
 #' \describe{
-#'   \item{\code{2001/2002}}{a numeric vector - 2001/2002 rates per 100,000 inhabitants.}
-#'   \item{\code{2002/2003}}{a numeric vector - 2002/2003 rates per 100,000 inhabitants.}
-#'   \item{\code{2003/2004}}{a numeric vector - 2003/2004 rates per 100,000 inhabitants.}
-#'   \item{\code{2004/2005}}{a numeric vector - 2004/2005 rates per 100,000 inhabitants.}
-#'   \item{\code{2005/2006}}{a numeric vector - 2005/2006 rates per 100,000 inhabitants.}
-#'   \item{\code{2006/2007}}{a numeric vector - 2006/2007 rates per 100,000 inhabitants.}
-#'   \item{\code{2007/2008}}{a numeric vector - 2007/2008 rates per 100,000 inhabitants.}
-#'   \item{\code{2008/2009}}{a numeric vector - 2008/2009 rates per 100,000 inhabitants.}
+#'   \item{\code{year}}{a numeric vector - year.}
+#'   \item{\code{week}}{a numeric vector - week.}
+#'   \item{\code{rate}}{a numeric vector - standarised rates per 100,000 inhabitants.}
 #' }
 #' @source
 #' Influenza Surveillance Programme. Castilla y Leon Health Sentinel Network. Consejeria
@@ -37,6 +32,6 @@
 #' Influenza Surveillance Programme (Programa de vigilancia de la gripe:
 #' \url{http://www.salud.jcyl.es/centinelas}).
 #' @examples
-#' data(flucyl)
-#' plot(flucyl[,1],type="l")
+#' data(flucylraw)
+#' plot(flucylraw$rate,type="l")
 NULL
