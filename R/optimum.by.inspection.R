@@ -21,9 +21,9 @@
 #' @examples
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
-#' # Inspection. It runs interactively
-#' opt.ins<-optimum.by.inspection(flucyl,i.detection.values=seq(2.5,2.8,0.1))
-#' opt.ins$optimum.data
+#' # Inspection. It runs interactively (uncomment to run)
+#' #opt.ins<-optimum.by.inspection(flucyl,i.detection.values=seq(2.0,3.0,0.1))
+#' #opt.ins$optimum.data
 #'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'

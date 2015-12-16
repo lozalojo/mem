@@ -4,7 +4,7 @@
 \alias{optimum.by.inspection}
 \title{Inspection calcultation of the optimum}
 \usage{
-optimum.by.inspection(i.data, i.detection.values = seq(2, 3, 0.1))
+optimum.by.inspection(i.data, i.detection.values = seq(1.5, 4.5, 0.1))
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
@@ -29,8 +29,8 @@ To be written
 \examples{
 # Castilla y Leon Influenza Rates data
 data(flucyl)
-# Inspection. It runs interactively
-#opt.ins<-optimum.by.inspection(flucyl,i.detection.values=seq(2.5,2.8,0.1))
+# Inspection. It runs interactively (uncomment to run)
+#opt.ins<-optimum.by.inspection(flucyl,i.detection.values=seq(2.0,3.0,0.1))
 #opt.ins$optimum.data
 
 }
