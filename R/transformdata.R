@@ -101,7 +101,7 @@ transformdata<-function(i.data,
 	temp9$week<-NULL
 	temp9$week.no<-NULL
 
-	transformdata.output<-list(tdata=temp8)
+	transformdata.output<-list(tdata=temp9)
 	transformdata.output$call<-match.call()
 	return(transformdata.output)
 
