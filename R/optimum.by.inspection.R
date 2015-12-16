@@ -57,10 +57,10 @@ optimum.by.inspection<-function(i.data,
     itsnotok<-T
     while(itsnotok){
       memsurveillance(cur,NA,NA,i.graph.file=F,i.graph.title=nombre.anios[i])
-      cat("Click on the FIRST epidemic week of this season\nWhen done, click on FINISH (top-right corner)\n")
+      cat("Click on the FIRST epidemic week of this season\nDepending on the device used to plot the graph, you might need to click on FINISH (top-right corner)\n")
       i.timing.1.1<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana,n=1,plot=F)
       if (is.numeric(i.timing.1.1)) points(x=i.timing.1.1,y=cur[i.timing.1.1,],pch=1,col="#FF0000",lwd=7)
-      cat("Click on the LAST epidemic week of this season\nWhen done, click on FINISH (top-right corner)\n\n")
+      cat("Click on the LAST epidemic week of this season\nDepending on the device used to plot the graph, you might need to click on FINISH (top-right corner)\n\n")
       i.timing.1.2<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana,n=1,plot=F)
       if (is.numeric(i.timing.1.2)) points(x=i.timing.1.2,y=cur[i.timing.1.2,],pch=1,col="#40FF40",lwd=7)      
       cat("Epidemic week range selected is: [",nombre.semana[i.timing.1.1],",",nombre.semana[i.timing.1.2],"]\n\n")
