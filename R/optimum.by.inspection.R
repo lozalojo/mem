@@ -22,8 +22,8 @@
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
 #' # Inspection. It runs interactively
-#' #opt.ins<-optimum.by.inspection(flucyl,i.detection.values=seq(2.5,2.8,0.1))
-#' #opt.ins$optimum.data
+#' opt.ins<-optimum.by.inspection(flucyl,i.detection.values=seq(2.5,2.8,0.1))
+#' opt.ins$optimum.data
 #'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
@@ -40,7 +40,7 @@
 #' @export
 #' @importFrom graphics identify
 optimum.by.inspection<-function(i.data,
-                                i.detection.values=seq(2.0,3.0,0.1)){
+                                i.detection.values=seq(1.5,4.5,0.1)){
 
   semanas<-dim(i.data)[1]
   anios<-dim(i.data)[2]
@@ -61,8 +61,7 @@ optimum.by.inspection<-function(i.data,
       i.timing.1.1<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana,n=1,plot=F)
       cat("Click on the LAST epidemic week of this season\nWhen done, click on FINISH (top-right corner)\n\n")
       i.timing.1.2<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana,n=1,plot=F)
-      cat("FIRST epidemic week selected is:",nombre.semana[i.timing.1.1],"\n")
-      cat("LAST epidemic week selected is:",nombre.semana[i.timing.1.2],"\n\n")
+      cat("Epidemic week range selected is: [",nombre.semana[i.timing.1.1],",",nombre.semana[i.timing.1.2],"]\n\n")
       i.timing.1.3<-readline("Is that correct? (type Y or N)\n")
       if (tolower(i.timing.1.3) %in% c("y","ye","yes")) itsnotok<-F
     }
