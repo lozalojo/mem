@@ -12,8 +12,9 @@ Depends:
     graphics,
     stats,
     sqldf,
-    reshape2
+    reshape2,
+    RColorBrewer
 Description: Modelization of influenza epidemics in order to monitor future
     activity.
 License: GPL (>= 2)
-RoxygenNote: 5.0.1.9000
+RoxygenNote: 5.0.1
