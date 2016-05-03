@@ -346,9 +346,12 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
   #   	jpeg(file=paste(salidas,"/",prefix,"MEM Model v2.jpg",sep=""),width=640,height=480,pointsize=10,bg="white")
   #    	tiff(filename=paste(salidas,"/",prefix,"MEM Model v2.tiff",sep=""),width=8,height=6,units="in",pointsize="12",
   #    	     compression="lzw",bg="white",res=300,antialias="none")
-  png(filename=paste(salidas,"/",prefix,"MEM Model v2.png",sep=""),width=8,height=6,units="in",pointsize="12",
-      bg=NA,res=300,antialias="none")
-  opar<-par(mfrow=c(1,1),mar=c(4,4,3,8) + 0.1,xpd=T)
+  # png(filename=paste(salidas,"/",prefix,"MEM Model v2.png",sep=""),width=8,height=6,units="in",pointsize="12",
+  #     bg=NA,res=300,antialias="none")
+  # opar<-par(mfrow=c(1,1),mar=c(4,4,3,8) + 0.1,xpd=T)
+  tiff(filename=paste(salidas,"/",prefix,"MEM Model v2.tiff",sep=""),width=8,height=6,units="in",pointsize="12",
+       compression="lzw",bg="white",res=300,antialias="none")
+  opar<-par(mfrow=c(1,1),mar=c(4,4,3,10) + 0.1,xpd=T)
 
   tipos<-c(1,2,rep(2,times=n.niveles))
   anchos<-c(3,2,rep(2,times=n.niveles))
