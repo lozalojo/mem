@@ -20,6 +20,7 @@ memtiming(i.data, i.n.values = 5, i.method = 2, i.param = 2.8)
 \code{memtiming} returns an object of class \code{epidemic}.
   An object of class \code{epidemic} is a list containing at least the following components:
     \item{i.data }{input data}
+  \item{data }{data with missing rates filled with data from smothing regression}
   \item{map.curve }{MAP curve}
   \item{optimum.map }{optimum}
   \item{pre.epi }{pre-epidemic highest rates}

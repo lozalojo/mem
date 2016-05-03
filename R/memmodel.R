@@ -115,23 +115,6 @@ memmodel<-function(i.data,
                     i.n.max=-1,
                     i.type.boot="norm",
                     i.iter.boot=10000){
-#   i.data<-flucyl
-#   i.seasons=-1
-#   i.type.threshold=4
-#   i.level.threshold=0.95
-#   i.tails.threshold=1
-#   i.type.intensity=4
-#   i.level.intensity=c(0.40,0.90,0.975)
-#   i.tails.intensity=1
-#   i.type.curve=2
-#   i.level.curve=0.95
-#   i.type.other=6
-#   i.level.other=0.95
-#   i.method=2
-#   i.param=2.8
-#   i.n.max=0
-#   i.type.boot="norm"
-#   i.iter.boot=1000
 
   if (is.matrix(i.data)) i.data<-as.data.frame(i.data)
 

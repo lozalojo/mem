@@ -52,6 +52,7 @@
 #'   \code{memtiming} returns an object of class \code{epidemic}.
 #'   An object of class \code{epidemic} is a list containing at least the following components:
 #'     \item{i.data }{input data}
+#'   \item{data }{data with missing rates filled with data from smothing regression}
 #'   \item{map.curve }{MAP curve}
 #'   \item{optimum.map }{optimum}
 #'   \item{pre.epi }{pre-epidemic highest rates}
@@ -83,13 +84,10 @@ memtiming<-function(i.data,
                     i.n.values=5,
                     i.method=2,
                     i.param=2.8){
-#   i.data<-flucyl[1]
-#   i.n.values<-5
-#   i.method<-2
-#   i.param<-2.8
   if (!is.null(dim(i.data))) if(ncol(i.data)!=1) stop('Incorrect use of this function. Use memtiming() with a single season.')
 
-  datos<-as.vector(as.matrix(i.data))
+  datos<-fill.missing(as.vector(as.matrix(i.data)))
+
   curva.map<-calcular.map(datos)
   optimo.map<-calcular.optimo(curva.map,i.method,i.param)
   if (!is.na(optimo.map[4])){
@@ -106,6 +104,7 @@ memtiming<-function(i.data,
                          optimum.map=optimo.map,
                          pre.epi=pre.epi,
                          post.epi=post.epi,
+                         data=datos,
                          param.data=i.data,
                          param.n.values=i.n.values,
                          param.method=i.method,
@@ -142,12 +141,14 @@ summary.epidemic<-function(object, ...){
 #' @export
 plot.epidemic<-function(x, ...){
   opar<-par(mfrow=c(1,1))
-  par(mfrow=c(1,1))
   x.data<-as.vector(as.matrix(x$param.data))
+  x.data.fixed<-as.vector(as.matrix(x$data))
+  x.data.missing<-x.data.fixed
+  x.data.missing[!(is.na(x.data) & !is.na(x.data.fixed))]<-NA
   semanas<-length(x.data)
   i.epi<-x$optimum.map[4]
   f.epi<-x$optimum.map[5]
-  matplot(1:semanas,x.data,type="l",xlab="Week",ylab="Rate",col="#808080",lty=c(1,1),xaxt="n")
+  matplot(1:semanas,x.data.fixed,type="l",xlab="Week",ylab="Rate",col="#808080",lty=c(1,1),xaxt="n")
   if (!is.null(rownames(x$param.data))){
     axis(1,at=1:semanas,labels=rownames(x$param.data),cex.axis=1)
   }else{
@@ -156,20 +157,32 @@ plot.epidemic<-function(x, ...){
   if (is.na(i.epi)){
     puntos<-x.data
     points(1:semanas,puntos,pch=19,type="p",col="#00C000",cex=1.5)
+    puntos<-x.data.missing
+    points(1:semanas,puntos,pch=13,type="p",col="#00C000",cex=1.5)
   }else{
     # pre
     puntos<-x.data
     puntos[i.epi:semanas]<-NA
     points(1:semanas,puntos,pch=19,type="p",col="#00C000",cex=1.5)
+    puntos<-x.data.missing
+    puntos[i.epi:semanas]<-NA
+    points(1:semanas,puntos,pch=13,type="p",col="#00C000",cex=1.5)
     # epi
     puntos<-x.data
     if (i.epi>1) puntos[1:(i.epi-1)]<-NA
     if (f.epi<semanas) puntos[(f.epi+1):semanas]<-NA
     points(1:semanas,puntos,pch=19,type="p",col="#800080",cex=1.5)
+    puntos<-x.data.missing
+    if (i.epi>1) puntos[1:(i.epi-1)]<-NA
+    if (f.epi<semanas) puntos[(f.epi+1):semanas]<-NA
+    points(1:semanas,puntos,pch=13,type="p",col="#800080",cex=1.5)
     # post
     puntos<-x.data
     puntos[1:f.epi]<-NA
     points(1:semanas,puntos,pch=19,type="p",col="#FFB401",cex=1.5)
+    puntos<-x.data.missing
+    puntos[1:f.epi]<-NA
+    points(1:semanas,puntos,pch=13,type="p",col="#FFB401",cex=1.5)
   }
 
   legend(semanas*0.70,max.fix.na(x.data)*0.99,legend=c("Crude rate","Pre-epi period","Epidemic","Post-epi period"),
