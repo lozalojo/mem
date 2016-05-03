@@ -37,7 +37,6 @@
 #' @importFrom grDevices colorRamp colorRampPalette
 processPlots<-function(i.flu,i.output=".",i.prefix=""){
 
-  if (i.prefix=="") prefix<-"" else prefix<-paste(i.prefix," - ",sep="")
   semanas<-dim(i.flu$data)[1]
   anios<-dim(i.flu$data)[2]
   if (!file.exists(i.output)) dir.create(i.output)
@@ -46,22 +45,22 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
 
   # Output 0 - Summary of the results.
 
-  sink(file=paste(salidas,"/",prefix,"Summary.txt",sep=""),append=FALSE)
+  sink(file=paste(salidas,"/",i.prefix,"Summary.txt",sep=""),append=FALSE)
   summary(i.flu)
   sink()
 
-  write.table(round(i.flu$pre.post.intervals,4),file=paste(salidas,"/",prefix,"Summary.txt",sep=""),dec=",",append=TRUE,quote=FALSE,sep="\t",row.names=F,col.names=F)
-  sink(file=paste(salidas,"/",prefix,"Summary.txt",sep=""),append=TRUE)
+  write.table(round(i.flu$pre.post.intervals,4),file=paste(salidas,"/",i.prefix,"Summary.txt",sep=""),dec=",",append=TRUE,quote=FALSE,sep="\t",row.names=F,col.names=F)
+  sink(file=paste(salidas,"/",i.prefix,"Summary.txt",sep=""),append=TRUE)
   cat("\n\nEstimated starting and ending point of the influenza season and its 95% CL\n\n")
   sink()
-  write.table(i.flu$ci.start[1:2,],file=paste(salidas,"/",prefix,"Summary.txt",sep=""),dec=",",append=TRUE,quote=FALSE,sep="\t",row.names=F,col.names=F)
-  sink(file=paste(salidas,"/",prefix,"Summary.txt",sep=""),append=TRUE)
+  write.table(i.flu$ci.start[1:2,],file=paste(salidas,"/",i.prefix,"Summary.txt",sep=""),dec=",",append=TRUE,quote=FALSE,sep="\t",row.names=F,col.names=F)
+  sink(file=paste(salidas,"/",i.prefix,"Summary.txt",sep=""),append=TRUE)
   cat("\n\nLimits of the influenza season, relative and absolute position in weeks\n\n")
   sink()
 
   limites.temporada<-rbind(c(i.flu$mean.start,i.flu$mean.start+i.flu$mean.length-1),
                            c(semana.absoluta(i.flu$mean.start,i.flu$semana.inicio),semana.absoluta(i.flu$mean.start+i.flu$mean.length-1,i.flu$semana.inicio)))
-  write.table(limites.temporada,file=paste(salidas,"/",prefix,"Summary.txt",sep=""),dec=",",append=TRUE,quote=FALSE,sep="\t",row.names=F,col.names=F)
+  write.table(limites.temporada,file=paste(salidas,"/",i.prefix,"Summary.txt",sep=""),dec=",",append=TRUE,quote=FALSE,sep="\t",row.names=F,col.names=F)
 
 
 
@@ -69,11 +68,8 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
 
   for (j in 1:anios){
     opar<-par(mfrow=c(1,1))
-    #jpeg(file=paste(salidas,"/",prefix,"Epidemics ",j,".jpg",sep=""),width=640,height=480,pointsize=10,bg="white")
-    #png(file=paste(salidas,"/",prefix,"Epidemics ",j,".png",sep=""),width=800,height=600,pointsize=10,bg="white",antialias="cleartype")
-    tiff(filename=paste(salidas,"/",prefix,"Epidemics ",j,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
+    tiff(filename=paste(salidas,"/",i.prefix,"Epidemics ",j,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
          compression="lzw",bg="white",res=300,antialias="none")
-    #par(mfrow=c(1,1))
     opar<-par(mfrow=c(1,1),mar=c(4,4,3,10) + 0.1,xpd=T)
     tempdatos<-as.data.frame(cbind(1:semanas,i.flu$data[,j]))
     names(tempdatos)<-c("Week","Rate")
@@ -113,7 +109,7 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
     dev.off()
     par(opar)
 
-    write.table(round(tempdatos,2),file=paste(salidas,"/",prefix,"Epidemics ",j,".txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
+    write.table(round(tempdatos,2),file=paste(salidas,"/",i.prefix,"Epidemics ",j,".txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
 
   }
 
@@ -121,10 +117,7 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
 
   for (j in 1:anios){
 
-    #jpeg(file=paste(salidas,"/",prefix,"MAP Curve ",j,".jpg",sep=""),width=640,height=480,pointsize=10,bg="white")
-    #opar<-par(mfrow=c(1,1))
-
-    tiff(filename=paste(salidas,"/",prefix,"MAP Curve ",j,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
+    tiff(filename=paste(salidas,"/",i.prefix,"MAP Curve ",j,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
          compression="lzw",bg="white",res=300,antialias="none")
     opar<-par(mfrow=c(1,1),mar=c(4,4,3,2) + 0.1,xpd=T)
 
@@ -150,7 +143,7 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
            col="#980043",lwd=2.5)
     par(opar)
     dev.off()
-    write.table(round(tempdatos,2),file=paste(salidas,"/",prefix,"MAP Curve ",j,".txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
+    write.table(round(tempdatos,2),file=paste(salidas,"/",i.prefix,"MAP Curve ",j,".txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
   }
 
   # Figure 2.b : MAP Curve Slope for criterium 2
@@ -158,9 +151,7 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
   if (i.flu$param.method==2){
     for (j in 1:anios){
 
-      #jpeg(file=paste(salidas,"/",prefix,"MAP Curve Slope ",j,".jpg",sep=""),width=640,height=480,pointsize=10,bg="white")
-      #opar<-par(mfrow=c(1,1))
-      tiff(filename=paste(salidas,"/",prefix,"MAP Curve Slope ",j,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
+      tiff(filename=paste(salidas,"/",i.prefix,"MAP Curve Slope ",j,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
            compression="lzw",bg="white",res=300,antialias="none")
       opar<-par(mfrow=c(1,1),mar=c(4,4,3,2) + 0.1,xpd=T)
 
@@ -197,7 +188,7 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
       par(opar)
       dev.off()
 
-      write.table(round(cbind(x[-length(x)],d.y),2),file=paste(salidas,"/",prefix,"MAP Curve Slope ",j,".txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
+      write.table(round(cbind(x[-length(x)],d.y),2),file=paste(salidas,"/",i.prefix,"MAP Curve Slope ",j,".txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
     }
   }
 
@@ -206,19 +197,17 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
 
   tempdatos<-as.data.frame(i.flu$season.scheme[,,1])
   names(tempdatos)<-c(names(i.flu$param.data),"Optimal","Period")
-  write.table(tempdatos,file=paste(salidas,"/",prefix,"Relative Positions.txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
+  write.table(tempdatos,file=paste(salidas,"/",i.prefix,"Relative Positions.txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
   tempdatos<-as.data.frame(i.flu$season.scheme[,,2])
   names(tempdatos)<-c(names(i.flu$param.data),"Optimal","Period")
-  write.table(tempdatos,file=paste(salidas,"/",prefix,"Absolute Positions.txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
+  write.table(tempdatos,file=paste(salidas,"/",i.prefix,"Absolute Positions.txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
 
   ## Figure 4 - Weekly incidence rates of the seasons matching their relative position in the model.
 
   tempdatos<-as.data.frame(cbind(1:semanas,i.flu$moving.epidemics))
   names(tempdatos)<-c("Week",names(i.flu$param.data))
-  write.table(round(tempdatos,2),file=paste(salidas,"/",prefix,"Moving Epidemics.txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
-  #opar<-par(mfrow=c(1,1))
-  #jpeg(file=paste(salidas,"/",prefix,"Moving Epidemics.jpg",sep=""),width=640,height=480,pointsize=10,bg="white")
-  tiff(filename=paste(salidas,"/",prefix,"Moving Epidemics.tiff",sep=""),width=8,height=6,units="in",pointsize="12",
+  write.table(round(tempdatos,2),file=paste(salidas,"/",i.prefix,"Moving Epidemics.txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
+  tiff(filename=paste(salidas,"/",i.prefix,"Moving Epidemics.tiff",sep=""),width=8,height=6,units="in",pointsize="12",
        compression="lzw",bg="white",res=300,antialias="none")
   opar<-par(mfrow=c(1,1),mar=c(4,4,3,12) + 0.1,xpd=T)
 
@@ -248,14 +237,6 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
   y<-limite.superior[2]-rango.superior*0.025
   legend("topright",inset=c(-0.475,0),legend=names(i.flu$param.data),lty=tipos,lwd=anchos,col=colores,cex=0.75)
 
-  #   	if (semanas-limites.temporada[1,2]>=20){
-  #       x<-semanas-2
-  #       legend(x,y,xjust=1,legend=names(i.flu$param.data),lty=tipos,lwd=anchos,col=colores)
-  #   	}else{
-  #       x<-2
-  #       legend(x,y,legend=names(i.flu$param.data),lty=tipos,lwd=anchos,col=colores)
-  #   	}
-
   par(opar)
   dev.off()
 
@@ -273,10 +254,8 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
 
   tempdatos<-as.data.frame(cbind(1:semanas,i.flu$typ.curve,lineas.basicas))
   names(tempdatos)<-c("Week","LowerCurve","MeanCurve","UpperCurve","LowerThreshold","MeanThreshold","UpperThreshold")
-  write.table(round(tempdatos,2),file=paste(salidas,"/",prefix,"MEM Model v1.txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
-  #   	opar<-par(mfrow=c(1,1))
-  #   	jpeg(file=paste(salidas,"/",prefix,"MEM Model.jpg",sep=""),width=640,height=480,pointsize=10,bg="white")
-  tiff(filename=paste(salidas,"/",prefix,"MEM Model v1.tiff",sep=""),width=8,height=6,units="in",pointsize="12",
+  write.table(round(tempdatos,2),file=paste(salidas,"/",i.prefix,"MEM Model v1.txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
+  tiff(filename=paste(salidas,"/",i.prefix,"MEM Model v1.tiff",sep=""),width=8,height=6,units="in",pointsize="12",
        compression="lzw",bg="white",res=300,antialias="none")
   opar<-par(mfrow=c(1,1),mar=c(4,4,3,10) + 0.1,xpd=T)
 
@@ -309,24 +288,10 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
   abline(v=c(limites.temporada[1,1]-0.5,limites.temporada[1,2]+0.5),col=c("#00C000","#FFB401"),lty=2)
   x<-semanas-10
   y<-max.fix.na(tempdatos)-1
-  #legend(x,y,legend=c("Typical curve","Limits of the curve","Threshold","Epidemic limits"),lty=c(2,1,1,2),lwd=c(1,2,2,1),col=c("#000000","#0000C0","#FF0000","#800000"))
   legend("topright",inset=c(-0.375,0),
          legend=c("Typical curve","Limits of the curve","Threshold","Epidemic start","Epidemic end"),
          lty=c(1,1,2,2,2),lwd=c(2,10,2,1,1),
          col=c("#808080","#e0e0e0","#8c6bb1","#00C000","#FFB401"),cex=0.75)
-  # El logaritmo
-  # lgraf<-log(dgraf)
-  # limite.superior<-c(min.fix.na(lgraf[lgraf!=-Inf])-1,max.fix.na(lgraf[lgraf!=-Inf])+1)
-  # matplot(lgraf,type="l",sub=paste("\nFig. 6b: Logarithmic scale."),lty=tipos,lwd=anchos,col=colores,xlim=c(1,dim(dgraf)[1]),xlab="Week",ylab="Log-Rate",font.axis=1,font.lab=1,font.main=2,font.sub=1, ylim=limite.superior)
-  # x<-2
-  # y<-log(round(dgraf[1,6],digits=2))+1
-  # texto<-as.character(round(log(dgraf[1,6]),digits=2))
-  # text(x,y,texto,font=2)
-  # x<-semanas-3
-  # y<-log(round(dgraf[1,6],digits=2))+1
-  # texto<-as.character(round(log(dgraf[temp.limites[1,2]+1,6]),digits=2))
-  # text(x,y,texto,font=2)
-  # abline(v=c(temp.limites[1,1]-1,temp.limites[1,2]+1),col="red",lty=2)
   par(opar)
   dev.off()
 
@@ -341,15 +306,8 @@ processPlots<-function(i.flu,i.output=".",i.prefix=""){
   tempdatos<-as.data.frame(cbind(1:semanas,i.flu$typ.curve[,2],lineas.basicas[,3],limites.niveles.mas))
   etiquetas<-paste(round(limites.niveles,2)," (",as.numeric(nombres.niveles)*100,"%) ",sep="")
   names(tempdatos)<-c("Week","Threshold",etiquetas)
-  write.table(round(tempdatos,2),file=paste(salidas,"/",prefix,"MEM Model v2.txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
-  #   	opar<-par(mfrow=c(1,1))
-  #   	jpeg(file=paste(salidas,"/",prefix,"MEM Model v2.jpg",sep=""),width=640,height=480,pointsize=10,bg="white")
-  #    	tiff(filename=paste(salidas,"/",prefix,"MEM Model v2.tiff",sep=""),width=8,height=6,units="in",pointsize="12",
-  #    	     compression="lzw",bg="white",res=300,antialias="none")
-  # png(filename=paste(salidas,"/",prefix,"MEM Model v2.png",sep=""),width=8,height=6,units="in",pointsize="12",
-  #     bg=NA,res=300,antialias="none")
-  # opar<-par(mfrow=c(1,1),mar=c(4,4,3,8) + 0.1,xpd=T)
-  tiff(filename=paste(salidas,"/",prefix,"MEM Model v2.tiff",sep=""),width=8,height=6,units="in",pointsize="12",
+  write.table(round(tempdatos,2),file=paste(salidas,"/",i.prefix,"MEM Model v2.txt",sep=""),dec=",",append=FALSE,quote=FALSE,sep="\t",row.names=F,col.names=T)
+  tiff(filename=paste(salidas,"/",i.prefix,"MEM Model v2.tiff",sep=""),width=8,height=6,units="in",pointsize="12",
        compression="lzw",bg="white",res=300,antialias="none")
   opar<-par(mfrow=c(1,1),mar=c(4,4,3,10) + 0.1,xpd=T)
 
