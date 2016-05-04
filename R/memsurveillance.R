@@ -347,13 +347,13 @@ memsurveillance<-function(i.current,
   }
   season.scheme[is.na(current.season[,2])]<-NA
 
+  current.season$season.scheme<-season.scheme
+
   memsurveillance.output<-list(current.season=current.season,
-                               season.scheme=season.scheme,
                                real.start.week=semana.inicio.real,
                                forced.start.week=semana.inicio.forzado,
                                start.week=semana.inicio,
                                end.week=semana.fin,
-                               season.scheme=season.scheme,
                                param.current=i.current,
                                param.epidemic.thresholds=i.epidemic.thresholds,
                                param.intensity.thresholds=i.intensity.thresholds,
