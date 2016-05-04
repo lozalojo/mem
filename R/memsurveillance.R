@@ -331,7 +331,30 @@ memsurveillance<-function(i.current,
   if (i.graph.file) dev.off()
   if (i.graph.file) cat("graph created: ",getwd(),"/",i.output,"/",graph.name,".tiff","\n",sep="")
 
-  memsurveillance.output<-list(param.current=i.current,
+  n.season.scheme<-dim(current.season)[1]
+  season.scheme<-rep(0,n.season.scheme)
+  if (is.na(semana.inicio)){
+    season.scheme[1:n.season.scheme]<-1
+  }else {
+    if (is.na(semana.fin)){
+      if (semana.inicio>1) season.scheme[1:(semana.inicio-1)]<-1
+      season.scheme[semana.inicio:n.season.scheme]<-2
+    }else{
+      if (semana.inicio>1) season.scheme[1:(semana.inicio-1)]<-1
+      season.scheme[semana.inicio:semana.fin]<-2
+      if (semana.fin<n.season.scheme) season.scheme[(semana.fin+1):n.season.scheme]<-1
+    }
+  }
+  season.scheme[is.na(current.season[,2])]<-NA
+
+  memsurveillance.output<-list(current.season=current.season,
+                               season.scheme=season.scheme,
+                               real.start.week=semana.inicio.real,
+                               forced.start.week=semana.inicio.forzado,
+                               start.week=semana.inicio,
+                               end.week=semana.fin,
+                               season.scheme=season.scheme,
+                               param.current=i.current,
                                param.epidemic.thresholds=i.epidemic.thresholds,
                                param.intensity.thresholds=i.intensity.thresholds,
                                param.mean.length=i.mean.length,
