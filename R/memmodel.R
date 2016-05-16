@@ -116,6 +116,8 @@ memmodel<-function(i.data,
                     i.type.boot="norm",
                     i.iter.boot=10000){
 
+  if (is.null(dim(i.data))) stop('Incorrect number of dimensions, input must be a data.frame.') else if (!(ncol(i.data)>1)) stop('Incorrect number of dimensions, at least two seasons of data required.')
+
   if (is.matrix(i.data)) i.data<-as.data.frame(i.data)
 
   if (i.seasons>0) i.data<-i.data[(max((dim(i.data)[2])-i.seasons+1,1)):(dim(i.data)[2])]
