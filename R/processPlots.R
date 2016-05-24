@@ -35,6 +35,8 @@
 #' @export
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom grDevices colorRamp colorRampPalette
+#' @importFrom graphics polygon
+#' @importFrom utils write.table
 processPlots<-function(i.flu,i.output=".",i.prefix=""){
 
   semanas<-dim(i.flu$data)[1]

@@ -85,7 +85,8 @@ memgoodness<-function(i.data,
 
   anios<-dim(i.data)[2]
   semanas<-dim(i.data)[1]
-  validacion<-array(dim=c(8,anios),dimnames=c("year","indicator"))
+  #validacion<-array(dim=c(8,anios),dimnames=c("year","indicator"))
+  validacion<-array(dim=c(8,anios))
   colnames(validacion)<-names(i.data)
 
   if (!(i.goodness.method=="sequential")){

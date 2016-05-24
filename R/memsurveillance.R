@@ -341,8 +341,8 @@ memsurveillance<-function(i.current,
       season.scheme[semana.inicio:n.season.scheme]<-2
     }else{
       if (semana.inicio>1) season.scheme[1:(semana.inicio-1)]<-1
-      season.scheme[semana.inicio:semana.fin]<-2
-      if (semana.fin<n.season.scheme) season.scheme[(semana.fin+1):n.season.scheme]<-3
+      season.scheme[semana.inicio:(semana.fin-1)]<-2
+      season.scheme[semana.fin:n.season.scheme]<-3
     }
   }
   season.scheme[is.na(current.season[,2])]<-NA
