@@ -141,6 +141,8 @@ summary.epidemic<-function(object, ...){
 #' @export
 plot.epidemic<-function(x, ...){
   opar<-par(mfrow=c(1,1))
+  title.graph<-names(x$param.data)
+  if (is.null(title.graph)) title.graph=""
   x.data<-as.vector(as.matrix(x$param.data))
   x.data.fixed<-as.vector(as.matrix(x$data))
   x.data.missing<-x.data.fixed
@@ -148,7 +150,7 @@ plot.epidemic<-function(x, ...){
   semanas<-length(x.data)
   i.epi<-x$optimum.map[4]
   f.epi<-x$optimum.map[5]
-  matplot(1:semanas,x.data.fixed,type="l",xlab="Week",ylab="Rate",col="#808080",lty=c(1,1),xaxt="n")
+  matplot(1:semanas,x.data.fixed,type="l",xlab="Week",ylab="Rate",col="#808080",lty=c(1,1),xaxt="n",main=title.graph)
   if (!is.null(rownames(x$param.data))){
     axis(1,at=1:semanas,labels=rownames(x$param.data),cex.axis=1)
   }else{
