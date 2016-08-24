@@ -30,6 +30,7 @@
 #' @param i.output output directory for graphs.
 #' @param i.graph whether the graphs must be written or not.
 #' @param i.prefix prefix used for naming graphs.
+#' @param i.min.seasons minimum number of seasons to perform goodness, default=6.
 #'
 #' @return
 #' \code{memgoodness} returns a list.
@@ -81,7 +82,8 @@ memgoodness<-function(i.data,
                       i.weeks.above=1,
                       i.output=".",
                       i.graph=F,
-                      i.prefix=""){
+                      i.prefix="",
+                      i.min.seasons=6){
 
   anios<-dim(i.data)[2]
   semanas<-dim(i.data)[1]
@@ -91,7 +93,7 @@ memgoodness<-function(i.data,
 
   if (!(i.goodness.method=="sequential")){
     # Metodo 2: cruzada
-    if (anios>5){
+    if (anios>=i.min.seasons){
       for (i in 1:anios){
         indices.2<-(1:anios)-i
         indices.1<-abs(indices.2)
@@ -133,7 +135,7 @@ memgoodness<-function(i.data,
     }
   }else{
     # Metodo 1: secuencial
-    if (anios>5){
+    if (anios>=i.min.seasons){
       for (i in 6:anios){
         indices.modelo<-max(1,i-10):(i-1)
         indices.actual<-i

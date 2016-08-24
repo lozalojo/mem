@@ -12,7 +12,7 @@ memgoodness(i.data, i.seasons = 10, i.type.threshold = 5,
   i.type.boot = "norm", i.iter.boot = 10000,
   i.calculation.method = "default", i.goodness.method = "cross",
   i.detection.values = seq(2, 3, 0.1), i.weeks.above = 1, i.output = ".",
-  i.graph = F, i.prefix = "")
+  i.graph = F, i.prefix = "", i.min.seasons = 6)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
@@ -62,6 +62,8 @@ memgoodness(i.data, i.seasons = 10, i.type.threshold = 5,
 \item{i.graph}{whether the graphs must be written or not.}
 
 \item{i.prefix}{prefix used for naming graphs.}
+
+\item{i.min.seasons}{minimum number of seasons to perform goodness, default=6.}
 }
 \value{
 \code{memgoodness} returns a list.
