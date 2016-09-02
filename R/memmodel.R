@@ -312,9 +312,9 @@ memmodel<-function(i.data,
   pre.i<-iconfianza(pre.d,nivel=i.level.threshold,tipo=i.type.threshold,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=i.tails.threshold)
   post.i<-iconfianza(post.d,nivel=i.level.threshold,tipo=i.type.threshold,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=i.tails.threshold)
   epi.intervalos<-numeric()
-  #niveles<-c(0.50,0.90,0.95)
   for (niv in i.level.intensity) epi.intervalos<-rbind(epi.intervalos,c(niv,iconfianza(epi.d,nivel=niv,tipo=i.type.intensity,ic=T,colas=i.tails.intensity)))
-  for (niv in i.level.intensity) epi.intervalos<-rbind(epi.intervalos,c(niv,iconfianza(epi.d.2,nivel=niv,tipo=i.type.intensity,ic=T,colas=i.tails.intensity)))
+  epi.intervalos.2<-numeric()
+  for (niv in i.level.intensity) epi.intervalos.2<-rbind(epi.intervalos.2,c(niv,iconfianza(epi.d.2,nivel=niv,tipo=i.type.intensity,ic=T,colas=i.tails.intensity)))
 
   pre.post.intervalos<-rbind(pre.i,post.i)
 
@@ -338,6 +338,7 @@ memmodel<-function(i.data,
     mean.start=inicio.medio,
     moving.epidemics=temporadas.moviles.recortada,
     epi.intervals=epi.intervalos,
+    epi.intervals.2=epi.intervalos.2,
     typ.curve=curva.tipo,
     n.max=n.max,
     n.seasons=anios,
