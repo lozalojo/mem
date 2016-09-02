@@ -295,7 +295,8 @@ memmodel<-function(i.data,
   ## ya q podrian llevar a una infraestimacion de la tasa base fuera de temporada
 
   pre.post.datos<-rbind(as.vector(as.matrix(extraer.datos.pre.epi(optimo))),as.vector(as.matrix(extraer.datos.post.epi(optimo))))
-  epi.datos<-as.vector(as.matrix(apply(datos,2,max.n.valores,n.max=n.max)))
+  epi.datos<-as.vector(as.matrix(extraer.datos.epi(optimo)))
+  #epi.datos<-as.vector(as.matrix(apply(datos,2,max.n.valores,n.max=n.max)))
   # IC de la linea basica de pre y post temporada
 
   # por defecto estaba la geometrica

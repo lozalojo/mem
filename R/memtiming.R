@@ -56,7 +56,11 @@
 #'   \item{map.curve }{MAP curve}
 #'   \item{optimum.map }{optimum}
 #'   \item{pre.epi }{pre-epidemic highest rates}
+#'   \item{epi }{epidemic highest rates}
 #'   \item{post.epi }{post-epidemic highest rates}
+#'   \item{pre.epi.data }{pre-epidemic rates}
+#'   \item{epi.data }{epidemic rates}
+#'   \item{post.epi.data }{post-epidemic rates}
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data
@@ -90,20 +94,41 @@ memtiming<-function(i.data,
 
   curva.map<-calcular.map(datos)
   optimo.map<-calcular.optimo(curva.map,i.method,i.param)
-  if (!is.na(optimo.map[4])){
-    pre.epi<-max.n.valores(datos[-(optimo.map[4]:length(datos))],i.n.values)
+  epi.ini<-optimo.map[4]
+  epi.fin<-optimo.map[5]
+  n.datos<-length(datos)
+  if (is.na(epi.ini) & !is.na(epi.fin)) epi.ini<-1
+  if (!is.na(epi.ini) & is.na(epi.fin)) epi.fin<-n.datos
+  if (is.na(epi.ini) & is.na(epi.fin)){
+    pre.epi.datos<-datos
+    epi.datos<-NA
+    post.epi.datos<-NA
   }else{
-    pre.epi<-max.n.valores(datos,i.n.values)
+    pre.epi.datos<-datos[-(epi.ini:n.datos)]
+    epi.datos<-datos[epi.ini:epi.fin]
+    post.epi.datos<-datos[-(1:epi.fin)]
   }
-  if (!is.na(optimo.map[5])){
-    post.epi<-max.n.valores(datos[-(1:optimo.map[5])],i.n.values)
-  }else{
-    post.epi<-max.n.valores(datos,i.n.values)
-  }
+  pre.epi<-max.n.valores(pre.epi.datos,i.n.values)
+  epi<-max.n.valores(epi.datos,i.n.values)
+  post.epi<-max.n.valores(post.epi.datos,i.n.values)
+  # if (!is.na(optimo.map[4])){
+  #   pre.epi<-max.n.valores(datos[-(optimo.map[4]:length(datos))],i.n.values)
+  # }else{
+  #   pre.epi<-max.n.valores(datos,i.n.values)
+  # }
+  # if (!is.na(optimo.map[5])){
+  #   post.epi<-max.n.valores(datos[-(1:optimo.map[5])],i.n.values)
+  # }else{
+  #   post.epi<-max.n.valores(datos,i.n.values)
+  # }
   memtiming.output<-list(map.curve=curva.map,
                          optimum.map=optimo.map,
                          pre.epi=pre.epi,
                          post.epi=post.epi,
+                         epi=epi,
+                         pre.epi.data=pre.epi.datos,
+                         post.epi.data=post.epi.datos,
+                         epi.data=epi.datos,
                          data=datos,
                          param.data=i.data,
                          param.n.values=i.n.values,

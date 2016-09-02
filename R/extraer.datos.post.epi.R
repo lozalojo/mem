@@ -1,4 +1,4 @@
-#' Extract post-epidemic rates
+#' Extract post-epidemic hightest rates
 #'
 #' @keywords internal
 extraer.datos.post.epi<-function(i.epi){
