@@ -7,5 +7,6 @@ max.n.valores<-function(mis.datos,n.max=1){
   ordenado<-sort(mis.datos,decreasing=T,na.last=T)
   n.datos<-length(mis.datos)
   if (n.max>0) resultado<-ordenado[1:min(n.max,n.datos)] else resultado<-ordenado
+  resultado<-(c(resultado,rep(NA,n.max)))[1:n.max]
   return(resultado)
 }
