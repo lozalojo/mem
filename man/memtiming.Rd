@@ -24,7 +24,11 @@ memtiming(i.data, i.n.values = 5, i.method = 2, i.param = 2.8)
   \item{map.curve }{MAP curve}
   \item{optimum.map }{optimum}
   \item{pre.epi }{pre-epidemic highest rates}
+  \item{epi }{epidemic highest rates}
   \item{post.epi }{post-epidemic highest rates}
+  \item{pre.epi.data }{pre-epidemic rates}
+  \item{epi.data }{epidemic rates}
+  \item{post.epi.data }{post-epidemic rates}
 }
 \description{
 Function \code{memtiming} is used to find the optimal timing of an influenza epidemic

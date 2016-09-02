@@ -2,12 +2,12 @@
 % Please edit documentation in R/extraer.datos.pre.epi.R
 \name{extraer.datos.pre.epi}
 \alias{extraer.datos.pre.epi}
-\title{Extract pre-epidemic rates}
+\title{Extract pre-epidemic hightest rates}
 \usage{
 extraer.datos.pre.epi(i.epi)
 }
 \description{
-Extract pre-epidemic rates
+Extract pre-epidemic hightest rates
 }
 \keyword{internal}
 

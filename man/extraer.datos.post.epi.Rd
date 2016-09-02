@@ -2,12 +2,12 @@
 % Please edit documentation in R/extraer.datos.post.epi.R
 \name{extraer.datos.post.epi}
 \alias{extraer.datos.post.epi}
-\title{Extract post-epidemic rates}
+\title{Extract post-epidemic hightest rates}
 \usage{
 extraer.datos.post.epi(i.epi)
 }
 \description{
-Extract post-epidemic rates
+Extract post-epidemic hightest rates
 }
 \keyword{internal}
 

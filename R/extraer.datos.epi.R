@@ -1,7 +1,7 @@
 #' Extract epidemic hightest rates
 #'
 #' @keywords internal
-extraer.datos.pre.epi<-function(i.epi){
+extraer.datos.epi<-function(i.epi){
   resultado<-as.data.frame(i.epi[[1]]$epi)
   m<-ncol(resultado)
   n<-length(names(i.epi))
