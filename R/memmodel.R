@@ -294,22 +294,29 @@ memmodel<-function(i.data,
   ## Como no se registra mas q de la semana 40 a la 20, tenemos q muchas de las semanas tienen tasa 0, eliminamos esas semanas,
   ## ya q podrian llevar a una infraestimacion de la tasa base fuera de temporada
 
-  pre.post.datos<-rbind(as.vector(as.matrix(extraer.datos.pre.epi(optimo))),as.vector(as.matrix(extraer.datos.post.epi(optimo))))
+  pre.datos<-as.vector(as.matrix(extraer.datos.pre.epi(optimo)))
+  post.datos<-as.vector(as.matrix(extraer.datos.post.epi(optimo)))
   epi.datos<-as.vector(as.matrix(extraer.datos.epi(optimo)))
-  #epi.datos<-as.vector(as.matrix(apply(datos,2,max.n.valores,n.max=n.max)))
+  epi.datos.2<-as.vector(as.matrix(apply(datos,2,max.n.valores,n.max=n.max)))
+
+  pre.post.datos<-rbind(pre.datos,post.datos)
+
   # IC de la linea basica de pre y post temporada
 
   # por defecto estaba la geometrica
-  pre.d<-pre.post.datos[1,!(is.na(pre.post.datos[1,]) | pre.post.datos[1,]==0)]
+  pre.d<-pre.datos[!(is.na(pre.datos) | pre.datos==0)]
+  post.d<-post.datos[!(is.na(post.datos) | post.datos==0)]
+  epi.d<-epi.datos[!(is.na(epi.datos) | epi.datos==0)]
+  epi.d.2<-epi.datos.2[!(is.na(epi.datos.2) | epi.datos.2==0)]
+
   pre.i<-iconfianza(pre.d,nivel=i.level.threshold,tipo=i.type.threshold,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=i.tails.threshold)
-  post.d<-pre.post.datos[2,!(is.na(pre.post.datos[2,]) | pre.post.datos[2,]==0)]
   post.i<-iconfianza(post.d,nivel=i.level.threshold,tipo=i.type.threshold,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=i.tails.threshold)
-  pre.post.intervalos<-rbind(pre.i,post.i)
   epi.intervalos<-numeric()
   #niveles<-c(0.50,0.90,0.95)
-  for (niv in i.level.intensity){
-    epi.intervalos<-rbind(epi.intervalos,c(niv,iconfianza(epi.datos,nivel=niv,tipo=i.type.intensity,ic=T,colas=i.tails.intensity)))
-  }
+  for (niv in i.level.intensity) epi.intervalos<-rbind(epi.intervalos,c(niv,iconfianza(epi.d,nivel=niv,tipo=i.type.intensity,ic=T,colas=i.tails.intensity)))
+  for (niv in i.level.intensity) epi.intervalos<-rbind(epi.intervalos,c(niv,iconfianza(epi.d.2,nivel=niv,tipo=i.type.intensity,ic=T,colas=i.tails.intensity)))
+
+  pre.post.intervalos<-rbind(pre.i,post.i)
 
   ## Ademas, añadimos las estimaciones de las lineas basicas antes y despues
 
