@@ -5,11 +5,11 @@
 \title{Creates the surveillance graph of the current season}
 \usage{
 memsurveillance(i.current, i.epidemic.thresholds = NA,
-  i.intensity.thresholds = NA, i.mean.length = 10, i.output = ".",
-  i.graph.title = "", i.graph.file = T, i.graph.file.name = "",
-  i.week.report = NA, i.equal = F, i.pos.epidemic = F,
-  i.no.epidemic = F, i.no.intensity = F, i.epidemic.start = NA,
-  i.epidemic.end = NA, i.range.x = c(40, 20), i.range.x.53 = F,
+  i.intensity.thresholds = NA, i.mean.length = 10, i.force.length = F,
+  i.output = ".", i.graph.title = "", i.graph.file = T,
+  i.graph.file.name = "", i.week.report = NA, i.equal = F,
+  i.pos.epidemic = F, i.no.epidemic = F, i.no.intensity = F,
+  i.epidemic.start = NA, i.range.x = c(40, 20), i.range.x.53 = F,
   i.range.y = NA, i.no.labels = F, i.start.end.marks = T)
 }
 \arguments{
@@ -19,7 +19,9 @@ memsurveillance(i.current, i.epidemic.thresholds = NA,
 
 \item{i.intensity.thresholds}{Intensity thresholds.}
 
-\item{i.mean.length}{Mean length.}
+\item{i.mean.length}{Mean length of epidemic.}
+
+\item{i.force.length}{If you want to force the epidemic to be exactly as the mean length.}
 
 \item{i.output}{Directory where graph is saved.}
 
@@ -40,8 +42,6 @@ memsurveillance(i.current, i.epidemic.thresholds = NA,
 \item{i.no.intensity}{Do not print intensity threholds.}
 
 \item{i.epidemic.start}{Week to force start of the epidemic.}
-
-\item{i.epidemic.end}{Week to force start of the epidemic.}
 
 \item{i.range.x}{Range of weeks.}
 

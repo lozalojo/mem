@@ -12,7 +12,8 @@
 #' @param i.current Current season weekly rates.
 #' @param i.epidemic.thresholds Pre and post epidemic threholds.
 #' @param i.intensity.thresholds Intensity thresholds.
-#' @param i.mean.length Mean length.
+#' @param i.mean.length Mean length of epidemic.
+#' @param i.force.length If you want to force the epidemic to be exactly as the mean length.
 #' @param i.output Directory where graph is saved.
 #' @param i.graph.title Title of the graph.
 #' @param i.graph.file Graph to a file.
@@ -23,7 +24,6 @@
 #' @param i.no.epidemic Force no start of the epidemic, print only the epidemic threshold.
 #' @param i.no.intensity Do not print intensity threholds.
 #' @param i.epidemic.start Week to force start of the epidemic.
-#' @param i.epidemic.end Week to force start of the epidemic.
 #' @param i.range.x Range of weeks.
 #' @param i.range.x.53 Is there a week 53 this season.
 #' @param i.range.y Range of graph.
@@ -81,6 +81,7 @@ memsurveillance<-function(i.current,
                        i.epidemic.thresholds=NA,
                        i.intensity.thresholds=NA,
                        i.mean.length=10,
+                       i.force.length=F,
                        i.output=".",
                        i.graph.title="",
                        i.graph.file=T,
@@ -91,7 +92,6 @@ memsurveillance<-function(i.current,
                        i.no.epidemic=F,
                        i.no.intensity=F,
                        i.epidemic.start=NA,
-                       i.epidemic.end=NA,
                        i.range.x=c(40,20),
                        i.range.x.53=F,
                        i.range.y=NA,
@@ -155,16 +155,21 @@ memsurveillance<-function(i.current,
   }
 
   if (!is.na(semana.inicio)){
-    if (!is.na(semana.inicio.real)){
-      # I didn't know exactly why I made this distinction when !is.na(semana.inicio.real), 
-      # because if i chose the semana.fin.1 between semana.inicio.real and the end
-      # it is possible that semana.fin>semana.inicio>semana.inicio.real
-      # semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & semana.inicio.real<(1:semanas)]
-      semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & semana.inicio<(1:semanas)]
+    # if (!is.na(semana.inicio.real)){
+    #   # semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & semana.inicio.real<(1:semanas)]
+    #   punto.de.busqueda<-max(semana.inicio,semana.inicio.real,na.rm=T)
+    #   semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & punto.de.busqueda<(1:semanas)]
+    # }else{
+    #   semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & semana.inicio<(1:semanas)]
+    # }
+    if (i.force.length){
+      semana.fin<-semana.inicio+i.mean.length
+      if (semana.fin>semanas) semana.fin<-NA
     }else{
-      semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & semana.inicio<(1:semanas)]
+      punto.de.busqueda<-max(semana.inicio,semana.inicio.real,na.rm=T)
+      semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & punto.de.busqueda<(1:semanas)]
+      if (any(semana.fin.1,na.rm=T)) semana.fin<-min(semana.fin.1,na.rm=T) else semana.fin<-NA
     }
-    if (any(semana.fin.1,na.rm=T)) semana.fin<-min(semana.fin.1,na.rm=T) else semana.fin<-NA
   }else{
     semana.fin<-NA
   }
@@ -235,7 +240,8 @@ memsurveillance<-function(i.current,
   # Puntos de la serie de tasas
   points(1:semanas,dgraf[,1],pch=19,type="p",col="#000000",cex=1)
   # Marcas de inicio y fin
-  if (is.na(semana.inicio.forzado) & i.start.end.marks){
+  # if (is.na(semana.inicio.forzado) & i.start.end.marks){
+  if (i.start.end.marks){
     if (!is.na(semana.inicio)) points(x=semana.inicio,y=current.season[semana.inicio,2],pch=1,bg="#FFFFFF",col="#FF0000",lwd=7)
     if (!is.na(semana.fin) & i.pos.epidemic) points(x=semana.fin,y=current.season[semana.fin,2],pch=1,bg="#FFFFFF",col="#40FF40",lwd=7)
   }
@@ -364,6 +370,7 @@ memsurveillance<-function(i.current,
                                param.epidemic.thresholds=i.epidemic.thresholds,
                                param.intensity.thresholds=i.intensity.thresholds,
                                param.mean.length=i.mean.length,
+                               param.force.length=i.force.length,
                                param.output=i.output,
                                param.graph.title=i.graph.title,
                                param.graph.file=i.graph.file,
@@ -374,7 +381,6 @@ memsurveillance<-function(i.current,
                                param.no.epidemic=i.no.epidemic,
                                param.no.intensity=i.no.intensity,
                                param.epidemic.start=i.epidemic.start,
-                               param.epidemic.end=i.epidemic.end,
                                param.range.x=i.range.x,
                                param.range.x.53=i.range.x.53,
                                param.range.y=i.range.y,
