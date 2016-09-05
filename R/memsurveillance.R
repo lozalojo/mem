@@ -242,7 +242,7 @@ memsurveillance<-function(i.current,
   axis(1,at=seq(2,semanas,2),tick=F,
        labels=esquema.semanas$nombre.semana[seq(2,semanas,2)],cex.axis=0.7,line=0.60,col.axis="#404040",col="#C0C0C0")
   mtext(1,text="Week",line=2,cex=0.8,col="#000040")
-  mtext(4,text="mem R library - Jose E. Lozano - https://cran.r-project.org/web/packages/mem/index.html",
+  mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
         line=0.75,cex=0.6,col="#404040")
   # Etiquetas de los 4 umbrales
   if (!i.no.labels){
