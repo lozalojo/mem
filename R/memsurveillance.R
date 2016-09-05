@@ -98,6 +98,8 @@ memsurveillance<-function(i.current,
                        i.no.labels=F,
                        i.start.end.marks=T){
 
+  if (is.null(dim(i.current))) stop('Incorrect number of dimensions, input must be a data.frame.') else if (!(ncol(i.current)==1)) stop('Incorrect number of dimensions, only one season required.')
+  
   if (!is.numeric(i.epidemic.thresholds) | length(i.epidemic.thresholds)==1) i.epidemic.thresholds<-rep(NA,2)
   if (!is.numeric(i.intensity.thresholds) | length(i.intensity.thresholds)==1) i.intensity.thresholds<-rep(NA,3)
   # Esquema de las semanas
@@ -154,7 +156,11 @@ memsurveillance<-function(i.current,
 
   if (!is.na(semana.inicio)){
     if (!is.na(semana.inicio.real)){
-      semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & semana.inicio.real<(1:semanas)]
+      # I didn't know exactly why I made this distinction when !is.na(semana.inicio.real), 
+      # because if i chose the semana.fin.1 between semana.inicio.real and the end
+      # it is possible that semana.fin>semana.inicio>semana.inicio.real
+      # semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & semana.inicio.real<(1:semanas)]
+      semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & semana.inicio<(1:semanas)]
     }else{
       semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & semana.inicio<(1:semanas)]
     }
