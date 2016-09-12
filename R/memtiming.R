@@ -175,7 +175,7 @@ plot.epidemic<-function(x, ...){
   semanas<-length(x.data)
   i.epi<-x$optimum.map[4]
   f.epi<-x$optimum.map[5]
-  otick<-optimal.tickmarks(0,max(x.data.fixed),10)
+  otick<-optimal.tickmarks(0,max.n.valores(x.data.fixed),10)
   opar<-par(mar=c(4,3,1,2)+0.1,mgp=c(3,0.5,0),xpd=T)
   matplot(1:semanas,x.data.fixed,type="l",col="#808080",
           lty=c(1,1),xaxt="n",main=title.graph,ylim=otick$range,axes=F,xlab="",ylab="")
