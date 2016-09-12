@@ -2,7 +2,7 @@
 % Please edit documentation in R/optimal.tickmarks.R
 \name{optimal.tickmarks}
 \alias{optimal.tickmarks}
-\title{Find tickmarks to a given range of the y-axis that best fit an optimal number of tickmarks
+\title{Find tickmarks for a given range of the y-axis that best fit an optimal number of tickmarks
 you decide. f.i: what if i want to have a graph with 8 tickmarks in a range of 34 to 345}
 \usage{
 optimal.tickmarks(minimo.y, maximo.y, ticks.objetivo = 10,
@@ -10,7 +10,7 @@ optimal.tickmarks(minimo.y, maximo.y, ticks.objetivo = 10,
   2000, 2500, 5000, 10000, 20000, 25000, 50000))
 }
 \description{
-Find tickmarks to a given range of the y-axis that best fit an optimal number of tickmarks
+Find tickmarks for a given range of the y-axis that best fit an optimal number of tickmarks
 you decide. f.i: what if i want to have a graph with 8 tickmarks in a range of 34 to 345
 }
 \keyword{internal}
