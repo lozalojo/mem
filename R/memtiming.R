@@ -176,9 +176,10 @@ plot.epidemic<-function(x, ...){
   i.epi<-x$optimum.map[4]
   f.epi<-x$optimum.map[5]
   otick<-optimal.tickmarks(0,max.n.valores(x.data.fixed),10)
+  range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
   opar<-par(mar=c(4,3,1,2)+0.1,mgp=c(3,0.5,0),xpd=T)
   matplot(1:semanas,x.data.fixed,type="l",col="#808080",
-          lty=c(1,1),xaxt="n",main=title.graph,ylim=otick$range,axes=F,xlab="",ylab="")
+          lty=c(1,1),xaxt="n",main=title.graph,ylim=range.y,axes=F,xlab="",ylab="")
   # Axis
   if (!is.null(rownames(x$param.data))){
     week.labels<-rownames(x$param.data)
@@ -190,9 +191,8 @@ plot.epidemic<-function(x, ...){
   axis(1,at=seq(2,semanas,2),tick=F,
        labels=week.labels[seq(2,semanas,2)],cex.axis=0.7,line=0.60,col.axis="#404040",col="#C0C0C0")
   axis(1,at=seq(1,semanas,1),labels=F,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-  axis(2,ylim=otick$range,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-
   mtext(1,text="Week",line=2,cex=0.8,col="#000040")
+  axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
   mtext(2,text="Weekly rate",line=1.3,cex=0.8,col="#000040")
   mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
         line=0.75,cex=0.6,col="#404040")

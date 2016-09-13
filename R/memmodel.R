@@ -282,7 +282,8 @@ memmodel<-function(i.data,
   ## Dibujamos la curva epidemica tipo
 
   # Importante: ?Quitamos los ceros?
-  iy<-(is.na(temporadas.moviles.recortada) | temporadas.moviles.recortada==0)
+  # iy<-(is.na(temporadas.moviles.recortada) | temporadas.moviles.recortada==0)
+  iy<-is.na(temporadas.moviles.recortada)
   temporadas.moviles.recortada.no.ceros<-temporadas.moviles.recortada
   temporadas.moviles.recortada.no.ceros[iy]<-NA
   curva.tipo<-t(apply(temporadas.moviles.recortada.no.ceros,1,iconfianza,nivel=i.level.curve,tipo=i.type.curve,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=2))
@@ -304,11 +305,15 @@ memmodel<-function(i.data,
   # IC de la linea basica de pre y post temporada
 
   # por defecto estaba la geometrica
-  pre.d<-pre.datos[!(is.na(pre.datos) | pre.datos==0)]
-  post.d<-post.datos[!(is.na(post.datos) | post.datos==0)]
-  epi.d<-epi.datos[!(is.na(epi.datos) | epi.datos==0)]
-  epi.d.2<-epi.datos.2[!(is.na(epi.datos.2) | epi.datos.2==0)]
-
+  # pre.d<-pre.datos[!(is.na(pre.datos) | pre.datos==0)]
+  # post.d<-post.datos[!(is.na(post.datos) | post.datos==0)]
+  # epi.d<-epi.datos[!(is.na(epi.datos) | epi.datos==0)]
+  # epi.d.2<-epi.datos.2[!(is.na(epi.datos.2) | epi.datos.2==0)]
+  pre.d<-pre.datos[!is.na(pre.datos)]
+  post.d<-post.datos[!is.na(post.datos)]
+  epi.d<-epi.datos[!is.na(epi.datos)]
+  epi.d.2<-epi.datos.2[!is.na(epi.datos.2)]
+  
   pre.i<-iconfianza(pre.d,nivel=i.level.threshold,tipo=i.type.threshold,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=i.tails.threshold)
   post.i<-iconfianza(post.d,nivel=i.level.threshold,tipo=i.type.threshold,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=i.tails.threshold)
   epi.intervalos<-numeric()

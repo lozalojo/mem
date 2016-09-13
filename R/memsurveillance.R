@@ -99,7 +99,7 @@ memsurveillance<-function(i.current,
                        i.start.end.marks=T){
 
   if (is.null(dim(i.current))) stop('Incorrect number of dimensions, input must be a data.frame.') else if (!(ncol(i.current)==1)) stop('Incorrect number of dimensions, only one season required.')
-  
+
   if (!is.numeric(i.epidemic.thresholds) | length(i.epidemic.thresholds)==1) i.epidemic.thresholds<-rep(NA,2)
   if (!is.numeric(i.intensity.thresholds) | length(i.intensity.thresholds)==1) i.intensity.thresholds<-rep(NA,3)
   # Esquema de las semanas
@@ -224,7 +224,10 @@ memsurveillance<-function(i.current,
   tipos<-c(1,2,2,2,2)
   anchos<-c(3,2,2,2,2)
   colores<-c("#808080","#8c6bb1","#88419d","#810f7c","#4d004b")
-  if (is.numeric(i.range.y)) range.y<-i.range.y else range.y<-1.05*c(0,max.fix.na(dgraf))
+
+  if (is.numeric(i.range.y)) range.y.bus<-i.range.y else range.y.bus<-c(0,max.fix.na(dgraf))
+  otick<-optimal.tickmarks(range.y.bus[1],range.y.bus[2],10)
+  range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
 
   if (i.graph.file) tiff(filename=paste(i.output,"/",graph.name,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
        compression="lzw",bg="white",res=300,antialias="none")
@@ -246,14 +249,14 @@ memsurveillance<-function(i.current,
     if (!is.na(semana.fin) & i.pos.epidemic) points(x=semana.fin,y=current.season[semana.fin,2],pch=1,bg="#FFFFFF",col="#40FF40",lwd=7)
   }
   # Ejes
-  axis(2,ylim=range.y,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-  mtext(2,text="Weekly rate",line=1.3,cex=0.8,col="#000040")
   axis(1,at=seq(1,semanas,1),labels=F,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
   axis(1,at=seq(1,semanas,2),tick=F,
        labels=esquema.semanas$nombre.semana[seq(1,semanas,2)],cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
   axis(1,at=seq(2,semanas,2),tick=F,
        labels=esquema.semanas$nombre.semana[seq(2,semanas,2)],cex.axis=0.7,line=0.60,col.axis="#404040",col="#C0C0C0")
   mtext(1,text="Week",line=2,cex=0.8,col="#000040")
+  axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
+  mtext(2,text="Weekly rate",line=1.3,cex=0.8,col="#000040")
   mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
         line=0.75,cex=0.6,col="#404040")
   # Etiquetas de los 4 umbrales
