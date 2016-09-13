@@ -118,11 +118,13 @@ memmodel<-function(i.data,
 
   if (is.null(dim(i.data))) stop('Incorrect number of dimensions, input must be a data.frame.') else if (!(ncol(i.data)>1)) stop('Incorrect number of dimensions, at least two seasons of data required.')
 
-  if (is.matrix(i.data)) i.data<-as.data.frame(i.data)
+  datos<-i.data
+  
+  if (is.matrix(datos)) datos<-as.data.frame(datos)
 
-  if (i.seasons>0) i.data<-i.data[(max((dim(i.data)[2])-i.seasons+1,1)):(dim(i.data)[2])]
+  if (i.seasons>0) datos<-datos[(max((dim(datos)[2])-i.seasons+1,1)):(dim(datos)[2])]
 
-  datos<-apply(i.data,2,fill.missing)
+  datos<-apply(datos,2,fill.missing)
 
   semanas<-dim(datos)[1]
   anios<-dim(datos)[2]
@@ -156,7 +158,7 @@ memmodel<-function(i.data,
 
   # Datos de la gripe en la temporada REAL y en la temporada MEDIA, esta ultima sirve para unir las temporadas.
 
-  semana.inicio<-as.integer(rownames(i.data)[1])
+  semana.inicio<-as.integer(rownames(datos)[1])
   gripe<-array(dim=c(7,anios,2))
 
   datos.duracion.media<-extraer.datos.curva.map(optimo,duracion.media)
@@ -229,7 +231,7 @@ memmodel<-function(i.data,
       diferencia<-inicio.epidemia.esquema-gripe[1,j,2]
       esquema.temporadas[i+diferencia,j,1]<-i
       esquema.temporadas[i+diferencia,j,2]<-semana.absoluta(i,semana.inicio)
-      esquema.temporadas[i+diferencia,j,3]<-i.data[i,j]
+      esquema.temporadas[i+diferencia,j,3]<-datos[i,j]
     }
   }
 
