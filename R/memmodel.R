@@ -314,8 +314,6 @@ memmodel<-function(i.data,
   epi.d<-epi.datos[!is.na(epi.datos)]
   epi.d.2<-epi.datos.2[!is.na(epi.datos.2)]
   
-  pre.post.d<-rbind(pre.d,post.d)
-  
   pre.i<-iconfianza(pre.d,nivel=i.level.threshold,tipo=i.type.threshold,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=i.tails.threshold)
   post.i<-iconfianza(post.d,nivel=i.level.threshold,tipo=i.type.threshold,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=i.tails.threshold)
   epi.intervalos<-numeric()
@@ -361,7 +359,8 @@ memmodel<-function(i.data,
     season.scheme=esquema.temporadas,
     seasons.moving=temporadas.moviles,
     pre.post.data=pre.post.datos,
-    pre.post.data.nona=pre.post.d,
+    pre.data.nona=pre.d,
+    post.data.nona=post.d,
     epidemic.thresholds=as.numeric(pre.post.intervalos[,3]),
     intensity.thresholds=as.numeric(epi.intervalos[,4]),
     param.data=i.data,
