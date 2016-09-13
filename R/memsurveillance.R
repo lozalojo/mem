@@ -340,8 +340,7 @@ memsurveillance<-function(i.current,
          bg=rev(bg.leyenda),
          cex=0.9,
          text.col="#000000",
-         ncol=1
-  )
+         ncol=1)
   par(opar)
   if (i.graph.file) dev.off()
   if (i.graph.file) cat("graph created: ",getwd(),"/",i.output,"/",graph.name,".tiff","\n",sep="")

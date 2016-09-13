@@ -226,8 +226,10 @@ plot.epidemic<-function(x, ...){
     puntos[1:f.epi]<-NA
     points(1:semanas,puntos,pch=13,type="p",col="#FFB401",cex=1.5)
   }
-
-  legend(semanas*0.70,otick$range[2]*0.99,legend=c("Crude rate","Pre-epi period","Epidemic","Post-epi period"),
+  
+  # legend(semanas*0.70,otick$range[2]*0.99,
+  legend("topright",inset=c(0,0),
+         legend=c("Crude rate","Pre-epi period","Epidemic","Post-epi period"),
          lty=c(1,1,1,1),
          lwd=c(1,1,1,1),
          col=c("#808080","#C0C0C0","#C0C0C0","#C0C0C0"),
