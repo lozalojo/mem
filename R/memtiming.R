@@ -230,6 +230,7 @@ plot.epidemic<-function(x, ...){
   # legend(semanas*0.70,otick$range[2]*0.99,
   legend("topright",inset=c(0,0),
          legend=c("Crude rate","Pre-epi period","Epidemic","Post-epi period"),
+         bty="n",
          lty=c(1,1,1,1),
          lwd=c(1,1,1,1),
          col=c("#808080","#C0C0C0","#C0C0C0","#C0C0C0"),
