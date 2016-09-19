@@ -119,7 +119,7 @@ memmodel<-function(i.data,
   if (is.null(dim(i.data))) stop('Incorrect number of dimensions, input must be a data.frame.') else if (!(ncol(i.data)>1)) stop('Incorrect number of dimensions, at least two seasons of data required.')
 
   datos<-i.data
-  
+
   if (is.matrix(datos)) datos<-as.data.frame(datos)
 
   if (i.seasons>0) datos<-datos[(max((dim(datos)[2])-i.seasons+1,1)):(dim(datos)[2])]
@@ -315,7 +315,7 @@ memmodel<-function(i.data,
   post.d<-post.datos[!is.na(post.datos)]
   epi.d<-epi.datos[!is.na(epi.datos)]
   epi.d.2<-epi.datos.2[!is.na(epi.datos.2)]
-  
+
   pre.i<-iconfianza(pre.d,nivel=i.level.threshold,tipo=i.type.threshold,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=i.tails.threshold)
   post.i<-iconfianza(post.d,nivel=i.level.threshold,tipo=i.type.threshold,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=i.tails.threshold)
   epi.intervalos<-numeric()
@@ -448,7 +448,9 @@ summary.mem<-function(object, ...){
 
 #' @export
 plot.mem<-function(x,...){
-  opar<-par(mfrow=c(1,2))
+  #opar<-par(mfrow=c(1,2))
+  opar<-par(mfrow=c(1,2),mar=c(4,3,1,2)+0.1,mgp=c(3,0.5,0),xpd=T)
+
   # Graph 1
   semanas<-dim(x$param.data)[1]
   anios<-dim(x$param.data)[2]
@@ -461,20 +463,69 @@ plot.mem<-function(x,...){
   tipos<-rep(1,anios)
   anchos<-rep(2,anios)
   colores<-c(rgb(runif(anios-1),runif(anios-1),runif(anios-1)),"#FF0000")
-  limite.superior<-c(1.05*max.fix.na(datos.graf))
-  matplot(1:semanas,datos.graf,type="l",sub=paste("Weekly incidence rates of the seasons matching their relative position in the model."),lty=tipos,lwd=anchos,col=colores,xlim=c(1,semanas),xlab="Week",ylab="Rate",font.axis=1,font.lab=1,font.main=2,font.sub=1, ylim=c(0,limite.superior),xaxt="n")
-  axis(1,at=1:semanas,labels=as.character(lab.graf))
+  # limite.superior<-c(1.05*max.fix.na(datos.graf))
+  otick<-optimal.tickmarks(0,max.fix.na(datos.graf),10)
+  range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
+  matplot(1:semanas,
+          datos.graf,
+          type="l",
+          sub=paste("Weekly incidence rates of the seasons matching their relative position in the model."),
+          lty=tipos,
+          lwd=anchos,
+          col=colores,
+          xlim=c(1,semanas),
+          #xlab="Week",
+          #ylab="Rate",
+          xlab="",
+          ylab="",
+          axes=F,
+          #font.axis=1,
+          #font.lab=1,
+          font.main=2,
+          font.sub=1,
+          ylim=range.y)
+  # Ejes
+  axis(1,at=seq(1,semanas,1),labels=F,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
+  axis(1,at=seq(1,semanas,2),tick=F,
+       labels=as.character(lab.graf)[seq(1,semanas,2)],cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
+  axis(1,at=seq(2,semanas,2),tick=F,
+       labels=as.character(lab.graf)[seq(2,semanas,2)],cex.axis=0.7,line=0.60,col.axis="#404040",col="#C0C0C0")
+  mtext(1,text="Week",line=2,cex=0.8,col="#000040")
+  axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
+  mtext(2,text="Weekly rate",line=1.3,cex=0.8,col="#000040")
+  mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
+        line=0.75,cex=0.6,col="#404040")
   i.temporada<-x$ci.start[1,2]
   f.temporada<-x$ci.start[1,2]+x$mean.length-1
   abline(v=c(i.temporada-0.5,f.temporada+0.5),col=c("#00C000","#FFB401"),lty=c(2,2))
-  ya<-limite.superior*0.975
+  ya<-range.y[2]*0.975
   if ((i.temporada-1)<=(semanas-f.temporada)){
-    xa<-semanas*0.99
-    legend(x="topright",xjust=1,legend=names(x$param.data),lty=tipos,lwd=anchos,col=colores,cex=0.75)
+  #   xa<-semanas*0.99
+  #   legend(x="topright",xjust=1,legend=names(x$param.data),lty=tipos,lwd=anchos,col=colores,cex=0.75)
+    legend("topright",inset=c(0,0),
+           legend=names(x$param.data),
+           bty="n",
+           lty=tipos,
+           lwd=anchos,
+           col=colores,
+           cex=0.75,
+           text.col="#000000",
+           ncol=1)
+
   }else{
-    xa<-semanas*0.01
-    legend(x="topleft",legend=names(x$param.data),lty=tipos,lwd=anchos,col=colores,cex=0.75)
+  #   xa<-semanas*0.01
+  #   legend(x="topleft",legend=names(x$param.data),lty=tipos,lwd=anchos,col=colores,cex=0.75)
+    legend("topleft",inset=c(0,0),
+           legend=names(x$param.data),
+           bty="n",
+           lty=tipos,
+           lwd=anchos,
+           col=colores,
+           cex=0.75,
+           text.col="#000000",
+           ncol=1)
   }
+
   # Graph 2
   lineas.basicas<-rbind(matrix(rep(x$pre.post.intervals[1,1:3],i.temporada-1),ncol=3,byrow=T),
                         matrix(rep(NA,3*(f.temporada-i.temporada+1)),ncol=3),
@@ -491,11 +542,34 @@ plot.mem<-function(x,...){
   tipos<-c(1,2,rep(2,times=n.niveles))
   anchos<-c(3,2,rep(2,times=n.niveles))
   colores<-c("#FF0000","#800080","#C0C0FF","#8080FF","#4040FF","#0000C0","#000080")
-  limite.superior<-c(0,1.1*max.fix.na(datos.graf))
-  matplot(1:semanas,datos.graf,type="l",sub=paste("MEM Threshold"),lty=tipos,lwd=anchos,
-          col=colores,xlim=c(1,semanas),xlab="Week",ylab="Rate",font.axis=1,font.lab=1,font.main=2,
-          font.sub=1, ylim=limite.superior,xaxt="n")
-  axis(1,at=1:semanas,labels=as.character(lab.graf))
+  #limite.superior<-c(0,1.1*max.fix.na(datos.graf))
+  matplot(1:semanas,
+          datos.graf,
+          type="l",
+          sub=paste("MEM Threshold"),
+          lty=tipos,
+          lwd=anchos,
+          col=colores,
+          xlim=c(1,semanas),
+          xlab="",
+          ylab="",
+          axes=F,
+          #font.axis=1,
+          #font.lab=1,
+          font.main=2,
+          font.sub=1,
+          ylim=range.y)
+  # Ejes
+  axis(1,at=seq(1,semanas,1),labels=F,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
+  axis(1,at=seq(1,semanas,2),tick=F,
+       labels=as.character(lab.graf)[seq(1,semanas,2)],cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
+  axis(1,at=seq(2,semanas,2),tick=F,
+       labels=as.character(lab.graf)[seq(2,semanas,2)],cex.axis=0.7,line=0.60,col.axis="#404040",col="#C0C0C0")
+  mtext(1,text="Week",line=2,cex=0.8,col="#000040")
+  axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
+  mtext(2,text="Weekly rate",line=1.3,cex=0.8,col="#000040")
+  mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
+        line=0.75,cex=0.6,col="#404040")
   xa<-c(i.temporada/2,1+rep(f.temporada,n.niveles))
   ya<-c(lineas.basicas[1,3],limites.niveles)
   texto<-c(paste("Threshold: ",round(lineas.basicas[1,3],2),sep=""),etiquetas)
