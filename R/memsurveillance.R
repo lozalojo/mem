@@ -47,19 +47,19 @@
 #' # Set the working directory to whererever you want to store the graph file
 #' setwd(".")
 #' # The graph, default values
-#' memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+#' m1<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
 #'      i.graph.file.name="graph 1")
 #' # No intensity levels
-#' memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+#' m2<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
 #'      i.graph.file.name="graph 2",i.no.intensity=TRUE)
 #' # No start/end tickmarks
-#' memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+#' m3<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
 #'      i.graph.file.name="graph 3",i.start.end.marks=FALSE)
 #' # Post-epidemic threshold
-#' memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+#' m4<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
 #'      i.graph.file.name="graph 4",i.pos.epidemic=TRUE)
 #' # Report for week 2, instead of all data
-#' memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+#' m5<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
 #'      i.graph.file.name="graph 5",i.week.report=2)
 #'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
@@ -76,7 +76,7 @@
 #'
 #' @export
 #' @importFrom grDevices dev.off rgb tiff
-#' @importFrom graphics abline axis legend matplot mtext par points text
+#' @importFrom graphics abline axis legend matplot mtext par points text lines
 memsurveillance<-function(i.current,
                        i.epidemic.thresholds=NA,
                        i.intensity.thresholds=NA,
@@ -330,7 +330,15 @@ memsurveillance<-function(i.current,
   #          bg=rev(bg.leyenda),
   #          cex=0.9
   #          )
-  legend("topright",inset=c(0,0),
+
+  if (is.na(semana.inicio) | is.na(semana.fin)){
+    xa<-"topright"
+    ya<-NULL
+  }else{
+    ya<-otick$range[2]
+    if ((semana.inicio-1)<=(semanas-semana.fin)) xa<-semana.fin+1 else xa<-1
+  }
+  legend(x=xa,y=ya,inset=c(0,0),xjust=0,
          legend=rev(etiquetas.leyenda),
          bty="n",
          lty=rev(tipos.leyenda),
@@ -338,7 +346,9 @@ memsurveillance<-function(i.current,
          col=rev(colores.leyenda),
          pch=rev(puntos.leyenda),
          bg=rev(bg.leyenda),
-         cex=0.9,
+         cex=0.75,
+         x.intersp=0.5,
+         y.intersp=0.6,
          text.col="#000000",
          ncol=1)
   par(opar)

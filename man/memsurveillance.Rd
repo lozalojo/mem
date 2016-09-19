@@ -79,19 +79,19 @@ i.thr<-epi$intensity.thresholds
 # Set the working directory to whererever you want to store the graph file
 setwd(".")
 # The graph, default values
-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+m1<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
      i.graph.file.name="graph 1")
 # No intensity levels
-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+m2<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
      i.graph.file.name="graph 2",i.no.intensity=TRUE)
 # No start/end tickmarks
-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+m3<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
      i.graph.file.name="graph 3",i.start.end.marks=FALSE)
 # Post-epidemic threshold
-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+m4<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
      i.graph.file.name="graph 4",i.pos.epidemic=TRUE)
 # Report for week 2, instead of all data
-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
+m5<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
      i.graph.file.name="graph 5",i.week.report=2)
 
 }
