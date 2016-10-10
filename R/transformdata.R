@@ -57,7 +57,8 @@ transformdata<-function(i.data,
 	# set season
 
 	if (i.week.first<i.week.last){
-	  i.data$season<-paste(i.data$year,i.data$year,sep="/")
+	  #i.data$season<-paste(i.data$year,i.data$year,sep="/")
+	  i.data$season<-as.character(i.data$year)
 	}else{
 	  i.data$season[i.data$week<i.week.first]<-paste(i.data$year[i.data$week<i.week.first]-1,i.data$year[i.data$week<i.week.first],sep="/")
 	  i.data$season[i.data$week>=i.week.first]<-paste(i.data$year[i.data$week>=i.week.first],i.data$year[i.data$week>=i.week.first]+1,sep="/")
