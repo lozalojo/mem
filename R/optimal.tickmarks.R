@@ -18,7 +18,7 @@ optimal.tickmarks<-function(minimo.y,maximo.y,ticks.objetivo=10,
   # Tickmarks
   tickmarks<-seq(ini,fin,salto)
   # El número de ticks resultante
-  numero.ticks<-length(range.y)
+  numero.ticks<-length(tickmarks)
   # Y la secuencia para definir el eje Y final
   return(list(by=salto,number=numero.ticks,range=range.y,tickmarks=tickmarks))
 }
