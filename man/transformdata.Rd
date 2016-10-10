@@ -4,7 +4,8 @@
 \alias{transformdata}
 \title{Data transformation}
 \usage{
-transformdata(i.data, i.week.first = 40, i.week.last = 20)
+transformdata(i.data, i.week.first = 40, i.week.last = 20,
+  i.max.na.per = 100)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
@@ -12,6 +13,8 @@ transformdata(i.data, i.week.first = 40, i.week.last = 20)
 \item{i.week.first}{First surveillance week.}
 
 \item{i.week.last}{Last surveillance week.}
+
+\item{i.max.na.per}{maximum percentage of na's in a season allowable, otherwise, the season is removed}
 }
 \value{
 \code{transformdata} returns a data.frame where each column has a different season and

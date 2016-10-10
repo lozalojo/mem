@@ -10,6 +10,7 @@
 #' @param i.data Data frame of input data.
 #' @param i.week.first First surveillance week.
 #' @param i.week.last Last surveillance week.
+#' @param i.max.na.per maximum percentage of na's in a season allowable, otherwise, the season is removed
 #'
 #' @return
 #' \code{transformdata} returns a data.frame where each column has a different season and
@@ -42,7 +43,8 @@
 #' @importFrom reshape2 dcast
 transformdata<-function(i.data,
 						i.week.first=40,
-						i.week.last=20){
+						i.week.last=20,
+						i.max.na.per=100){
 
 	# Corrections
 
@@ -101,7 +103,12 @@ transformdata<-function(i.data,
 	temp9$week<-NULL
 	temp9$week.no<-NULL
 
-	transformdata.output<-list(tdata=temp9)
+	# remove those seasons whose percentaje of NA is greater than a parameter
+	
+	temp10<-apply(temp9,2,function(x) sum(is.na(x))/length(x))
+	temp11<-temp9[temp10<i.max.na.per/100]
+	
+	transformdata.output<-list(tdata=temp11)
 	transformdata.output$call<-match.call()
 	return(transformdata.output)
 
