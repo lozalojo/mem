@@ -5,7 +5,7 @@
 \title{Tranform the historial series from the mem default input format (weeksxseasons)
 to a single serie data.frame, with season, week and rate column}
 \usage{
-transformdata.back(i.data, i.name, i.range.x = c(40, 20))
+transformdata.back(i.data, i.name = "rates", i.range.x = c(1, 53))
 }
 \description{
 Tranform the historial series from the mem default input format (weeksxseasons)

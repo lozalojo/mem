@@ -14,9 +14,18 @@
 #' @param i.graph.subtitle Subtitle of the graph.
 #' @param i.graph.file Graph to a file.
 #' @param i.graph.file.name Name of the graph.
+#' @param i.color.pattern colors to use in the graph
 #'
 #' @return
 #' \code{full.series.graph} writes a tiff graph of the full series of the dataset.
+#'
+#' Color codes:
+#' 1: Axis.
+#' 2: Tickmarks.
+#' 3: Axis labels.
+#' 4: Series line.
+#' 5: Series dots.
+#' 6: Title and subtitle.
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data
@@ -45,12 +54,13 @@ full.series.graph<-function(i.data,
                             i.graph.title="",
                             i.graph.subtitle="",
                             i.graph.file=T,
-                            i.graph.file.name=""){
-  datos<-transformdata.back(i.data,"Rates",c(30,29))
+                            i.graph.file.name="",
+                            i.color.pattern=c("#C0C0C0","#606060","#000000","#004C99","#0066CC","#001933")){
+  datos<-transformdata.back(i.data,i.name="rates",i.range.x=c(30,29))
   datos.x<-1:dim(datos)[1]
   datos.semanas<-as.numeric(datos$week)
-  datos.anios<-as.numeric(datos$year)
-  datos.y<-as.numeric(datos[,4])
+  datos.temporadas<-datos$season
+  datos.y<-as.numeric(datos[,names(datos)=="rates"])
   range.x<-range(datos.x,na.rm=T)
 
   if (i.graph.file.name=="") graph.name="series graph" else graph.name<-i.graph.file.name
@@ -67,29 +77,32 @@ full.series.graph<-function(i.data,
   #Plot the first time series. Notice that you don't have to draw the axis nor the labels
   plot(datos.x,datos.y,axes=F,xlab="",ylab="",
        type="l",
-       col="#000000",
+       col=i.color.pattern[4],
        main=i.graph.title,
        xlim=range.x,
        ylim=range.y,
        lty=1,
-       col.main="#003366")
+       col.main=i.color.pattern[6])
   # Puntos de la serie de tasas
-  points(1:length(datos.x),datos.y,pch=19,type="p",col="#606060",cex=0.5)
+  points(1:length(datos.x),datos.y,pch=21,bg="#FFFFFF",type="p",col=i.color.pattern[5],cex=0.5)
   # Ejes
   axis(1,at=datos.x[datos.semanas %in% c(40,50,10,20,30)],
        labels=datos.semanas[datos.semanas %in% c(40,50,10,20,30)],cex.axis=0.7,
-       col.axis="#404040",
-       col="#C0C0C0")
-  axis(1,at=datos.x[datos.semanas==24],tick=F,
-       labels=datos.anios[datos.semanas==24],cex.axis=0.7,line=1,
-       col.axis="#404040",
-       col="#C0C0C0")
-  mtext("Week",side=1,line=2.5,cex=0.8,col="#000040")
+       col.axis=i.color.pattern[2],
+       col=i.color.pattern[1])
+  posicion.temporadas<-as.numeric(rownames(i.data)[floor(dim(i.data)[1]/2)])
+  axis(1,at=datos.x[datos.semanas==posicion.temporadas],tick=F,
+       labels=datos.temporadas[datos.semanas==posicion.temporadas],cex.axis=0.7,line=1,
+       col.axis=i.color.pattern[2],
+       col=i.color.pattern[1])
+  mtext(side=1,text="Week",line=2.5,cex=0.8,col=i.color.pattern[3])
 
-  axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-  mtext(2,text="Weekly rate",line=1.3,cex=0.8,col="#000040")
+  axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,
+       col.axis=i.color.pattern[2],
+       col=i.color.pattern[1])
+  mtext(2,text="Weekly rate",line=1.3,cex=0.8,col=i.color.pattern[3])
 
-  mtext(3,text=i.graph.subtitle,cex=0.8,col="#606060")
+  mtext(3,text=i.graph.subtitle,cex=0.8,col=i.color.pattern[6])
 
   mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
         line=0.75,cex=0.6,col="#404040")

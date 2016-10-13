@@ -125,9 +125,9 @@ memmodel<-function(i.data,
 
   if (is.matrix(datos)) datos<-as.data.frame(datos)
 
-  if (i.seasons>0) datos<-datos[(max((dim(datos)[2])-i.seasons+1,1)):(dim(datos)[2])]
+  if (!is.na(i.seasons)) if (i.seasons>0) datos<-datos[(max((dim(datos)[2])-i.seasons+1,1)):(dim(datos)[2])]
 
-  datos<-apply(datos,2,fill.missing)
+  datos<-as.data.frame(apply(datos,2,fill.missing))
 
   semanas<-dim(datos)[1]
   anios<-dim(datos)[2]
@@ -455,10 +455,10 @@ plot.mem<-function(x,...){
   opar<-par(mfrow=c(1,2),mar=c(4,3,1,2)+0.1,mgp=c(3,0.5,0),xpd=T)
 
   # Graph 1
-  semanas<-dim(x$param.data)[1]
-  anios<-dim(x$param.data)[2]
+  semanas<-dim(x$data)[1]
+  anios<-dim(x$data)[2]
   datos.graf<-x$moving.epidemics
-  colnames(datos.graf)<-names(x$param.data)
+  colnames(datos.graf)<-names(x$data)
   #lab.graf<-(1:semanas)+x$mean.start[2]-x$mean.start[1]
   lab.graf<-(1:semanas)+x$ci.start[2,2]-x$ci.start[1,2]
   lab.graf[lab.graf>52]<-(lab.graf-52)[lab.graf>52]
@@ -510,7 +510,7 @@ plot.mem<-function(x,...){
   ya<-otick$range[2]
   if ((i.temporada-1)<=(semanas-f.temporada)) xa<-f.temporada+1 else xa<-1
   legend(x=xa,y=ya,inset=c(0,0),xjust=0,seg.len=1,
-           legend=names(x$param.data),
+           legend=names(x$data),
            bty="n",
            lty=tipos,
            lwd=anchos,
@@ -582,7 +582,7 @@ plot.mem<-function(x,...){
                          i.no.epidemic = F,
                          i.no.intensity = F,
                          i.epidemic.start = x$ci.start[2,2],
-                         i.range.x = as.numeric(c(rownames(x$param.data)[1],rownames(x$param.data)[semanas])),
+                         i.range.x = as.numeric(c(rownames(x$data)[1],rownames(x$data)[semanas])),
                          i.range.x.53 = F,
                          i.range.y = NA,
                          i.no.labels = F,

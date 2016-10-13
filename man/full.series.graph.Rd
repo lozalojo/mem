@@ -6,7 +6,8 @@
 \usage{
 full.series.graph(i.data, i.range.y = NA, i.output = ".",
   i.graph.title = "", i.graph.subtitle = "", i.graph.file = T,
-  i.graph.file.name = "")
+  i.graph.file.name = "", i.color.pattern = c("#C0C0C0", "#606060",
+  "#000000", "#004C99", "#0066CC", "#001933"))
 }
 \arguments{
 \item{i.data}{Historical data series.}
@@ -22,9 +23,19 @@ full.series.graph(i.data, i.range.y = NA, i.output = ".",
 \item{i.graph.file}{Graph to a file.}
 
 \item{i.graph.file.name}{Name of the graph.}
+
+\item{i.color.pattern}{colors to use in the graph}
 }
 \value{
 \code{full.series.graph} writes a tiff graph of the full series of the dataset.
+
+Color codes:
+1: Axis.
+2: Tickmarks.
+3: Axis labels.
+4: Series line.
+5: Series dots.
+6: Title and subtitle.
 }
 \description{
 Function \code{full.series.graph} creates a graph with the whole data.
