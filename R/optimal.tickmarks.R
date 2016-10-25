@@ -2,17 +2,17 @@
 #' you decide. f.i: what if i want to have a graph with 8 tickmarks in a range of 34 to 345
 #'
 #' @keywords internal
-optimal.tickmarks<-function(minimo.y,maximo.y,ticks.objetivo=10,
-  ticks.validos=c(1,2,5,10,20,25,50,100,200,250,500,1000,1500,2000,2500,5000,10000,20000,25000,50000)){
+optimal.tickmarks<-function(i.min,i.max,i.number.ticks=10,
+  i.valid.ticks=apply(expand.grid(c(1,2,2.5,5), 10^(-10:10)), 1, FUN = function(x) {x[1] * x[2]})){
   # Y ahora calculo el tickmark que más se acerca a esos 10 tickmarks objetivo.
-  ticks.min<-floor(minimo.y/ticks.validos)
-  ticks.max<-ceiling(maximo.y/ticks.validos)
+  ticks.min<-floor(i.min/i.valid.ticks)
+  ticks.max<-ceiling(i.max/i.valid.ticks)
   ticks.maxmin<-ticks.max-ticks.min+1
-  n.ticks.validos<-length(ticks.validos)
-  posicion.ticks<-(1:n.ticks.validos)[min(abs(ticks.maxmin-ticks.objetivo))==abs(ticks.maxmin-ticks.objetivo)][1]
-  ini<-(ticks.min*ticks.validos)[posicion.ticks]
-  fin<-(ticks.max*ticks.validos)[posicion.ticks]
-  salto<-ticks.validos[posicion.ticks]
+  n.valid.ticks<-length(i.valid.ticks)
+  posicion.ticks<-(1:n.valid.ticks)[min(abs(ticks.maxmin-i.number.ticks))==abs(ticks.maxmin-i.number.ticks)][1]
+  ini<-(ticks.min*i.valid.ticks)[posicion.ticks]
+  fin<-(ticks.max*i.valid.ticks)[posicion.ticks]
+  salto<-i.valid.ticks[posicion.ticks]
   # Rango
   range.y<-c(ini,fin)
   # Tickmarks
@@ -22,3 +22,4 @@ optimal.tickmarks<-function(minimo.y,maximo.y,ticks.objetivo=10,
   # Y la secuencia para definir el eje Y final
   return(list(by=salto,number=numero.ticks,range=range.y,tickmarks=tickmarks))
 }
+

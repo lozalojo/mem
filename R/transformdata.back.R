@@ -23,6 +23,7 @@ transformdata.back<-function(i.data,i.name="rates",i.range.x=c(1,53)){
     data.out.i$yrweek<-data.out.i$year*100+data.out.i$week
     data.out<-rbind(data.out,data.out.i)
   }
+  data.out<-data.out[!(data.out$week==53 & is.na(data.out$data)),]
   names(data.out)[names(data.out)=="data"]<-i.name
   # Now limit to the period
   if (i.range.x[1]>i.range.x[2]){

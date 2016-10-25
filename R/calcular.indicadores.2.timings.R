@@ -158,7 +158,7 @@ calcular.indicadores.2.timings<-function(i.current,
       text(semanas,-3.5*posicion.ticks/2,pos=2,label=paste("Sensitivity: ",format(round(sensibilidad,2),nsmall=2,align="right"),", Specificity: ",format(round(especificidad,2),nsmall=2,align="right"),sep=""),cex=0.5)
 
       axis(2,at=seq(-2.5,-1.5,1)*posicion.ticks/2,
-           labels=i.timing.labels,
+           labels=rev(i.timing.labels),
            tick=F,
            las=1,
            lwd=1,

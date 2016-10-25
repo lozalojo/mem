@@ -50,7 +50,7 @@ optimum.by.inspection<-function(i.data,
   n.values<-length(i.detection.values)
 
   i.timing.1<-array(dim=c(anios,2))
-  resultados.i<-array(dim=c(anios,8,n.values),dimnames=c("year","indicator","parameter"))
+  resultados.i<-array(dim=c(anios,8,n.values),dimnames=list(year=names(i.data),indicator=LETTERS[1:8],parameter=i.detection.values))
 
   col.points<-c("#FF0000","#40FF40")
   col.points.alpha<-add.alpha(col.points,alpha=0.4)
@@ -59,7 +59,8 @@ optimum.by.inspection<-function(i.data,
     cur<-i.data[i]
     itsnotok<-T
     while(itsnotok){
-      memsurveillance(cur,NA,NA,i.graph.file=F,i.graph.title=nombre.anios[i])
+      memsur<-memsurveillance(cur,NA,NA,i.graph.file=F,i.graph.title=nombre.anios[i],
+                      i.range.x=as.numeric(rownames(cur))[c(1,semanas)])
       cat("Click on the FIRST epidemic week of this season\nDepending on the device used to plot the graph, you might need to click on FINISH (top-right corner)\n")
       i.timing.1.1<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana,n=1,plot=F)
       if (is.numeric(i.timing.1.1)) points(x=i.timing.1.1,y=cur[i.timing.1.1,],pch=1,col=col.points.alpha[1],lwd=7)

@@ -16,6 +16,7 @@
 #' @param i.force.length If you want to force the epidemic to be exactly as the mean length.
 #' @param i.output Directory where graph is saved.
 #' @param i.graph.title Title of the graph.
+#' @param i.graph.subtitle Subtitle of the graph.
 #' @param i.graph.file Graph to a file.
 #' @param i.graph.file.name Name of the graph.
 #' @param i.week.report Week to use in the report.
@@ -84,6 +85,7 @@ memsurveillance<-function(i.current,
                        i.force.length=F,
                        i.output=".",
                        i.graph.title="",
+                       i.graph.subtitle="",
                        i.graph.file=T,
                        i.graph.file.name="",
                        i.week.report=NA,
@@ -232,7 +234,7 @@ memsurveillance<-function(i.current,
   if (i.graph.file) tiff(filename=paste(i.output,"/",graph.name,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
        compression="lzw",bg="white",res=300,antialias="none")
 
-  opar<-par(mar=c(4,3,1,2)+0.1,mgp=c(3,0.5,0),xpd=T)
+  opar<-par(mar=c(5,3,3,3)+0.1,mgp=c(3,0.5,0),xpd=T)
   # Grafico principal
   matplot(1:semanas,
           dgraf,
@@ -249,14 +251,31 @@ memsurveillance<-function(i.current,
     if (!is.na(semana.fin) & i.pos.epidemic) points(x=semana.fin,y=current.season[semana.fin,2],pch=1,bg="#FFFFFF",col="#40FF40",lwd=7)
   }
   # Ejes
-  axis(1,at=seq(1,semanas,1),labels=F,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-  axis(1,at=seq(1,semanas,2),tick=F,
-       labels=esquema.semanas$nombre.semana[seq(1,semanas,2)],cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-  axis(1,at=seq(2,semanas,2),tick=F,
-       labels=esquema.semanas$nombre.semana[seq(2,semanas,2)],cex.axis=0.7,line=0.60,col.axis="#404040",col="#C0C0C0")
-  mtext(1,text="Week",line=2,cex=0.8,col="#000040")
-  axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
+  axis(1,at=seq(1,semanas,1),
+       labels=F,
+       cex.axis=0.7,
+       col.axis="#404040",
+       col="#C0C0C0")
+  axis(1,at=seq(1,semanas,2),
+       tick=F,
+       labels=esquema.semanas$nombre.semana[seq(1,semanas,2)],
+       cex.axis=0.7,
+       col.axis="#404040",
+       col="#C0C0C0")
+  axis(1,at=seq(2,semanas,2),
+       tick=F,
+       labels=esquema.semanas$nombre.semana[seq(2,semanas,2)],
+       cex.axis=0.7,
+       line=0.75,
+       col.axis="#404040",col="#C0C0C0")
+  axis(2,at=otick$tickmarks,
+       lwd=1,
+       cex.axis=0.6,
+       col.axis="#404040",
+       col="#C0C0C0")
+  mtext(1,text="Week",line=2.5,cex=0.8,col="#000040")
   mtext(2,text="Weekly rate",line=1.3,cex=0.8,col="#000040")
+  mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")  
   mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
         line=0.75,cex=0.6,col="#404040")
   # Etiquetas de los 4 umbrales
@@ -335,10 +354,12 @@ memsurveillance<-function(i.current,
     xa<-"topright"
     ya<-NULL
   }else{
-    ya<-otick$range[2]
-    if ((semana.inicio-1)<=(semanas-semana.fin)) xa<-semana.fin+1 else xa<-1
+    #ya<-otick$range[2]
+    #if ((semana.inicio-1)<=(semanas-semana.fin)) xa<-semana.fin+1 else xa<-1
+    if (semana.fin<0.80*semanas) xa<-"topright" else xa<-"topleft"
+    ya<-NULL
   }
-  legend(x=xa,y=ya,inset=c(0,0),xjust=0,
+  legend(x=xa,y=ya,inset=c(0,-0.05),xjust=0,
          legend=rev(etiquetas.leyenda),
          bty="n",
          lty=rev(tipos.leyenda),
@@ -348,7 +369,7 @@ memsurveillance<-function(i.current,
          bg=rev(bg.leyenda),
          cex=0.75,
          x.intersp=0.5,
-         y.intersp=0.6,
+         y.intersp=0.7,
          text.col="#000000",
          ncol=1)
   par(opar)

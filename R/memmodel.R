@@ -121,7 +121,7 @@ memmodel<-function(i.data,
 
   if (is.null(dim(i.data))) stop('Incorrect number of dimensions, input must be a data.frame.') else if (!(ncol(i.data)>1)) stop('Incorrect number of dimensions, at least two seasons of data required.')
 
-  datos<-i.data
+  datos<-i.data[apply(i.data,2,function(x) sum(x,na.rm=T)>0)]
 
   if (is.matrix(datos)) datos<-as.data.frame(datos)
 

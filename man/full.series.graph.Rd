@@ -6,8 +6,10 @@
 \usage{
 full.series.graph(i.data, i.range.y = NA, i.output = ".",
   i.graph.title = "", i.graph.subtitle = "", i.graph.file = T,
-  i.graph.file.name = "", i.color.pattern = c("#C0C0C0", "#606060",
-  "#000000", "#004C99", "#0066CC", "#001933"))
+  i.graph.file.name = "", i.plot.timing = F, i.plot.intensity = F,
+  i.color.pattern = c("#C0C0C0", "#606060", "#000000", "#808080", "#000000",
+  "#001933", "#00C000", "#800080", "#FFB401", "#8c6bb1", "#88419d", "#810f7c",
+  "#4d004b"))
 }
 \arguments{
 \item{i.data}{Historical data series.}
@@ -24,6 +26,10 @@ full.series.graph(i.data, i.range.y = NA, i.output = ".",
 
 \item{i.graph.file.name}{Name of the graph.}
 
+\item{i.plot.timing}{Plot the timing of epidemics.}
+
+\item{i.plot.intensity}{Plot the intensity levels.}
+
 \item{i.color.pattern}{colors to use in the graph}
 }
 \value{
@@ -34,8 +40,15 @@ Color codes:
 2: Tickmarks.
 3: Axis labels.
 4: Series line.
-5: Series dots.
+5: Series dots (default).
 6: Title and subtitle.
+7: Series dots (pre-epidemic).
+8: Series dots (epidemic).
+9: Series dots (post-epidemic).
+10: Epidemic threshold.
+11: Medium threshold.
+12: High threshold.
+13: Very high threshold.
 }
 \description{
 Function \code{full.series.graph} creates a graph with the whole data.
