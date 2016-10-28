@@ -4,64 +4,17 @@
 \alias{roc.analysis}
 \title{ROC analysis to find optimum parameter value}
 \usage{
-roc.analysis(i.data, i.seasons = 10, i.type.threshold = 5,
-  i.level.threshold = 0.95, i.tails.threshold = 1, i.type.intensity = 6,
-  i.level.intensity = c(0.4, 0.9, 0.975), i.tails.intensity = 1,
-  i.type.curve = 2, i.level.curve = 0.95, i.type.other = 2,
-  i.level.other = 0.95, i.method = 2, i.param.values = seq(2, 3, 0.1),
-  i.n.max = -1, i.type.boot = "norm", i.iter.boot = 10000,
-  i.calculation.method = "default", i.goodness.method = "cross",
-  i.detection.values = seq(2, 3, 0.1), i.weeks.above = 1, i.output = ".",
-  i.graph = F, i.prefix = "")
+roc.analysis(i.data, i.param.values = seq(2, 3, 0.1), i.prefix.roc = "",
+  ...)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
 
-\item{i.seasons}{Maximum number of seasons to use.}
-
-\item{i.type.threshold}{Type of confidence interval to calculate the threshold.}
-
-\item{i.level.threshold}{Level of confidence interval to calculate the threshold.}
-
-\item{i.tails.threshold}{Tails for the confidence interval to calculate the threshold.}
-
-\item{i.type.intensity}{Type of confidence interval to calculate the intensity thresholds.}
-
-\item{i.level.intensity}{Levels of confidence interval to calculate the intensity thresholds.}
-
-\item{i.tails.intensity}{Tails for the confidence interval to calculate the threshold.}
-
-\item{i.type.curve}{Type of confidence interval to calculate the modelled curve.}
-
-\item{i.level.curve}{Level of confidence interval to calculate the modelled curve.}
-
-\item{i.type.other}{Type of confidence interval to calculate length, start and percentages.}
-
-\item{i.level.other}{Level of confidence interval to calculate length, start and percentages.}
-
-\item{i.method}{Method to calculate the optimal timing of the epidemic.}
-
 \item{i.param.values}{range of i.param values to test.}
 
-\item{i.n.max}{Number of pre-epidemic values used to calculate the threshold.}
+\item{i.prefix.roc}{prefix used for naming graphs.}
 
-\item{i.type.boot}{Type of bootstrap technique.}
-
-\item{i.iter.boot}{Number of bootstrap iterations.}
-
-\item{i.calculation.method}{method of determining true/false positives and true/false negatives.}
-
-\item{i.goodness.method}{method to calculate goodness.}
-
-\item{i.detection.values}{values to use in the i.param value of \code{memtiming}.}
-
-\item{i.weeks.above}{number of weeks over the threshold to give the alert.}
-
-\item{i.output}{output directory for graphs.}
-
-\item{i.graph}{whether the graphs must be written or not.}
-
-\item{i.prefix}{prefix used for naming graphs.}
+\item{...}{other paramaters to be used by memgoodness function.}
 }
 \value{
 \code{roc.analysis} returns a list.

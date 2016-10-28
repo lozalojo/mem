@@ -15,6 +15,9 @@ calcular.indicadores<-function(i.current,
                                i.graph=F,
                                i.graph.name=""){
 
+  #if (is.na(i.umbral.pre)) if (!is.na(i.umbral.pos)) i.umbral.pre<-i.umbral.pos else i.umbral.pre<-Inf
+  if (is.na(i.umbral.pre)) i.umbral.pre<-Inf
+  
   semanas<-dim(i.current)[1]
   nombre.semana<-rownames(i.current)
   numero.semana<-1:semanas
@@ -107,20 +110,40 @@ calcular.indicadores<-function(i.current,
   true.neg<-apply(resultado.3=="TN",1,sum,na.rm=T)
 
   sensibilidad<-true.pos/(true.pos+false.neg)
+  sensibilidad[is.nan(sensibilidad)]<-NA
   especificidad<-true.neg/(true.neg+false.pos)
-
-  sensibilidad.t<-true.pos.t/(true.pos.t+false.neg.t)
-  especificidad.t<-true.neg.t/(true.neg.t+false.pos.t)
-
-
+  especificidad[is.nan(especificidad)]<-NA
+  ppv<-true.pos/(true.pos+false.pos)
+  ppv[is.nan(ppv)]<-NA
+  npv<-true.neg/(true.neg+false.neg)
+  npv[is.nan(npv)]<-NA
+  pos.likehood.ratio<-sensibilidad/(1-especificidad)
+  pos.likehood.ratio[is.nan(pos.likehood.ratio)]<-NA
+  neg.likehood.ratio<-(1-sensibilidad)/especificidad
+  neg.likehood.ratio[is.nan(neg.likehood.ratio)]<-NA
+  
+  if (true.pos.t+false.neg.t>0) sensibilidad.t<-true.pos.t/(true.pos.t+false.neg.t) else sensibilidad.t<-NA
+  if (true.neg.t+false.pos.t>0) especificidad.t<-true.neg.t/(true.neg.t+false.pos.t) else especificidad.t<-NA
+  if (true.pos.t+false.pos.t>0) ppv.t<-true.pos.t/(true.pos.t+false.pos.t) else ppv.t<-NA
+  if (true.neg.t+false.neg.t>0) npv.t<-true.neg.t/(true.neg.t+false.neg.t) else npv.t<-NA
+  pos.likehood.ratio.t<-NA
+  if (!is.na(especificidad.t)) if (1-especificidad.t>0) pos.likehood.ratio.t<-sensibilidad.t/(1-especificidad.t) else pos.likehood.ratio.t<-NA
+  neg.likehood.ratio.t<-NA
+  if (!is.na(especificidad.t)) if (especificidad.t>0) neg.likehood.ratio.t<-(1-sensibilidad.t)/especificidad.t else neg.likehood.ratio.t<-NA
+  
   semanas.not.na<-sum(!is.na(i.current))
 
-  indicadores.t<-as.matrix(c(semanas,semanas.not.na,true.pos.t,false.pos.t,true.neg.t,false.neg.t,sensibilidad.t,especificidad.t))
-  rownames(indicadores.t)<-c("Weeks","Non-missing weeks","True positives","False positives","True negatives","False negatives","Sensitivity","Specificity")
+  indicadores.t<-as.matrix(c(semanas,semanas.not.na,true.pos.t,false.pos.t,true.neg.t,
+                             false.neg.t,sensibilidad.t,especificidad.t,ppv.t,npv.t,pos.likehood.ratio.t,neg.likehood.ratio.t))
+  rownames(indicadores.t)<-c("Weeks","Non-missing weeks","True positives","False positives",
+                             "True negatives","False negatives","Sensitivity","Specificity",
+                             "Positive predictive value","Negative predictive value","Positive likehood ratio","Negative likehood ratio")
   colnames(indicadores.t)<-"values"
 
-  indicadores<-data.frame(parametro=i.valores.parametro.deteccion,semanas=semanas,semanas.not.na=semanas.not.na,true.pos=true.pos,false.pos=false.pos,
-                          true.neg=true.neg,false.neg=false.neg,sensibilidad=sensibilidad,especificidad=especificidad)
+  indicadores<-data.frame(parametro=i.valores.parametro.deteccion,semanas=semanas,semanas.not.na=semanas.not.na,
+                          true.pos=true.pos,false.pos=false.pos,true.neg=true.neg,false.neg=false.neg,
+                          sensibilidad=sensibilidad,especificidad=especificidad,ppv=ppv,npv=npv,
+                          pos.likehood.ratio=pos.likehood.ratio,neg.likehood.ratio=neg.likehood.ratio)
 
   if (i.graph){
 

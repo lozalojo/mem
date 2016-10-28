@@ -374,7 +374,7 @@ memsurveillance<-function(i.current,
          ncol=1)
   par(opar)
   if (i.graph.file) dev.off()
-  if (i.graph.file) cat("graph created: ",getwd(),"/",i.output,"/",graph.name,".tiff","\n",sep="")
+  #if (i.graph.file) cat("graph created: ",getwd(),"/",i.output,"/",graph.name,".tiff","\n",sep="")
 
   n.season.scheme<-dim(current.season)[1]
   season.scheme<-rep(0,n.season.scheme)

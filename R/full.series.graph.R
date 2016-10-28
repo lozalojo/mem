@@ -16,7 +16,8 @@
 #' @param i.graph.file.name Name of the graph.
 #' @param i.plot.timing Plot the timing of epidemics.
 #' @param i.plot.intensity Plot the intensity levels.
-#' @param i.color.pattern colors to use in the graph
+#' @param i.color.pattern colors to use in the graph.
+#' @param ... other parameters passed to memmodel.
 #'
 #' @return
 #' \code{full.series.graph} writes a tiff graph of the full series of the dataset.
@@ -68,7 +69,7 @@ full.series.graph<-function(i.data,
                             i.plot.intensity=F,
                             i.color.pattern=c("#C0C0C0","#606060","#000000","#808080","#000000","#001933",
                                               "#00C000","#800080","#FFB401",
-                                              "#8c6bb1","#88419d","#810f7c","#4d004b")){
+                                              "#8c6bb1","#88419d","#810f7c","#4d004b"),...){
 
   datos<-transformdata.back(i.data,i.name="rates",i.range.x=c(30,29))
   datos.x<-1:dim(datos)[1]
@@ -78,7 +79,7 @@ full.series.graph<-function(i.data,
   datos.y<-as.numeric(datos[,names(datos)=="rates"])
   range.x<-range(datos.x,na.rm=T)
 
-  epi<-memmodel(i.data,i.seasons=NA)
+  epi<-memmodel(i.data,...)
   
   datos.fixed<-transformdata.back(epi$data,i.name="rates",i.range.x=c(30,29))
   datos.y.fixed<-as.numeric(datos.fixed[,names(datos.fixed)=="rates"])
@@ -210,5 +211,5 @@ full.series.graph<-function(i.data,
 
   par(opar)
   if (i.graph.file) dev.off()
-  if (i.graph.file) cat("graph created: ",getwd(),"/",paste(i.output,"/",graph.name,".tiff",sep=""),"\n",sep="")
+  #if (i.graph.file) cat("graph created: ",getwd(),"/",paste(i.output,"/",graph.name,".tiff",sep=""),"\n",sep="")
 }

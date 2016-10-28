@@ -9,7 +9,7 @@ full.series.graph(i.data, i.range.y = NA, i.output = ".",
   i.graph.file.name = "", i.plot.timing = F, i.plot.intensity = F,
   i.color.pattern = c("#C0C0C0", "#606060", "#000000", "#808080", "#000000",
   "#001933", "#00C000", "#800080", "#FFB401", "#8c6bb1", "#88419d", "#810f7c",
-  "#4d004b"))
+  "#4d004b"), ...)
 }
 \arguments{
 \item{i.data}{Historical data series.}
@@ -30,7 +30,9 @@ full.series.graph(i.data, i.range.y = NA, i.output = ".",
 
 \item{i.plot.intensity}{Plot the intensity levels.}
 
-\item{i.color.pattern}{colors to use in the graph}
+\item{i.color.pattern}{colors to use in the graph.}
+
+\item{...}{other parameters passed to memmodel.}
 }
 \value{
 \code{full.series.graph} writes a tiff graph of the full series of the dataset.
