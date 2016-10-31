@@ -88,7 +88,7 @@ memgoodness<-function(i.data,
   anios<-dim(i.data)[2]
   semanas<-dim(i.data)[1]
   #validacion<-array(dim=c(12,anios),dimnames=c("year","indicator"))
-  validacion<-array(dim=c(12,anios))
+  validacion<-array(dim=c(13,anios))
   colnames(validacion)<-names(i.data)
 
   if (!(i.goodness.method=="sequential")){
@@ -187,6 +187,8 @@ memgoodness<-function(i.data,
   resultado[11]<-resultado[7]/(1-resultado[8])
   # negative likehood ratio
   resultado[12]<-(1-resultado[7])/resultado[8]
+  # negative likehood ratio
+  resultado[13]<-(resultado[3]+resultado[5])/(resultado[3]+resultado[4]+resultado[5]+resultado[6])
   
   memgoodness.output<-list(validity.data=validacion,
                           results=resultado,

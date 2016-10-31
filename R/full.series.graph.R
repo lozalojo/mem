@@ -8,6 +8,7 @@
 #' @name full.series.graph
 #'
 #' @param i.data Historical data series.
+#' @param i.range.x Range x (surveillance weeks) of graph.
 #' @param i.range.y Range y of graph.
 #' @param i.output Directory where graph is saved.
 #' @param i.graph.title Title of the graph.
@@ -59,6 +60,7 @@
 #' @importFrom grDevices dev.off rgb tiff
 #' @importFrom graphics abline axis legend matplot mtext par points text lines plot
 full.series.graph<-function(i.data,
+                            i.range.x=c(30,29),
                             i.range.y=NA,
                             i.output=".",
                             i.graph.title="",
@@ -71,7 +73,7 @@ full.series.graph<-function(i.data,
                                               "#00C000","#800080","#FFB401",
                                               "#8c6bb1","#88419d","#810f7c","#4d004b"),...){
 
-  datos<-transformdata.back(i.data,i.name="rates",i.range.x=c(30,29))
+  datos<-transformdata.back(i.data,i.name="rates",i.range.x=i.range.x)
   datos.x<-1:dim(datos)[1]
   semanas<-length(datos.x)
   datos.semanas<-as.numeric(datos$week)
@@ -81,7 +83,7 @@ full.series.graph<-function(i.data,
 
   epi<-memmodel(i.data,...)
   
-  datos.fixed<-transformdata.back(epi$data,i.name="rates",i.range.x=c(30,29))
+  datos.fixed<-transformdata.back(epi$data,i.name="rates",i.range.x=i.range.x)
   datos.y.fixed<-as.numeric(datos.fixed[,names(datos.fixed)=="rates"])
 
   datos.missing<-datos.fixed
@@ -91,14 +93,20 @@ full.series.graph<-function(i.data,
   indices<-as.data.frame(epi$season.indexes[,,1])
   rownames(indices)<-rownames(i.data)
   names(indices)<-names(i.data)
-  datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x=c(30,29))
+  datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x=i.range.x)
   datos.y.indexes<-as.numeric(datos.indexes[,names(datos.indexes)=="rates"])
   
   intensity<-as.numeric(memintensity(epi)$intensity.thresholds)
 
   if (i.graph.file.name=="") graph.name="series graph" else graph.name<-i.graph.file.name
 
-  if (is.numeric(i.range.y)) range.y.bus<-i.range.y else range.y.bus<-c(0,max.fix.na(c(datos.y,intensity)))
+  if (is.numeric(i.range.y)){
+    range.y.bus<-i.range.y
+  }else if (i.plot.intensity){
+    range.y.bus<-c(0,max.fix.na(c(datos.y,intensity)))
+  }else{
+    range.y.bus<-c(0,max.fix.na(datos.y))
+  }
   otick<-optimal.tickmarks(range.y.bus[1],range.y.bus[2],10)
   range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
 
@@ -167,19 +175,34 @@ full.series.graph<-function(i.data,
   }
   # Ejes
   posicion.temporadas<-as.numeric(rownames(i.data)[floor(dim(i.data)[1]/2)])
-  axis(1,at=datos.x[datos.semanas %in% c(40,50,10,20,30)],
+  axis(1,at=datos.x[datos.semanas %in% c(40,50,10,20,30)],tcl=-0.3,
+       tick=T,
        labels=F,
        cex.axis=0.7,
        col.axis=i.color.pattern[2],col=i.color.pattern[1])
-  axis(1,at=datos.x[datos.semanas %in% c(40,50,10,20,30)],
+  axis(1,at=datos.x[datos.semanas %in% c(10,30,50)],las=3,
        tick=F,
-       labels=datos.semanas[datos.semanas %in% c(40,50,10,20,30)],
+       labels=datos.semanas[datos.semanas %in% c(10,30,50)],
+       cex.axis=0.5,
+       line=0.2,
+       col.axis=i.color.pattern[2],col=i.color.pattern[1])
+  axis(1,at=datos.x[datos.semanas %in% c(20,40)],las=3,
+       tick=F,
+       labels=datos.semanas[datos.semanas %in% c(20,40)],
+       cex.axis=0.5,
+       line=0.2,
+       col.axis=i.color.pattern[2],col=i.color.pattern[1])
+  
+  axis(1,at=datos.x[datos.semanas %in% i.range.x],tcl=-0.3,
+       tick=T,
+       labels=F,
        cex.axis=0.7,
+       line=1.7,
        col.axis=i.color.pattern[2],col=i.color.pattern[1])
   axis(1,at=datos.x[datos.semanas==posicion.temporadas],
        tick=F,
        labels=datos.temporadas[datos.semanas==posicion.temporadas],
-       cex.axis=0.7,
+       cex.axis=0.5,
        line=1,
        col.axis=i.color.pattern[2],col=i.color.pattern[1])
   axis(2,at=otick$tickmarks,
@@ -188,7 +211,7 @@ full.series.graph<-function(i.data,
        col.axis=i.color.pattern[2],
        col=i.color.pattern[1])
   mtext(1,text="Week",line=2.5,cex=0.8,col=i.color.pattern[3])
-  mtext(2,text="Weekly rate",line=1.3,cex=0.8,col=i.color.pattern[3])
+  mtext(2,text="Weekly value",line=1.3,cex=0.8,col=i.color.pattern[3])
   mtext(3,text=i.graph.subtitle,cex=0.8,col=i.color.pattern[6])
   mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
         line=0.75,cex=0.6,col="#404040")

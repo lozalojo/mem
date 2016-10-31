@@ -220,9 +220,9 @@ memsurveillance<-function(i.current,
   intensidades.3<-array(dim=c(semanas,3))
   intensidades<-rbind(intensidades.1,intensidades.2,intensidades.3)[1:semanas,]
   dgraf<-as.data.frame(cbind(current.season[,2],umbrales,intensidades))
-  names(dgraf)<-c("Rate","Epidemic threshold",paste("Intensidad",1:3))
+  names(dgraf)<-c("Value","Epidemic threshold",paste("Intensidad",1:3))
   if (i.graph.file.name=="") graph.name="mem surveillance graph" else graph.name<-i.graph.file.name
-  etiquetas<-c("Weekly rates","Epidemic","Medium","High","Very high")
+  etiquetas<-c("Weekly values","Epidemic","Medium","High","Very high")
   tipos<-c(1,2,2,2,2)
   anchos<-c(3,2,2,2,2)
   colores<-c("#808080","#8c6bb1","#88419d","#810f7c","#4d004b")
@@ -274,7 +274,7 @@ memsurveillance<-function(i.current,
        col.axis="#404040",
        col="#C0C0C0")
   mtext(1,text="Week",line=2.5,cex=0.8,col="#000040")
-  mtext(2,text="Weekly rate",line=1.3,cex=0.8,col="#000040")
+  mtext(2,text="Weekly value",line=1.3,cex=0.8,col="#000040")
   mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")  
   mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
         line=0.75,cex=0.6,col="#404040")

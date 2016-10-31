@@ -4,7 +4,7 @@
 \alias{roc.analysis}
 \title{ROC analysis to find optimum parameter value}
 \usage{
-roc.analysis(i.data, i.param.values = seq(2, 3, 0.1), i.prefix.roc = "",
+roc.analysis(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.prefix.roc = "",
   ...)
 }
 \arguments{
