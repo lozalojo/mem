@@ -39,13 +39,23 @@ calcular.indicadores.2.timings<-function(i.current,
   false.pos<-sum(resultado.3=="FP",na.rm=T)
   true.neg<-sum(resultado.3=="TN",na.rm=T)
 
-  sensibilidad<-true.pos/(true.pos+false.neg)
-  especificidad<-true.neg/(true.neg+false.pos)
+  if (true.pos+false.neg>0) sensibilidad<-true.pos/(true.pos+false.neg) else sensibilidad<-NA
+  if (true.neg+false.pos>0) especificidad<-true.neg/(true.neg+false.pos) else especificidad<-NA
+  if (true.pos+false.pos>0) ppv<-true.pos/(true.pos+false.pos) else ppv<-NA
+  if (true.neg+false.neg>0) npv<-true.neg/(true.neg+false.neg) else npv<-NA
+  pos.likehood.ratio<-NA
+  if (!is.na(especificidad)) if (1-especificidad>0) pos.likehood.ratio<-sensibilidad/(1-especificidad) else pos.likehood.ratio<-NA
+  neg.likehood.ratio<-NA
+  if (!is.na(especificidad)) if (especificidad>0) neg.likehood.ratio<-(1-sensibilidad)/especificidad else neg.likehood.ratio<-NA
+  if (true.pos+true.neg+false.pos+false.neg>0) percent.agreement<-(true.pos+true.neg)/(true.pos+true.neg+false.pos+false.neg) else percent.agreement<-NA
+  if ((true.pos+false.pos)>0 & (true.pos+false.neg)>0 & (true.neg+false.pos)>0 & (true.neg+false.neg)>0) mcc<-(true.pos*true.neg-false.pos*false.neg)/(sqrt(true.pos+false.pos)*sqrt(true.pos+false.neg)*sqrt(true.neg+false.pos)*sqrt(true.neg+false.neg)) else mcc<-NA
 
   semanas.not.na<-sum(!is.na(i.current))
 
   indicadores<-data.frame(semanas=semanas,semanas.not.na=semanas.not.na,true.pos=true.pos,false.pos=false.pos,
-                          true.neg=true.neg,false.neg=false.neg,sensibilidad=sensibilidad,especificidad=especificidad)
+                          true.neg=true.neg,false.neg=false.neg,sensibilidad=sensibilidad,especificidad=especificidad,
+                          ppv=ppv,npv=npv,pos.likehood.ratio=pos.likehood.ratio,neg.likehood.ratio=neg.likehood.ratio,
+                          percent.agreement=percent.agreement,mcc=mcc)
 
     dgraf<-as.data.frame(i.current)
     names(dgraf)<-c("Rate")

@@ -88,7 +88,7 @@ memgoodness<-function(i.data,
   anios<-dim(i.data)[2]
   semanas<-dim(i.data)[1]
   #validacion<-array(dim=c(12,anios),dimnames=c("year","indicator"))
-  validacion<-array(dim=c(13,anios))
+  validacion<-array(dim=c(14,anios))
   colnames(validacion)<-names(i.data)
 
   if (!(i.goodness.method=="sequential")){
@@ -100,6 +100,7 @@ memgoodness<-function(i.data,
         indices.modelo<-order(indices.1,indices.2)[2:11]
         indices.modelo<-sort(indices.modelo[!is.na(indices.modelo)])
         indices.actual<-i
+        #cat(indices.actual,"\n")
         datos.actual<-i.data[indices.actual]
         datos.modelo<-memmodel(i.data[indices.modelo],
                                 i.seasons,
@@ -187,8 +188,10 @@ memgoodness<-function(i.data,
   resultado[11]<-resultado[7]/(1-resultado[8])
   # negative likehood ratio
   resultado[12]<-(1-resultado[7])/resultado[8]
-  # negative likehood ratio
+  # percentage agreement/accuracy
   resultado[13]<-(resultado[3]+resultado[5])/(resultado[3]+resultado[4]+resultado[5]+resultado[6])
+  # Matthews correlation coefficient
+  resultado[14]<-(resultado[3]*resultado[5]-resultado[4]*resultado[6])/sqrt((resultado[3]+resultado[4])*(resultado[3]+resultado[6])*(resultado[5]+resultado[4])*(resultado[5]+resultado[6]))
   
   memgoodness.output<-list(validity.data=validacion,
                           results=resultado,

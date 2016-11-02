@@ -125,6 +125,10 @@ calcular.indicadores<-function(i.current,
   percent.agreement<-(true.pos+true.neg)/(true.pos+true.neg+false.pos+false.neg)
   percent.agreement[is.nan(percent.agreement)]<-NA
   
+  #Matthews correlation coefficient
+  mcc<-(true.pos*true.neg-false.pos*false.neg)/sqrt((true.pos+false.pos)*(true.pos+false.neg)*(true.neg+false.pos)*(true.neg+false.neg))
+  mcc[is.nan(mcc)]<-NA    
+  
   if (true.pos.t+false.neg.t>0) sensibilidad.t<-true.pos.t/(true.pos.t+false.neg.t) else sensibilidad.t<-NA
   if (true.neg.t+false.pos.t>0) especificidad.t<-true.neg.t/(true.neg.t+false.pos.t) else especificidad.t<-NA
   if (true.pos.t+false.pos.t>0) ppv.t<-true.pos.t/(true.pos.t+false.pos.t) else ppv.t<-NA
@@ -135,22 +139,26 @@ calcular.indicadores<-function(i.current,
   if (!is.na(especificidad.t)) if (especificidad.t>0) neg.likehood.ratio.t<-(1-sensibilidad.t)/especificidad.t else neg.likehood.ratio.t<-NA
   if (true.pos.t+true.neg.t+false.pos.t+false.neg.t>0) percent.agreement.t<-(true.pos.t+true.neg.t)/(true.pos.t+true.neg.t+false.pos.t+false.neg.t) else percent.agreement.t<-NA
   
+  if ((true.pos.t+false.pos.t)>0 & (true.pos.t+false.neg.t)>0 & (true.neg.t+false.pos.t)>0 & (true.neg.t+false.neg.t)>0) mcc.t<-(true.pos.t*true.neg.t-false.pos.t*false.neg.t)/(sqrt(true.pos.t+false.pos.t)*sqrt(true.pos.t+false.neg.t)*sqrt(true.neg.t+false.pos.t)*sqrt(true.neg.t+false.neg.t)) else mcc.t<-NA
+  
   semanas.not.na<-sum(!is.na(i.current))
 
   indicadores.t<-as.matrix(c(semanas,semanas.not.na,true.pos.t,false.pos.t,true.neg.t,
                              false.neg.t,sensibilidad.t,especificidad.t,ppv.t,npv.t,
-                             pos.likehood.ratio.t,neg.likehood.ratio.t,percent.agreement.t))
+                             pos.likehood.ratio.t,neg.likehood.ratio.t,percent.agreement.t,
+                             mcc.t))
   rownames(indicadores.t)<-c("Weeks","Non-missing weeks","True positives","False positives",
                              "True negatives","False negatives","Sensitivity","Specificity",
                              "Positive predictive value","Negative predictive value",
-                             "Positive likehood ratio","Negative likehood ratio","Percent agreement")
+                             "Positive likehood ratio","Negative likehood ratio",
+                             "Percent agreement","Matthews correlation coefficient")
   colnames(indicadores.t)<-"values"
 
   indicadores<-data.frame(parametro=i.valores.parametro.deteccion,semanas=semanas,semanas.not.na=semanas.not.na,
                           true.pos=true.pos,false.pos=false.pos,true.neg=true.neg,false.neg=false.neg,
                           sensibilidad=sensibilidad,especificidad=especificidad,ppv=ppv,npv=npv,
                           pos.likehood.ratio=pos.likehood.ratio,neg.likehood.ratio=neg.likehood.ratio,
-                          percent.agreement=percent.agreement)
+                          percent.agreement=percent.agreement,mcc=mcc)
 
   if (i.graph){
 
