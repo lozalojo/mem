@@ -1,7 +1,39 @@
-#' Tranform the historial series from the mem default input format (weeksxseasons)
-#' to a single serie data.frame, with season, week and rate column
+#' Data transformation
 #'
-#' @keywords internal
+#' Function \code{transformdata} transforms data from week,rate1,...,rateN to year,week,rate
+#' format.
+#'
+#' Yet to be written
+#'
+#' @name transformdata.back
+#'
+#' @param i.data Data frame of input data.
+#' @param i.name Name of the column that contains the values.
+#' @param i.range.x maximum percentage of na's in a season allowable, otherwise, the season is removed
+#'
+#' @return
+#' \code{transformdata.back} returns a data.frame with three columns, year, week and rate.
+#'
+#' @examples
+#' # Castilla y Leon Influenza Rates data
+#' data(flucyl)
+#' # Transform data
+#' newdata<-transformdata.back(flucyl)
+#'
+#' @author Jose E. Lozano \email{lozalojo@@gmail.com}
+#'
+#' @references
+#' Vega T., Lozano J.E. (2004) Modelling influenza epidemic - can we detect the beginning
+#' and predict the intensity and duration? International Congress Series 1263 (2004)
+#' 281-283.\cr
+#' Vega T., Lozano J.E. (2012) Influenza surveillance in Europe: establishing epidemic
+#' thresholds by the Moving Epidemic Method. Influenza and Other Respiratory Viruses,
+#' DOI:10.1111/j.1750-2659.2012.00422.x.
+#'
+#' @keywords influenza
+#'
+#' @export
+#' @importFrom stats aggregate
 transformdata.back<-function(i.data,i.name="rates",i.range.x=c(1,53)){
   n.seasons<-dim(i.data)[2]
   n.weeks<-dim(i.data)[1]
@@ -30,7 +62,7 @@ transformdata.back<-function(i.data,i.name="rates",i.range.x=c(1,53)){
   data.out<-merge(data.out.1,data.out.2,by=c("year","week","yrweek","season"),all.x=T)
   data.out$dummy<-NULL
   data.out<-data.out[order(data.out$yrweek),]
-  
+
   data.out<-data.out[!(data.out$week==53 & is.na(data.out$data)),]
   names(data.out)[names(data.out)=="data"]<-i.name
   # Now limit to the period

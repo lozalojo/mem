@@ -2,14 +2,44 @@
 % Please edit documentation in R/transformdata.back.R
 \name{transformdata.back}
 \alias{transformdata.back}
-\title{Tranform the historial series from the mem default input format (weeksxseasons)
-to a single serie data.frame, with season, week and rate column}
+\title{Data transformation}
 \usage{
 transformdata.back(i.data, i.name = "rates", i.range.x = c(1, 53))
 }
-\description{
-Tranform the historial series from the mem default input format (weeksxseasons)
-to a single serie data.frame, with season, week and rate column
+\arguments{
+\item{i.data}{Data frame of input data.}
+
+\item{i.name}{Name of the column that contains the values.}
+
+\item{i.range.x}{maximum percentage of na's in a season allowable, otherwise, the season is removed}
 }
-\keyword{internal}
+\value{
+\code{transformdata.back} returns a data.frame with three columns, year, week and rate.
+}
+\description{
+Function \code{transformdata} transforms data from week,rate1,...,rateN to year,week,rate
+format.
+}
+\details{
+Yet to be written
+}
+\examples{
+# Castilla y Leon Influenza Rates data
+data(flucyl)
+# Transform data
+newdata<-transformdata.back(flucyl)
+
+}
+\author{
+Jose E. Lozano \email{lozalojo@gmail.com}
+}
+\references{
+Vega T., Lozano J.E. (2004) Modelling influenza epidemic - can we detect the beginning
+and predict the intensity and duration? International Congress Series 1263 (2004)
+281-283.\cr
+Vega T., Lozano J.E. (2012) Influenza surveillance in Europe: establishing epidemic
+thresholds by the Moving Epidemic Method. Influenza and Other Respiratory Viruses,
+DOI:10.1111/j.1750-2659.2012.00422.x.
+}
+\keyword{influenza}
 

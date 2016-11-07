@@ -5,8 +5,8 @@
 \title{ROC analysis to find optimum parameter value}
 \usage{
 roc.analysis(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.prefix.roc = "",
-  i.graph.file.name = "", i.graph.title = "", i.graph.subtitle = "",
-  i.output = ".", i.graph.file = F, ...)
+  i.graph.file = F, i.graph.file.name = "", i.graph.title = "",
+  i.graph.subtitle = "", i.output = ".", ...)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
@@ -15,6 +15,8 @@ roc.analysis(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.prefix.roc = "",
 
 \item{i.prefix.roc}{prefix used for naming graphs.}
 
+\item{i.graph.file}{T/F to produce the graph or not.}
+
 \item{i.graph.file.name}{name of the output file.}
 
 \item{i.graph.title}{title of the graph.}
@@ -22,8 +24,6 @@ roc.analysis(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.prefix.roc = "",
 \item{i.graph.subtitle}{subtitle of the graph.}
 
 \item{i.output}{output directory.}
-
-\item{i.graph.file}{T/F to produce the graph or not.}
 
 \item{...}{other paramaters to be used by memgoodness function.}
 }
