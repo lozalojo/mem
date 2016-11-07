@@ -42,40 +42,47 @@
 #' @keywords influenza
 #'
 #' @export
-roc.analysis <- function(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.prefix.roc = "",
+roc.analysis <- function(i.data, 
+                         i.param.values = seq(1.5, 4.5, 0.1), 
+                         i.prefix.roc = "",
+                         i.graph.file=F,
                          i.graph.file.name="",
                          i.graph.title="",
                          i.graph.subtitle="",
-                         i.output=".",
-                         i.graph.file=F,...) {
+                         i.output=".", ...) {
     n.values <- length(i.param.values)
     resultados <- data.frame()
     
     for (i in 1:n.values) {
         cat("[", format(round(100 * (i - 1)/n.values, 1), digits = 3, nsmall = 1), "%][Parameter: ", format(round(i.param.values[i], 
             1), digits = 3, nsmall = 1), "] Analysis started (", i, " out of ", n.values, ")\n", sep = "")
-        good.i<-memgoodness(i.data = i.data, i.method = 2, 
-            i.param = i.param.values[i], i.prefix = paste(i.prefix.roc, "[", format(round(i.param.values[i], 
-                1), digits = 3, nsmall = 1), "] ", sep = ""),...)
+        # good.i<-memgoodness(i.data = i.data, i.method = 2, 
+        #     i.param = i.param.values[i], i.prefix = paste(i.prefix.roc, "[", format(round(i.param.values[i], 
+        #         1), digits = 3, nsmall = 1), "] ", sep = ""),...)
+        good.i<-memgoodness(i.data = i.data, i.method = 2, i.param = i.param.values[i], i.graph=F, ...)
+        
         resultados.i <- data.frame(value = i.param.values[i], t(good.i$results))
         resultados <- rbind(resultados, resultados.i)
     }
     
     names(resultados) <- tolower(names(resultados))
     
-    if (is.null(resultados$sensitivity) | is.null(resultados$specificity)) {
+    if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
+      rankings.1<-NA
+      rankings.2<-NA
+      rankings.5<-NA
         optimo.1 <- NA
         optimo.2 <- NA
         optimo.5 <- NA
     } else {
         # rankings.1<-rank(resultados$sensitivity,na.last=F)+rank(resultados$specificity,na.last=F)
         # optimo.1<-i.param.values[which.max(rankings.1)]
-        rankings.1 <- rank(-resultados$sensitivity, na.last = F) + rank(-resultados$specificity, na.last = F)
+        rankings.1 <- rank(-resultados$sensitivity, na.last = T) + rank(-resultados$specificity, na.last = T)
         optimo.1 <- i.param.values[which.min(rankings.1)]
         
         # rankings.2<-rank(resultados$sensitivity*resultados$specificity,na.last=F)
         # optimo.2<-i.param.values[which.max(rankings.2)]
-        rankings.2 <- rank(-resultados$sensitivity * resultados$specificity, na.last = F)
+        rankings.2 <- rank(-resultados$sensitivity * resultados$specificity, na.last = T)
         optimo.2 <- i.param.values[which.min(rankings.2)]
         
         qf <- abs(resultados$sensitivity - resultados$specificity)
@@ -85,35 +92,39 @@ roc.analysis <- function(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.prefix.r
         rankings.5 <- rank(qf) + rank(qe) + rank(qs)
         optimo.5 <- i.param.values[which.min(rankings.5)]
     }
-    if (is.null(resultados$positive.likehood.ratio)) {
+    if (!any(!is.na(resultados$positive.likehood.ratio))) {
+      rankings.3<-NA
         optimo.3 <- NA
     } else {
         # rankings.3<-rank(resultados$positive.likehood.ratio,na.last=F)
         # optimo.3<-i.param.values[which.max(rankings.3)]
-        rankings.3 <- rank(-resultados$positive.likehood.ratio, na.last = F)
+        rankings.3 <- rank(-resultados$positive.likehood.ratio, na.last = T)
         optimo.3 <- i.param.values[which.min(rankings.3)]
     }
-    if (is.null(resultados$negative.likehood.ratio)) {
+    if (!any(!is.na(resultados$negative.likehood.ratio))) {
+      rankings.4<-NA
         optimo.4 <- NA
     } else {
         # rankings.4<-rank(resultados$negative.likehood.ratio,na.last=F)
         # optimo.4<-i.param.values[which.max(rankings.4)]
-        rankings.4 <- rank(-resultados$negative.likehood.ratio, na.last = F)
+        rankings.4 <- rank(-resultados$negative.likehood.ratio, na.last = T)
         optimo.4 <- i.param.values[which.min(rankings.4)]
     }
-    if (is.null(resultados$percent.agreement)) {
+    if (!any(!is.na(resultados$percent.agreement))) {
+      rankings.6 <- NA
         optimo.6 <- NA
     } else {
         # rankings.6<-rank(resultados$percent.agreement,na.last=F)
         # optimo.6<-i.param.values[which.max(rankings.6)]
-        rankings.6 <- rank(-resultados$percent.agreement, na.last = F)
+        rankings.6 <- rank(-resultados$percent.agreement, na.last = T)
         optimo.6 <- i.param.values[which.min(rankings.6)]
     }
     
-    if (is.null(resultados$matthews.correlation.coefficient)) {
+    if (!any(!is.na(resultados$matthews.correlation.coefficient))) {
+      rankings.7 <- NA
       optimo.7 <- NA
     } else {
-      rankings.7 <- rank(-resultados$matthews.correlation.coefficient, na.last = F)
+      rankings.7 <- rank(-resultados$matthews.correlation.coefficient, na.last = T)
       optimo.7 <- i.param.values[which.min(rankings.7)]
     }
     
@@ -121,7 +132,11 @@ roc.analysis <- function(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.prefix.r
     optimum <- data.frame(pos.likehood = optimo.3, neg.likehood = optimo.4, aditive = optimo.1, multiplicative = optimo.2, 
         mixed = optimo.5, percent = optimo.6, matthews=optimo.7)
     
-    roc.analysis.output <- list(optimum = optimum, roc.data = resultados, param.data = i.data, param.param.values = i.param.values, 
+    rankings <- data.frame(pos.likehood = rankings.3, neg.likehood = rankings.4, aditive = rankings.1, multiplicative = rankings.2, 
+                           mixed = rankings.5, percent = rankings.6, matthews=rankings.7)
+    
+    
+    roc.analysis.output <- list(optimum = optimum, rankings = rankings, roc.data = resultados, param.data = i.data, param.param.values = i.param.values, 
         param.prefix = i.prefix.roc)
     roc.analysis.output$call <- match.call()
     
@@ -134,7 +149,7 @@ roc.analysis <- function(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.prefix.r
     
     opar<-par(mar=c(5,3,3,3)+0.1,mgp=c(3,0.5,0),xpd=T,mfrow=c(2,2))
     
-    if (!is.null(resultados$sensitivity) & !is.null(resultados$specificity)){
+    if (any(!is.na(resultados$sensitivity)) & any(!is.na(resultados$specificity))){
     d.x<-resultados$value
     d.y<-cbind(resultados$sensitivity,resultados$specificity)
     etiquetas<-c("Sensitivity","Specificity")
@@ -153,7 +168,7 @@ roc.analysis <- function(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.prefix.r
       
     }
     
-    if (!is.null(resultados$positive.predictive.value) & !is.null(resultados$negative.predictive.value)){
+    if (any(!is.na(resultados$positive.predictive.value)) & any(!is.na(resultados$negative.predictive.value))){
       
     d.x<-resultados$value
     d.y<-cbind(resultados$positive.predictive.value,resultados$negative.predictive.value)
@@ -186,7 +201,7 @@ roc.analysis <- function(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.prefix.r
     # mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
     # legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
     
-    if (!is.null(resultados$percent.agreement) & !is.null(resultados$matthews.correlation.coefficient)){
+    if (any(!is.na(resultados$percent.agreement)) & any(!is.na(resultados$matthews.correlation.coefficient))){
       
     d.x<-resultados$value
     d.y<-cbind(resultados$percent.agreement,resultados$matthews.correlation.coefficient)
@@ -205,7 +220,7 @@ roc.analysis <- function(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.prefix.r
     legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
     }
     
-    if (!is.null(resultados$specificity) & !is.null(resultados$sensitivity)){
+    if (any(!is.na(resultados$specificity)) & any(!is.na(resultados$sensitivity))){
       
     d.x<-1-resultados$specificity
     d.y<-resultados$sensitivity[order(d.x)]
@@ -224,7 +239,6 @@ roc.analysis <- function(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.prefix.r
     }
     par(opar)
     if (i.graph.file) dev.off()
-    
-    
+
     return(roc.analysis.output)
 }

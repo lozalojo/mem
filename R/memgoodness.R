@@ -193,6 +193,8 @@ memgoodness<-function(i.data,
   # Matthews correlation coefficient
   resultado[14]<-(resultado[3]*resultado[5]-resultado[4]*resultado[6])/sqrt((resultado[3]+resultado[4])*(resultado[3]+resultado[6])*(resultado[5]+resultado[4])*(resultado[5]+resultado[6]))
   
+  resultado[is.nan(resultado)]<-NA
+        
   memgoodness.output<-list(validity.data=validacion,
                           results=resultado,
                           param.data=i.data,

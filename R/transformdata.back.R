@@ -19,10 +19,18 @@ transformdata.back<-function(i.data,i.name="rates",i.range.x=c(1,53)){
                            yrweek=NA,
                            season="",
                            data=i.data[,i],stringsAsFactors = F)
-    if (dim(years)[2]>1) if (!is.na(years[i,2]) & years[i,1]!=years[i,2]) data.out.i$year[data.out.i$week<(rownames(i.data)[1])]<-years[i,2]
+    if (dim(years)[2]>1) if (!is.na(years[i,2]) & years[i,1]!=years[i,2]) data.out.i$year[data.out.i$week<as.numeric(rownames(i.data)[1])]<-years[i,2]
     data.out.i$yrweek<-data.out.i$year*100+data.out.i$week
     data.out<-rbind(data.out,data.out.i)
   }
+  data.out<-data.out[order(data.out$yrweek),]
+  data.out$dummy<-1
+  data.out.1<-aggregate(dummy ~ year + week + yrweek + season,data=data.out,FUN=NROW)
+  data.out.2<-aggregate(data ~ year + week + yrweek + season,data=data.out,FUN=mean,na.rm=T)
+  data.out<-merge(data.out.1,data.out.2,by=c("year","week","yrweek","season"),all.x=T)
+  data.out$dummy<-NULL
+  data.out<-data.out[order(data.out$yrweek),]
+  
   data.out<-data.out[!(data.out$week==53 & is.na(data.out$data)),]
   names(data.out)[names(data.out)=="data"]<-i.name
   # Now limit to the period

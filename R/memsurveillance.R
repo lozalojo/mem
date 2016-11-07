@@ -248,7 +248,9 @@ memsurveillance<-function(i.current,
   # if (is.na(semana.inicio.forzado) & i.start.end.marks){
   if (i.start.end.marks){
     if (!is.na(semana.inicio)) points(x=semana.inicio,y=current.season[semana.inicio,2],pch=1,bg="#FFFFFF",col="#FF0000",lwd=7)
-    if (!is.na(semana.fin) & i.pos.epidemic) points(x=semana.fin,y=current.season[semana.fin,2],pch=1,bg="#FFFFFF",col="#40FF40",lwd=7)
+    if (!is.na(semana.fin) & i.pos.epidemic){
+      if (is.na(current.season[semana.fin,2])) points(x=semana.fin,y=0,pch=13,bg="#FFFFFF",col="#40FF40",lwd=7) else points(x=semana.fin,y=current.season[semana.fin,2],pch=1,bg="#FFFFFF",col="#40FF40",lwd=7)
+    }
   }
   # Ejes
   axis(1,at=seq(1,semanas,1),

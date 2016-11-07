@@ -91,6 +91,8 @@ full.series.graph<-function(i.data,
   datos.y.missing<-as.numeric(datos.missing[,names(datos.missing)=="rates"])
 
   indices<-as.data.frame(epi$season.indexes[,,1])
+  indices[is.na(epi$data)]<-NA
+  
   rownames(indices)<-rownames(i.data)
   names(indices)<-names(i.data)
   datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x=i.range.x)
