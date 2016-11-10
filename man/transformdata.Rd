@@ -4,15 +4,15 @@
 \alias{transformdata}
 \title{Data transformation}
 \usage{
-transformdata(i.data, i.week.first = 40, i.week.last = 20,
+transformdata(i.data, i.range.x = c(40, 20), i.name = "rate",
   i.max.na.per = 100)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
 
-\item{i.week.first}{First surveillance week.}
+\item{i.range.x}{First and last surveillance week.}
 
-\item{i.week.last}{Last surveillance week.}
+\item{i.name}{Name of the column to transform.}
 
 \item{i.max.na.per}{maximum percentage of na's in a season allowable, otherwise, the season is removed}
 }

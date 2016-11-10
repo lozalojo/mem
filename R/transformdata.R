@@ -8,8 +8,8 @@
 #' @name transformdata
 #'
 #' @param i.data Data frame of input data.
-#' @param i.week.first First surveillance week.
-#' @param i.week.last Last surveillance week.
+#' @param i.range.x First and last surveillance week.
+#' @param i.name Name of the column to transform.
 #' @param i.max.na.per maximum percentage of na's in a season allowable, otherwise, the season is removed
 #'
 #' @return
@@ -41,76 +41,69 @@
 #' @export
 #' @importFrom sqldf sqldf
 #' @importFrom reshape2 dcast
-transformdata<-function(i.data,
-						i.week.first=40,
-						i.week.last=20,
-						i.max.na.per=100){
-
-	# Corrections
-
-	if (i.week.first<1) i.week.first<-1
-	if (i.week.first>52) i.week.first<-52
-	if (i.week.last<1) i.week.last<-1
-	if (i.week.last>52) i.week.last<-52
-	if (i.week.first==i.week.last) i.week.last<-i.week.last-1
-
-	# set season
-
-	if (i.week.first<i.week.last){
-	  #i.data$season<-paste(i.data$year,i.data$year,sep="/")
-	  i.data$season<-as.character(i.data$year)
-	}else{
-	  i.data$season[i.data$week<i.week.first]<-paste(i.data$year[i.data$week<i.week.first]-1,i.data$year[i.data$week<i.week.first],sep="/")
-	  i.data$season[i.data$week>=i.week.first]<-paste(i.data$year[i.data$week>=i.week.first],i.data$year[i.data$week>=i.week.first]+1,sep="/")
-	}
-
-	# First we create the frame of surveillance weeks
-	# The default scheme is: 40,41,...,52,1,...,20
-	# Sometimes surveillance period goes from 30,31,...52,1,...,29
-	# In southern hemisphere countries, surveillance is the contrary: 15,..,44 or 1,..,52
-
-	if (i.week.first>=i.week.last) week.scheme.52<-data.frame(week=c(i.week.first:52,1:i.week.last,NA)) else week.scheme.52<-data.frame(week=i.week.first:i.week.last)
-	week.scheme.52$week.no<-1:dim(week.scheme.52)[1]
-
-	if (i.week.first>=i.week.last) week.scheme.53<-data.frame(week=c(i.week.first:53,1:i.week.last)) else week.scheme.53<-data.frame(week=i.week.first:i.week.last)
-	week.scheme.53$week.no<-1:dim(week.scheme.53)[1]
-
-	# Separate seasons with week 53 and seasons without week 53
-	# With week 53
-	temp1.1<-sqldf("select distinct season from [i.data] where week=53")
-	temp2.1<-sqldf("select * from [i.data] where season in (select season from [temp1.1])")
-	temp3.1<-sqldf("select [temp1.1].*, [week.scheme.53].* from [temp1.1], [week.scheme.53]")
-	temp4.1<-sqldf("select [temp3.1].season, [temp3.1].[week.no], [temp2.1].rate from [temp3.1] left join [temp2.1] on ([temp3.1].season=[temp2.1].season and [temp3.1].week=[temp2.1].week)")
-	# Without week 53
-	temp1.2<-sqldf("select distinct season from [i.data] where season not in (select season from [temp1.1])")
-	temp2.2<-sqldf("select * from [i.data] where season in (select season from [temp1.2])")
-	temp3.2<-sqldf("select [temp1.2].*, [week.scheme.52].* from [temp1.2], [week.scheme.52]")
-	temp4.2<-sqldf("select [temp3.2].season, [temp3.2].[week.no], [temp2.2].rate from [temp3.2] left join [temp2.2] on ([temp3.2].season=[temp2.2].season and [temp3.2].week=[temp2.2].week)")
-
-	temp4<-rbind(temp4.1,temp4.2)
-	temp5<-temp4[order(temp4$season,temp4$week.no),]
-
-	temp6<-dcast(temp5, formula = week.no ~ season,sum,value.var="rate")
-
-	# Is possible that due to constraint of surveillance weeks, some seasons are empty,
-	# remove all columns with all na values.
-
-	temp7<-temp6[apply(temp6,2,function(i.data) any(!is.na(i.data)))]
-
-	temp8<-sqldf("select [week.scheme.52].week, temp7.* from temp7 inner join [week.scheme.52] on (temp7.[week.no]=[week.scheme.52].[week.no]) order by [week.no]")
-
-	temp9<-subset(temp8,!is.na(temp8$week))
-	row.names(temp9)<-temp9$week
-	temp9$week<-NULL
-	temp9$week.no<-NULL
-
-	# remove those seasons whose percentaje of NA is greater than a parameter
-	
-	temp10<-apply(temp9,2,function(x) sum(is.na(x))/length(x))
-	temp11<-temp9[temp10<i.max.na.per/100]
-	
-	transformdata.output<-list(tdata=temp11)
-	transformdata.output$call<-match.call()
-	return(transformdata.output)
-
+transformdata <- function(i.data, i.range.x = c(40, 20), i.name = "rate", 
+  i.max.na.per = 100) {
+  
+  i.week.first <- i.range.x[1]
+  i.week.last <- i.range.x[2]
+  
+  if (is.na(i.week.first) | is.na(i.week.last)) 
+    stop("Error in starting/ending week")
+  
+  if (i.week.first < 1) 
+    i.week.first <- 1
+  if (i.week.first > 53) 
+    i.week.first <- 53
+  if (i.week.last < 1) 
+    i.week.last <- 1
+  if (i.week.last > 53) 
+    i.week.last <- 53
+  if (i.week.first == i.week.last) 
+    i.week.last <- i.week.last - 1
+  
+  data <- subset(i.data, select = c("year", "week", i.name))
+  names(data)[names(data) == i.name] <- "rate"
+  
+  if (i.week.first < i.week.last) {
+    # Formato de temporada único año (ej: 2010)
+    data$season <- as.character(data$year)
+    seasons <- data.frame(season = unique(data$season))
+    weeks <- data.frame(week = i.week.first:i.week.last, 
+      week.no = 1:(i.week.last - i.week.first + 1))
+    esquema <- merge(weeks, seasons)
+  } else {
+    # Formato de temporada de dos años (ej: 2010/2011)
+    data$season <- ifelse(data$week < i.week.first, paste(as.character(data$year - 
+      1), as.character(data$year), sep = "/"), paste(as.character(data$year), 
+      as.character(data$year + 1), sep = "/"))
+    seasons.53 <- sqldf("select distinct season from data where week=53")
+    weeks.53 <- data.frame(week = c(i.week.first:53, 1:(i.week.last - 
+      1)), week.no = 1:(53 + i.week.last - i.week.first))
+    seasons <- sqldf("select distinct season from data where season not in (select season from [seasons.53])")
+    weeks <- data.frame(week = c(i.week.first:52, 1:i.week.last), 
+      week.no = 1:(53 + i.week.last - i.week.first))
+    esquema <- rbind(merge(weeks, seasons), merge(weeks.53, 
+      seasons.53))
+  }
+  temp1 <- sqldf("select esquema.season, esquema.week, esquema.[week.no], data.rate from esquema left join data on (esquema.week=data.week and esquema.season=data.season)")
+  temp2 <- temp1[order(temp1$season, temp1$week.no), ]
+  temp3 <- dcast(temp2, formula = week.no ~ season, fun.aggregate = NULL, 
+    value.var = "rate")
+  temp4 <- temp3[apply(temp3, 2, function(x) any(!is.na(x)))]
+  temp5 <- sqldf("select weeks.week, temp4.* from temp4 inner join weeks on (temp4.[week.no]=weeks.[week.no]) order by [week.no]")
+  
+  temp6 <- subset(temp5, !is.na(temp5$week))
+  row.names(temp6) <- temp6$week
+  temp6$week <- NULL
+  temp6$week.no <- NULL
+  
+  # remove those seasons whose percentaje of NA is greater than
+  # a parameter
+  
+  temp7 <- apply(temp6, 2, function(x) sum(is.na(x))/length(x))
+  temp8 <- temp6[temp7 < i.max.na.per/100]
+  
+  transformdata.output <- list(tdata = temp8)
+  transformdata.output$call <- match.call()
+  return(transformdata.output)
 }
