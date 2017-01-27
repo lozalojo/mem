@@ -73,7 +73,7 @@ full.series.graph<-function(i.data,
                                               "#00C000","#800080","#FFB401",
                                               "#8c6bb1","#88419d","#810f7c","#4d004b"),...){
 
-  datos<-transformdata.back(i.data,i.name="rates",i.range.x=i.range.x)
+  datos<-transformdata.back(i.data,i.name="rates",i.range.x=i.range.x,i.fun=sum)
   datos.x<-1:dim(datos)[1]
   semanas<-length(datos.x)
   datos.semanas<-as.numeric(datos$week)
@@ -83,7 +83,7 @@ full.series.graph<-function(i.data,
 
   epi<-memmodel(i.data,...)
   
-  datos.fixed<-transformdata.back(epi$data,i.name="rates",i.range.x=i.range.x)
+  datos.fixed<-transformdata.back(epi$data,i.name="rates",i.range.x=i.range.x,i.fun=sum)
   datos.y.fixed<-as.numeric(datos.fixed[,names(datos.fixed)=="rates"])
 
   datos.missing<-datos.fixed
@@ -95,7 +95,7 @@ full.series.graph<-function(i.data,
   
   rownames(indices)<-rownames(i.data)
   names(indices)<-names(i.data)
-  datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x=i.range.x)
+  datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x=i.range.x,i.fun=function(x,...) if (all(is.na(x))) return(NA) else if (any(x==2,...)) return(2) else if (any(x==1,...)) return(1) else return(3))
   datos.y.indexes<-as.numeric(datos.indexes[,names(datos.indexes)=="rates"])
   
   intensity<-as.numeric(memintensity(epi)$intensity.thresholds)

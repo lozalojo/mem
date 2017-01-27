@@ -4,7 +4,7 @@
 \alias{calcular.optimo.criterio}
 \title{calculates optimum: fixed criteria for slope}
 \usage{
-calcular.optimo.criterio(i.curva.map, i.criterio = 3)
+calcular.optimo.criterio(i.curva.map, i.criterio = 2.8)
 }
 \description{
 calculates optimum: fixed criteria for slope

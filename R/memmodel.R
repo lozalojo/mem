@@ -357,6 +357,8 @@ memmodel<-function(i.data,
     start.week=semana.inicio,
     epi.data=epi.datos,
     epi.data.nona=epi.d,
+    epi.data.full=epi.datos.2,
+    epi.data.nona.full=epi.d.2,
     optimum=optimo,
     real.length.data=datos.duracion.real,
     seasons.data=gripe,
@@ -457,6 +459,7 @@ plot.mem<-function(x,...){
   # Graph 1
   semanas<-dim(x$data)[1]
   anios<-dim(x$data)[2]
+  names.seasons<-sub("^.*\\(([^\\)]*)\\)$","\\1",names(x$data),perl=T)
   datos.graf<-x$moving.epidemics
   colnames(datos.graf)<-names(x$data)
   #lab.graf<-(1:semanas)+x$mean.start[2]-x$mean.start[1]
@@ -510,7 +513,7 @@ plot.mem<-function(x,...){
   ya<-otick$range[2]
   if ((i.temporada-1)<=(semanas-f.temporada)) xa<-f.temporada+1 else xa<-1
   legend(x=xa,y=ya,inset=c(0,0),xjust=0,seg.len=1,
-           legend=names(x$data),
+           legend=names.seasons,
            bty="n",
            lty=tipos,
            lwd=anchos,

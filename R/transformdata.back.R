@@ -10,6 +10,7 @@
 #' @param i.data Data frame of input data.
 #' @param i.name Name of the column that contains the values.
 #' @param i.range.x maximum percentage of na's in a season allowable, otherwise, the season is removed
+#' @param i.fun sumarize function
 #'
 #' @return
 #' \code{transformdata.back} returns a data.frame with three columns, year, week and rate.
@@ -34,7 +35,7 @@
 #'
 #' @export
 #' @importFrom stats aggregate
-transformdata.back<-function(i.data,i.name="rates",i.range.x=c(1,53)){
+transformdata.back<-function(i.data,i.name="rates",i.range.x=c(1,53),i.fun=mean){
   n.seasons<-dim(i.data)[2]
   n.weeks<-dim(i.data)[1]
   # Lets look at the format of the i.data
@@ -58,7 +59,7 @@ transformdata.back<-function(i.data,i.name="rates",i.range.x=c(1,53)){
   data.out<-data.out[order(data.out$yrweek),]
   data.out$dummy<-1
   data.out.1<-aggregate(dummy ~ year + week + yrweek + season,data=data.out,FUN=NROW)
-  data.out.2<-aggregate(data ~ year + week + yrweek + season,data=data.out,FUN=mean,na.rm=T)
+  data.out.2<-aggregate(data ~ year + week + yrweek + season,data=data.out,FUN=i.fun,na.rm=T)
   data.out<-merge(data.out.1,data.out.2,by=c("year","week","yrweek","season"),all.x=T)
   data.out$dummy<-NULL
   data.out<-data.out[order(data.out$yrweek),]

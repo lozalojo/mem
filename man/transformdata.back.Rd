@@ -4,7 +4,8 @@
 \alias{transformdata.back}
 \title{Data transformation}
 \usage{
-transformdata.back(i.data, i.name = "rates", i.range.x = c(1, 53))
+transformdata.back(i.data, i.name = "rates", i.range.x = c(1, 53),
+  i.fun = mean)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
@@ -12,6 +13,8 @@ transformdata.back(i.data, i.name = "rates", i.range.x = c(1, 53))
 \item{i.name}{Name of the column that contains the values.}
 
 \item{i.range.x}{maximum percentage of na's in a season allowable, otherwise, the season is removed}
+
+\item{i.fun}{sumarize function}
 }
 \value{
 \code{transformdata.back} returns a data.frame with three columns, year, week and rate.

@@ -70,7 +70,7 @@
 #' @export
 memintensity<-function(i.flu){
   intensity.thresholds<-matrix(c(i.flu$pre.post.intervals[1,3],i.flu$epi.intervals[,4]),ncol=4)
-  colnames(intensity.thresholds)<-c("Epidemic",paste(c("Medium (","High (","Very high ("),as.character(i.flu$epi.intervalos[,1]*100),"%)",sep=""))
+  colnames(intensity.thresholds)<-c("Epidemic",paste(c("Medium (","High (","Very high ("),as.character(round(i.flu$epi.intervals[,1]*100,1)),"%)",sep=""))
   rownames(intensity.thresholds)<-"Intensity Thresholds"
   memintensity.output<-list(intensity.thresholds=intensity.thresholds,
                             param.i.flu=i.flu)
