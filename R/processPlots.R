@@ -23,15 +23,15 @@
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
-#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
-#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
-#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International 
+#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
+#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
+#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International
 #' Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and 
-#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving 
+#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
+#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
 #' Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz 
-#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
+#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
+#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
 #' the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 #'
 #' @keywords influenza
@@ -42,6 +42,8 @@
 #' @importFrom graphics polygon
 #' @importFrom utils write.table
 processPlots<-function(i.flu,i.output=".",i.prefix=""){
+
+  i.flu$param.data<-i.flu$param.data[names(i.flu$param.data) %in% names(i.flu$data)]
 
   semanas<-dim(i.flu$data)[1]
   anios<-dim(i.flu$data)[2]
