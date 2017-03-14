@@ -10,4 +10,3 @@ comparar.metodos(i.data)
 Compares outputs from two methods of locating the epidemic
 }
 \keyword{internal}
-

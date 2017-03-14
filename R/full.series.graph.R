@@ -76,7 +76,9 @@ full.series.graph<-function(i.data,
                             i.color.pattern=c("#C0C0C0","#606060","#000000","#808080","#000000","#001933",
                                               "#00C000","#800080","#FFB401",
                                               "#8c6bb1","#88419d","#810f7c","#4d004b"),...){
-
+  epi<-memmodel(i.data,...)
+  i.data<-i.data[names(i.data) %in% names(epi$data)]
+  
   datos<-transformdata.back(i.data,i.name="rates",i.range.x=i.range.x,i.fun=sum)
   datos.x<-1:dim(datos)[1]
   semanas<-length(datos.x)
@@ -85,8 +87,6 @@ full.series.graph<-function(i.data,
   datos.y<-as.numeric(datos[,names(datos)=="rates"])
   range.x<-range(datos.x,na.rm=T)
 
-  epi<-memmodel(i.data,...)
-  
   datos.fixed<-transformdata.back(epi$data,i.name="rates",i.range.x=i.range.x,i.fun=sum)
   datos.y.fixed<-as.numeric(datos.fixed[,names(datos.fixed)=="rates"])
 

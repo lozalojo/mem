@@ -10,4 +10,3 @@ iconfianza.x(datos, nivel = 0.95, ic = T, colas = 2)
 confidence interval for a point (using arithmetic mean)
 }
 \keyword{internal}
-

@@ -10,4 +10,3 @@ iconfianza.completo(i.datos, tipo = 1, i.nivel = 0.95)
 Int. Confianza de 2 y 1 cola, por encima y por debajo. De la media y el punto.
 }
 \keyword{internal}
-

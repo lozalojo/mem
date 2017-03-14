@@ -10,4 +10,3 @@ calcular.optimo.derivada(i.curva.map)
 calculates optimum: second derivative equals 0 (change signs from - to +, or + to -)
 }
 \keyword{internal}
-

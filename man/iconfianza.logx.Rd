@@ -10,4 +10,3 @@ iconfianza.logx(datos, nivel = 0.95, ic = T, colas = 2)
 confidence interval for a point (using log transformation and geometric mean)
 }
 \keyword{internal}
-

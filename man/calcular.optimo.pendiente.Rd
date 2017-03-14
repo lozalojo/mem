@@ -10,4 +10,3 @@ calcular.optimo.pendiente(i.curva.map)
 calculates optimum: slope matches the overall slope
 }
 \keyword{internal}
-

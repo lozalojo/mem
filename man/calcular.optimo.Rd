@@ -10,4 +10,3 @@ calcular.optimo(i.curva.map, i.metodo, i.parametro)
 calculates optimum generic function
 }
 \keyword{internal}
-

@@ -12,4 +12,3 @@ Add an alpha value to a colour
 http://www.magesblog.com/2013/04/how-to-change-alpha-value-of-colours-in.html
 }
 \keyword{internal}
-

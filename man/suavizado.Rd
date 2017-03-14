@@ -10,4 +10,3 @@ suavizado(i.datos, hsuav = -1)
 smoothing regression function
 }
 \keyword{internal}
-

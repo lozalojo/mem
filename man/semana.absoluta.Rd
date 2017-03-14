@@ -10,4 +10,3 @@ semana.absoluta(i.semana, i.semana.inicio)
 Transforms relative weeks to absolute weeks in a 1-52 normal season
 }
 \keyword{internal}
-

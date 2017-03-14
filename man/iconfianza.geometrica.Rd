@@ -10,4 +10,3 @@ iconfianza.geometrica(datos, nivel = 0.95, ic = T, colas = 2)
 confidence interval for the geometric mean using the log-normal approximation
 }
 \keyword{internal}
-

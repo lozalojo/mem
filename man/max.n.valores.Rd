@@ -10,4 +10,3 @@
 highest n values of a data set, removing Inf and -Inf
 }
 \keyword{internal}
-

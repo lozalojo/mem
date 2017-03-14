@@ -10,4 +10,3 @@ extraer.datos.pre.epi(i.epi)
 Extract pre-epidemic hightest rates
 }
 \keyword{internal}
-

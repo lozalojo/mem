@@ -10,4 +10,3 @@ missings.inside(a)
 returns position of missing values inside the season. Leading and trailing missing values are not considered.
 }
 \keyword{internal}
-

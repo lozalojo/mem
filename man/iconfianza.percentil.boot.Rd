@@ -11,4 +11,3 @@ iconfianza.percentil.boot(datos, q = 0.5, nivel = 0.95, ic = T,
 confidence interval por the median using bootstrap methods
 }
 \keyword{internal}
-

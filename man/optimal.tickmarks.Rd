@@ -14,4 +14,3 @@ Find tickmarks for a given range of the y-axis that best fit an optimal number o
 you decide. f.i: what if i want to have a graph with 8 tickmarks in a range of 34 to 345
 }
 \keyword{internal}
-

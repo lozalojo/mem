@@ -10,4 +10,3 @@ iconfianza.aritmetica(datos, nivel = 0.95, ic = T, colas = 2)
 confidence interval for the arithmetic mean using the normal approximation
 }
 \keyword{internal}
-

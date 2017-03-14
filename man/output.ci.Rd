@@ -10,4 +10,3 @@ output.ci(i.type, i.level, i.tails)
 function to format output
 }
 \keyword{internal}
-

@@ -11,4 +11,3 @@ iconfianza(datos, nivel = 0.95, tipo = 1, ic = T, tipo.boot = "normal",
 generic confidence interval calculation function
 }
 \keyword{internal}
-

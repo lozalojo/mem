@@ -10,4 +10,3 @@
 min function, removing Inf and -Inf
 }
 \keyword{internal}
-

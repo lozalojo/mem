@@ -2,8 +2,8 @@
 % Please edit documentation in R/mem-package.R
 \docType{package}
 \name{mem-package}
-\alias{mem}
 \alias{mem-package}
+\alias{mem}
 \title{Moving Epidemic Method R Package}
 \value{
 \code{NULL}
@@ -55,9 +55,6 @@ i.thr<-epi$intensity.thresholds
 # Surveillance
 memsurveillance(flucyl[8],e.thr,i.thr,i.graph.file=FALSE)
 }
-\author{
-Jose E. Lozano \email{lozalojo@gmail.com}
-}
 \references{
 Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
 Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
@@ -70,5 +67,7 @@ Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Perni
 de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
 the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 }
+\author{
+Jose E. Lozano \email{lozalojo@gmail.com}
+}
 \keyword{package}
-

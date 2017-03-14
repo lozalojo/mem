@@ -10,4 +10,3 @@ calcular.optimo.criterio(i.curva.map, i.criterio = 2.8)
 calculates optimum: fixed criteria for slope
 }
 \keyword{internal}
-

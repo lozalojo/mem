@@ -10,4 +10,3 @@ extraer.datos.optimo.map(i.epi)
 Extract optimum
 }
 \keyword{internal}
-

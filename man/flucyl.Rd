@@ -48,4 +48,3 @@ Influenza Surveillance Programme (Programa de vigilancia de la gripe:
 \url{http://www.salud.jcyl.es/centinelas}).
 }
 \keyword{datasets}
-

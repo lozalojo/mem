@@ -10,4 +10,3 @@ extraer.datos.post.epi(i.epi)
 Extract post-epidemic hightest rates
 }
 \keyword{internal}
-

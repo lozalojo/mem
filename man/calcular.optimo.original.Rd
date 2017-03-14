@@ -10,4 +10,3 @@ calcular.optimo.original(i.curva.map, i.hsuav)
 calculates optimum: original method: second derivative + axis change
 }
 \keyword{internal}
-

@@ -10,4 +10,3 @@ calcular.map(i.datos)
 calculates map curve
 }
 \keyword{internal}
-

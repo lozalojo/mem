@@ -10,4 +10,3 @@ extraer.datos.epi(i.epi)
 Extract epidemic hightest rates
 }
 \keyword{internal}
-

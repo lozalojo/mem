@@ -10,4 +10,3 @@ extraer.datos.curva.map(i.epi, i.val)
 Extract map curve
 }
 \keyword{internal}
-

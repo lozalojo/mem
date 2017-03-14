@@ -10,4 +10,3 @@ iconfianza.percentil.kc(datos, q = 0.5, nivel = 0.95, ic = T, colas = 2)
 confidence interval por the median using KC Method
 }
 \keyword{internal}
-

@@ -47,9 +47,6 @@ epi.roc<-roc.analysis(flucyl,i.param.values=seq(2.5,2.8,0.1),i.detection.values=
 epi.roc$results
 
 }
-\author{
-Jose E. Lozano \email{lozalojo@gmail.com}
-}
 \references{
 Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
 Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
@@ -62,5 +59,7 @@ Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Perni
 de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
 the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 }
+\author{
+Jose E. Lozano \email{lozalojo@gmail.com}
+}
 \keyword{influenza}
-

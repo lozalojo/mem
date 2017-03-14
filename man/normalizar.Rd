@@ -10,4 +10,3 @@ normalizar(normalizar.i.datos)
 standarize data to [0,1] interval
 }
 \keyword{internal}
-

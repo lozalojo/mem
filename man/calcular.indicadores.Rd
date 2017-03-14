@@ -14,4 +14,3 @@ calcular.indicadores(i.current, i.umbral.pre, i.umbral.pos = NA,
 Calculates specificity and sensitivity
 }
 \keyword{internal}
-

@@ -12,4 +12,3 @@ calcular.indicadores.2.timings(i.current, i.timing.1, i.timing.2,
 Calculates specificity and sensitivity
 }
 \keyword{internal}
-

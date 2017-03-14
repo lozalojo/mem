@@ -10,4 +10,3 @@
 max function, removing Inf and -Inf
 }
 \keyword{internal}
-
