@@ -16,6 +16,7 @@
 #' @param i.graph.file.name Name of the graph.
 #' @param i.delay Delay between frames of the animated gif.
 #' @param i.loop Number of loops for the animated dif, 0 for Infinite.
+#' @param i.remove Remove partial graphs.
 #' @param ... Additional parameters parsed to memsurveillance.
 #'
 #' @return
@@ -62,7 +63,8 @@ memsurveillance.animated<-function(i.current,
                                    i.output=".",
                                    i.graph.file.name="",
                                    i.delay=100,
-                                   i.loop=0,...){
+                                   i.loop=0,
+                                   i.remove=T,...){
 
   if (is.null(dim(i.current))) stop('Incorrect number of dimensions, input must be a data.frame.') else if (!(ncol(i.current)==1)) stop('Incorrect number of dimensions, only one season required.')
 
@@ -78,17 +80,18 @@ memsurveillance.animated<-function(i.current,
                     i.epidemic.thresholds=i.epidemic.thresholds,
                     i.intensity.thresholds=i.intensity.thresholds,
                     i.graph.title = paste("Season: ",names(i.current),", Week: ",rownames(i.current)[i],sep=""), i.graph.file = TRUE,
-                    i.graph.file.name=i, i.range.y = c(0,y.max),...)
-    shell(paste("convert  \"",i,".tiff\" -resize 800x600 \"",i,".png\"",sep=""))
-    file.remove(paste(i,".tiff",sep=""))
+                    i.graph.file.name=paste(i.output,"/",i,sep=""), i.range.y = c(0,y.max),...)
+    shell(paste("convert  \"",i.output,"/",i,".tiff\" -resize 800x600 \"",i.output,"/",i,".png\"",sep=""))
+    file.remove(paste(i.output,"/",i,".tiff",sep=""))
   }
-  command<-paste("convert -delay ",i.delay," -loop ",i.loop,sep="")
-  for (i in 1:NROW(i.current)) command<-paste(command," \"",i,".png\"",sep="")
-  command<-paste(command, " \"Animated surveillance.gif\"",sep="")
-  shell(command)
-  for (i in 1:NROW(i.current)) file.remove(paste(i,".png",sep=""))
   if (i.graph.file.name=="") graph.name=paste(i.output,"/animated graph.gif",sep="") else graph.name<-paste(i.output,"/",i.graph.file.name,".gif",sep="")
-  file.rename("Animated surveillance.gif",graph.name)
+  command<-paste("convert -delay ",i.delay," -loop ",i.loop,sep="")
+  for (i in 1:NROW(i.current)) command<-paste(command," \"",i.output,"/",i,".png\"",sep="")
+  command<-paste(command, " \"",graph.name,"\"",sep="")
+  shell(command)
+  if (i.remove) for (i in 1:NROW(i.current)) file.remove(paste(i.output,"/",i,".png",sep=""))
+  
+  #file.rename("Animated surveillance.gif",graph.name)
   cat(graph.name,"\n")
   memsurveillance.animated.output<-list(param.current=i.current,
                                         param.output=i.output,

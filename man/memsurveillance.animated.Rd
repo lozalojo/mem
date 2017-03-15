@@ -6,7 +6,7 @@
 \usage{
 memsurveillance.animated(i.current, i.epidemic.thresholds = NA,
   i.intensity.thresholds = NA, i.output = ".", i.graph.file.name = "",
-  i.delay = 100, i.loop = 0, ...)
+  i.delay = 100, i.loop = 0, i.remove = T, ...)
 }
 \arguments{
 \item{i.current}{Current season weekly rates.}
@@ -22,6 +22,8 @@ memsurveillance.animated(i.current, i.epidemic.thresholds = NA,
 \item{i.delay}{Delay between frames of the animated gif.}
 
 \item{i.loop}{Number of loops for the animated dif, 0 for Infinite.}
+
+\item{i.remove}{Remove partial graphs.}
 
 \item{...}{Additional parameters parsed to memsurveillance.}
 }

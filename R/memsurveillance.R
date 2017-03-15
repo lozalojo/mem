@@ -137,7 +137,7 @@ memsurveillance<-function(i.current,
     semana.report<-((1:semanas)[i.week.report==as.numeric(esquema.semanas$nombre.semana)])[1]
     if (!is.na(semana.report) & semana.report<semanas) current.season[(semana.report+1):semanas,]<-NA
   }else{
-    semana.report<-max((1:semanas)[!is.na(current.season[,2])],na.rm=T)
+    if (all(is.na(current.season[,2]))) semana.report<-semanas else semana.report<-max((1:semanas)[!is.na(current.season[,2])],na.rm=T)
   }
 
   # Preparacion de datos necesarios
