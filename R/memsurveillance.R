@@ -400,7 +400,8 @@ memsurveillance<-function(i.current,
 
   current.season$season.scheme<-season.scheme
 
-  memsurveillance.output<-list(current.season=current.season,
+  memsurveillance.output<-list(graph.name=paste(i.output,"/",graph.name,".tiff",sep=""),
+                               current.season=current.season,
                                real.start.week=semana.inicio.real,
                                forced.start.week=semana.inicio.forzado,
                                start.week=semana.inicio,

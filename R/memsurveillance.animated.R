@@ -13,7 +13,8 @@
 #' @param i.epidemic.thresholds Pre and post epidemic threholds.
 #' @param i.intensity.thresholds Intensity thresholds.
 #' @param i.output Directory where graph is saved.
-#' @param i.graph.file.name Name of the graph.
+#' @param i.animated.graph.file If a animated gif should be produced, or just the intermediate graphics
+#' @param i.animated.graph.file.name Name of the animated graph.
 #' @param i.delay Delay between frames of the animated gif.
 #' @param i.loop Number of loops for the animated dif, 0 for Infinite.
 #' @param i.remove Remove partial graphs.
@@ -35,21 +36,21 @@
 #' i.thr<-epi$intensity.thresholds
 #' # Set the working directory to whererever you want to store the graph file
 #' setwd(".")
-#' m1<-a<-memsurveillance.animated(cur, i.graph.file.name="Animated",i.epidemic.thresholds = e.thr,
-#' i.intensity.thresholds = i.thr, i.pos.epidemic = TRUE)
+#' m1<-a<-memsurveillance.animated(cur, i.animated.graph.file.name="Animated",
+#' i.epidemic.thresholds = e.thr,i.intensity.thresholds = i.thr, i.pos.epidemic = TRUE)
 #'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
-#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
-#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
-#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International 
+#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
+#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
+#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International
 #' Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and 
-#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving 
+#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
+#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
 #' Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz 
-#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
+#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
+#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
 #' the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 #'
 #' @keywords influenza
@@ -61,7 +62,8 @@ memsurveillance.animated<-function(i.current,
                                    i.epidemic.thresholds=NA,
                                    i.intensity.thresholds=NA,
                                    i.output=".",
-                                   i.graph.file.name="",
+                                   i.animated.graph.file = T,
+                                   i.animated.graph.file.name="",
                                    i.delay=100,
                                    i.loop=0,
                                    i.remove=T,...){
@@ -79,25 +81,33 @@ memsurveillance.animated<-function(i.current,
     memsurveillance(temp1,
                     i.epidemic.thresholds=i.epidemic.thresholds,
                     i.intensity.thresholds=i.intensity.thresholds,
-                    i.graph.title = paste("Season: ",names(i.current),", Week: ",rownames(i.current)[i],sep=""), i.graph.file = TRUE,
-                    i.graph.file.name=paste(i.output,"/",i,sep=""), i.range.y = c(0,y.max),...)
-    shell(paste("convert  \"",i.output,"/",i,".tiff\" -resize 800x600 \"",i.output,"/",i,".png\"",sep=""))
-    file.remove(paste(i.output,"/",i,".tiff",sep=""))
+                    i.graph.title = paste("Season: ",names(i.current),", Week: ",rownames(i.current)[i],sep=""),
+                    i.graph.file = TRUE,
+                    i.output=i.output,
+                    i.graph.file.name=paste(i.animated.graph.file.name,"_",i,sep=""),
+                    i.range.y = c(0,y.max),...)
+    shell(paste("convert  \"",i.output,"/",i.animated.graph.file.name,"_",i,".tiff\" -resize 800x600 \"",i.output,"/",i.animated.graph.file.name,"_",i,".png\"",sep=""))
+    file.remove(paste(i.output,"/",i.animated.graph.file.name,"_",i,".tiff",sep=""))
   }
-  if (i.graph.file.name=="") graph.name=paste(i.output,"/animated graph.gif",sep="") else graph.name<-paste(i.output,"/",i.graph.file.name,".gif",sep="")
+  if (i.animated.graph.file.name=="") graph.name=paste(i.output,"/animated graph.gif",sep="") else graph.name<-paste(i.output,"/",i.animated.graph.file.name,".gif",sep="")
   command<-paste("convert -delay ",i.delay," -loop ",i.loop,sep="")
-  for (i in 1:NROW(i.current)) command<-paste(command," \"",i.output,"/",i,".png\"",sep="")
+  for (i in 1:NROW(i.current)) command<-paste(command," \"",i.output,"/",i.animated.graph.file.name,"_",i,".png\"",sep="")
   command<-paste(command, " \"",graph.name,"\"",sep="")
-  shell(command)
-  if (i.remove) for (i in 1:NROW(i.current)) file.remove(paste(i.output,"/",i,".png",sep=""))
-  
+  if (i.animated.graph.file) shell(command)
+  if (i.remove) for (i in 1:NROW(i.current)) file.remove(paste(i.output,"/",i.animated.graph.file.name,"_",i,".png",sep=""))
+
   #file.rename("Animated surveillance.gif",graph.name)
   cat(graph.name,"\n")
-  memsurveillance.animated.output<-list(param.current=i.current,
+  memsurveillance.animated.output<-list(graph.name=graph.name,
+                                        param.current=i.current,
+                                        param.epidemic.thresholds=i.epidemic.thresholds,
+                                        param.intensity.thresholds=i.intensity.thresholds,
                                         param.output=i.output,
-                                        param.graph.file.name=i.graph.file.name,
+                                        param.animated.graph.file=i.animated.graph.file,
+                                        param.animated.graph.file.name=i.animated.graph.file.name,
                                         param.delay=i.delay,
-                                        param.loop=i.loop)
+                                        param.loop=i.loop,
+                                        param.remove=i.remove)
   memsurveillance.animated.output$call<-match.call()
   return(memsurveillance.animated.output)
 }

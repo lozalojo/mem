@@ -5,8 +5,9 @@
 \title{Creates the animated surveillance graph of the current season}
 \usage{
 memsurveillance.animated(i.current, i.epidemic.thresholds = NA,
-  i.intensity.thresholds = NA, i.output = ".", i.graph.file.name = "",
-  i.delay = 100, i.loop = 0, i.remove = T, ...)
+  i.intensity.thresholds = NA, i.output = ".", i.animated.graph.file = T,
+  i.animated.graph.file.name = "", i.delay = 100, i.loop = 0,
+  i.remove = T, ...)
 }
 \arguments{
 \item{i.current}{Current season weekly rates.}
@@ -17,7 +18,9 @@ memsurveillance.animated(i.current, i.epidemic.thresholds = NA,
 
 \item{i.output}{Directory where graph is saved.}
 
-\item{i.graph.file.name}{Name of the graph.}
+\item{i.animated.graph.file}{If a animated gif should be produced, or just the intermediate graphics}
+
+\item{i.animated.graph.file.name}{Name of the animated graph.}
 
 \item{i.delay}{Delay between frames of the animated gif.}
 
@@ -52,20 +55,20 @@ e.thr<-epi$epidemic.thresholds
 i.thr<-epi$intensity.thresholds
 # Set the working directory to whererever you want to store the graph file
 setwd(".")
-m1<-a<-memsurveillance.animated(cur, i.graph.file.name="Animated",i.epidemic.thresholds = e.thr,
-i.intensity.thresholds = i.thr, i.pos.epidemic = TRUE)
+m1<-a<-memsurveillance.animated(cur, i.animated.graph.file.name="Animated",
+i.epidemic.thresholds = e.thr,i.intensity.thresholds = i.thr, i.pos.epidemic = TRUE)
 
 }
 \references{
-Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
-Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
-International Congress Series, Options for the Control of Influenza V. Proceedings of the International 
+Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
+Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
+International Congress Series, Options for the Control of Influenza V. Proceedings of the International
 Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and 
-Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving 
+Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
+Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
 Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz 
-de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
+Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
+de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
 the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 }
 \author{

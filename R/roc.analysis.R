@@ -8,7 +8,6 @@
 #'
 #' @param i.data Data frame of input data.
 #' @param i.param.values range of i.param values to test.
-#' @param i.prefix.roc prefix used for naming graphs.
 #' @param i.graph.file.name name of the output file.
 #' @param i.graph.title title of the graph.
 #' @param i.graph.subtitle subtitle of the graph.
@@ -32,23 +31,22 @@
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
-#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
-#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
-#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International 
+#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
+#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
+#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International
 #' Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and 
-#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving 
+#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
+#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
 #' Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz 
-#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
+#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
+#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
 #' the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 #'
 #' @keywords influenza
 #'
 #' @export
-roc.analysis <- function(i.data, 
-                         i.param.values = seq(1.5, 4.5, 0.1), 
-                         i.prefix.roc = "",
+roc.analysis <- function(i.data,
+                         i.param.values = seq(1.5, 4.5, 0.1),
                          i.graph.file=F,
                          i.graph.file.name="",
                          i.graph.title="",
@@ -56,21 +54,21 @@ roc.analysis <- function(i.data,
                          i.output=".", ...) {
     n.values <- length(i.param.values)
     resultados <- data.frame()
-    
+
     for (i in 1:n.values) {
-        cat("[", format(round(100 * (i - 1)/n.values, 1), digits = 3, nsmall = 1), "%][Parameter: ", format(round(i.param.values[i], 
+        cat("[", format(round(100 * (i - 1)/n.values, 1), digits = 3, nsmall = 1), "%][Parameter: ", format(round(i.param.values[i],
             1), digits = 3, nsmall = 1), "] Analysis started (", i, " out of ", n.values, ")\n", sep = "")
-        # good.i<-memgoodness(i.data = i.data, i.method = 2, 
-        #     i.param = i.param.values[i], i.prefix = paste(i.prefix.roc, "[", format(round(i.param.values[i], 
+        # good.i<-memgoodness(i.data = i.data, i.method = 2,
+        #     i.param = i.param.values[i], i.prefix = paste(i.prefix.roc, "[", format(round(i.param.values[i],
         #         1), digits = 3, nsmall = 1), "] ", sep = ""),...)
         good.i<-memgoodness(i.data = i.data, i.method = 2, i.param = i.param.values[i], i.graph=F, ...)
-        
+
         resultados.i <- data.frame(value = i.param.values[i], t(good.i$results))
         resultados <- rbind(resultados, resultados.i)
     }
-    
+
     names(resultados) <- tolower(names(resultados))
-    
+
     if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
       rankings.1<-NA
       rankings.2<-NA
@@ -83,16 +81,16 @@ roc.analysis <- function(i.data,
         # optimo.1<-i.param.values[which.max(rankings.1)]
         rankings.1 <- rank(-resultados$sensitivity, na.last = T) + rank(-resultados$specificity, na.last = T)
         optimo.1 <- i.param.values[which.min(rankings.1)]
-        
+
         # rankings.2<-rank(resultados$sensitivity*resultados$specificity,na.last=F)
         # optimo.2<-i.param.values[which.max(rankings.2)]
         rankings.2 <- rank(-resultados$sensitivity * resultados$specificity, na.last = T)
         optimo.2 <- i.param.values[which.min(rankings.2)]
-        
+
         qf <- abs(resultados$sensitivity - resultados$specificity)
         qe <- 2 - resultados$sensitivity - resultados$specificity
         qs <- (1 - resultados$sensitivity)^2 + (1 - resultados$specificity)^2
-        
+
         rankings.5 <- rank(qf) + rank(qe) + rank(qs)
         optimo.5 <- i.param.values[which.min(rankings.5)]
     }
@@ -123,7 +121,7 @@ roc.analysis <- function(i.data,
         rankings.6 <- rank(-resultados$percent.agreement, na.last = T)
         optimo.6 <- i.param.values[which.min(rankings.6)]
     }
-    
+
     if (!any(!is.na(resultados$matthews.correlation.coefficient))) {
       rankings.7 <- NA
       optimo.7 <- NA
@@ -131,28 +129,29 @@ roc.analysis <- function(i.data,
       rankings.7 <- rank(-resultados$matthews.correlation.coefficient, na.last = T)
       optimo.7 <- i.param.values[which.min(rankings.7)]
     }
-    
-    
-    optimum <- data.frame(pos.likehood = optimo.3, neg.likehood = optimo.4, aditive = optimo.1, multiplicative = optimo.2, 
+
+
+    optimum <- data.frame(pos.likehood = optimo.3, neg.likehood = optimo.4, aditive = optimo.1, multiplicative = optimo.2,
         mixed = optimo.5, percent = optimo.6, matthews=optimo.7)
-    
-    rankings <- data.frame(pos.likehood = rankings.3, neg.likehood = rankings.4, aditive = rankings.1, multiplicative = rankings.2, 
+
+    rankings <- data.frame(pos.likehood = rankings.3, neg.likehood = rankings.4, aditive = rankings.1, multiplicative = rankings.2,
                            mixed = rankings.5, percent = rankings.6, matthews=rankings.7)
-    
-    
-    roc.analysis.output <- list(optimum = optimum, rankings = rankings, roc.data = resultados, param.data = i.data, param.param.values = i.param.values, 
-        param.prefix = i.prefix.roc)
+
+
+    roc.analysis.output <- list(optimum = optimum, rankings = rankings, roc.data = resultados, param.data = i.data, param.param.values = i.param.values
+                                #,param.prefix = i.prefix.roc
+                                )
     roc.analysis.output$call <- match.call()
-    
-    
+
+
     colores<-c("#EBEAEA","#5B9BD5","#ED7D31")
-    
+
     if (i.graph.file.name=="") graph.name="roc analysis" else graph.name<-i.graph.file.name
     if (i.graph.file) tiff(filename=paste(i.output,"/",graph.name,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
                            compression="lzw",bg="white",res=300,antialias="none")
-    
+
     opar<-par(mar=c(5,3,3,3)+0.1,mgp=c(3,0.5,0),xpd=T,mfrow=c(2,2))
-    
+
     if (any(!is.na(resultados$sensitivity)) & any(!is.na(resultados$specificity))){
     d.x<-resultados$value
     d.y<-cbind(resultados$sensitivity,resultados$specificity)
@@ -166,14 +165,14 @@ roc.analysis <- function(i.data,
     axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
     mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
     mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-    mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")  
+    mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
     mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
     legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
-      
+
     }
-    
+
     if (any(!is.na(resultados$positive.predictive.value)) & any(!is.na(resultados$negative.predictive.value))){
-      
+
     d.x<-resultados$value
     d.y<-cbind(resultados$positive.predictive.value,resultados$negative.predictive.value)
     etiquetas<-c("Positive predictive value","Negative predictive value")
@@ -186,7 +185,7 @@ roc.analysis <- function(i.data,
     axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
     mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
     mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-    mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")  
+    mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
     mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
     legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
     }
@@ -201,12 +200,12 @@ roc.analysis <- function(i.data,
     # axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
     # mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
     # mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-    # mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")  
+    # mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
     # mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
     # legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
-    
+
     if (any(!is.na(resultados$percent.agreement)) & any(!is.na(resultados$matthews.correlation.coefficient))){
-      
+
     d.x<-resultados$value
     d.y<-cbind(resultados$percent.agreement,resultados$matthews.correlation.coefficient)
     etiquetas<-c("Percent agreement","Matthews correlation coefficient")
@@ -219,13 +218,13 @@ roc.analysis <- function(i.data,
     axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
     mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
     mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-    mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")  
+    mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
     mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
     legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
     }
-    
+
     if (any(!is.na(resultados$specificity)) & any(!is.na(resultados$sensitivity))){
-      
+
     d.x<-1-resultados$specificity
     d.y<-resultados$sensitivity[order(d.x)]
     d.x<-d.x[order(d.x)]
@@ -238,7 +237,7 @@ roc.analysis <- function(i.data,
     axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
     mtext(1,text="1 - specificity",line=1.3,cex=0.8,col="#000040")
     mtext(2,text="Sensitivity",line=1.3,cex=0.8,col="#000040")
-    mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")  
+    mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
     mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
     }
     par(opar)
