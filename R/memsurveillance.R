@@ -66,15 +66,15 @@
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
-#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
-#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
-#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International 
+#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
+#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
+#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International
 #' Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and 
-#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving 
+#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
+#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
 #' Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz 
-#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
+#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
+#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
 #' the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 #'
 #' @keywords influenza
@@ -160,6 +160,8 @@ memsurveillance<-function(i.current,
     semana.inicio<-semana.inicio.real
   }
 
+  week.peak<-which.max(current.season[,2])
+
   if (!is.na(semana.inicio)){
     # if (!is.na(semana.inicio.real)){
     #   # semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & semana.inicio.real<(1:semanas)]
@@ -172,7 +174,7 @@ memsurveillance<-function(i.current,
       semana.fin<-semana.inicio+i.mean.length
       if (semana.fin>semanas) semana.fin<-NA
     }else{
-      punto.de.busqueda<-max(semana.inicio,semana.inicio.real,na.rm=T)
+      punto.de.busqueda<-max(semana.inicio,semana.inicio.real,week.peak,na.rm=T)
       semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & punto.de.busqueda<(1:semanas)]
       if (any(semana.fin.1,na.rm=T)) semana.fin<-min(semana.fin.1,na.rm=T) else semana.fin<-NA
     }
@@ -281,7 +283,7 @@ memsurveillance<-function(i.current,
        col="#C0C0C0")
   mtext(1,text="Week",line=2.5,cex=0.8,col="#000040")
   mtext(2,text="Weekly value",line=1.3,cex=0.8,col="#000040")
-  mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")  
+  mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
   mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
         line=0.75,cex=0.6,col="#404040")
   # Etiquetas de los 4 umbrales
