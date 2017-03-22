@@ -427,6 +427,7 @@ summary.mem<-function(object, ...){
   cat("\t- General:\n")
   cat("\t\t+ Number of seasons restriction: ", if (object$param.seasons==-1) "Unrestricted (maximum)" else paste("Restricted to ",object$param.seasons,sep=""),"\n")
   cat("\t\t+ Number of seasons used: ", object$n.seasons,"\n")
+  cat("\t\t+ Seasons used: ", paste(names(object$data),collapse=","),"\n")  
   cat("\t\t+ Number of weeks: ", object$n.weeks,"\n")
   cat("\t- Confidence intervals:\n")
   cat("\t\t+ Epidemic threshold: ", output.ci(object$param.type.threshold,object$param.level.threshold,object$param.tails.threshold),"\n")
