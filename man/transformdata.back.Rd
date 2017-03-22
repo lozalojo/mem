@@ -4,7 +4,7 @@
 \alias{transformdata.back}
 \title{Data transformation}
 \usage{
-transformdata.back(i.data, i.name = "rates", i.range.x = c(1, 53),
+transformdata.back(i.data, i.name = "rates", i.range.x = c(30, 29),
   i.fun = mean)
 }
 \arguments{

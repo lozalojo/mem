@@ -45,8 +45,9 @@
 #' @export
 #' @importFrom sqldf sqldf
 #' @importFrom reshape2 dcast
-transformdata <- function(i.data, i.range.x = c(40, 20), i.name = "rate", 
-  i.max.na.per = 100) {
+transformdata <- function(i.data, i.range.x = c(30, 29), i.name = "rate", i.max.na.per = 100) {
+  
+  if (any(is.na(i.range.x))) i.range.x<-as.numeric(rownames(i.data)[c(1,NROW(i.data))])
   
   i.week.first <- i.range.x[1]
   i.week.last <- i.range.x[2]

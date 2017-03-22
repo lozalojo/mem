@@ -4,7 +4,7 @@
 \alias{transformdata}
 \title{Data transformation}
 \usage{
-transformdata(i.data, i.range.x = c(40, 20), i.name = "rate",
+transformdata(i.data, i.range.x = c(30, 29), i.name = "rate",
   i.max.na.per = 100)
 }
 \arguments{

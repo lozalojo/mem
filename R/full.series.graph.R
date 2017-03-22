@@ -76,7 +76,10 @@ full.series.graph<-function(i.data,
                             i.color.pattern=c("#C0C0C0","#606060","#000000","#808080","#000000","#001933",
                                               "#00C000","#800080","#FFB401",
                                               "#8c6bb1","#88419d","#810f7c","#4d004b"),...){
-  epi<-memmodel(i.data,...)
+  
+  if (any(is.na(i.range.x))) i.range.x<-as.numeric(rownames(i.data)[c(1,NROW(i.data))])
+  
+  epi<-memmodel(i.data, i.seasons=NA,...)
   i.data<-i.data[names(i.data) %in% names(epi$data)]
   
   datos<-transformdata.back(i.data,i.name="rates",i.range.x=i.range.x,i.fun=sum)

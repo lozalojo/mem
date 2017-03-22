@@ -39,7 +39,10 @@
 #'
 #' @export
 #' @importFrom stats aggregate
-transformdata.back<-function(i.data,i.name="rates",i.range.x=c(1,53),i.fun=mean){
+transformdata.back<-function(i.data,i.name="rates",i.range.x=c(30,29),i.fun=mean){
+  
+  if (any(is.na(i.range.x))) i.range.x<-as.numeric(rownames(i.data)[c(1,NROW(i.data))])
+  
   n.seasons<-dim(i.data)[2]
   n.weeks<-dim(i.data)[1]
   # Lets look at the format of the i.data
