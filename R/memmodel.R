@@ -425,7 +425,7 @@ summary.mem<-function(object, ...){
   print(object$call)
   cat("\nParameters:\n")
   cat("\t- General:\n")
-  cat("\t\t+ Number of seasons restriction: ", if (object$param.seasons==-1) "Unrestricted (maximum)" else paste("Restricted to ",object$param.seasons,sep=""),"\n")
+  cat("\t\t+ Number of seasons restriction: ", if (object$param.seasons==-1 | is.na(object$param.seasons)) "Unrestricted (maximum)" else paste("Restricted to ",object$param.seasons,sep=""),"\n")
   cat("\t\t+ Number of seasons used: ", object$n.seasons,"\n")
   cat("\t\t+ Seasons used: ", paste(names(object$data),collapse=","),"\n")  
   cat("\t\t+ Number of weeks: ", object$n.weeks,"\n")
