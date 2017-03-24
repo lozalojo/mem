@@ -17,6 +17,7 @@
 #' @param i.graph.file.name Name of the graph.
 #' @param i.plot.timing Plot the timing of epidemics.
 #' @param i.plot.intensity Plot the intensity levels.
+#' @param i.alternative.thresholds Use alternative thresholds, instead of the ones modelled by the input data (epidemic + 3 intensity thresholds)
 #' @param i.color.pattern colors to use in the graph.
 #' @param ... other parameters passed to memmodel.
 #'
@@ -73,6 +74,7 @@ full.series.graph<-function(i.data,
                             i.graph.file.name="",
                             i.plot.timing=F,
                             i.plot.intensity=F,
+                            i.alternative.thresholds=NA,
                             i.color.pattern=c("#C0C0C0","#606060","#000000","#808080","#000000","#001933",
                                               "#00C000","#800080","#FFB401",
                                               "#8c6bb1","#88419d","#810f7c","#4d004b"),...){
@@ -105,7 +107,7 @@ full.series.graph<-function(i.data,
   datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x=i.range.x,i.fun=function(x,...) if (all(is.na(x))) return(NA) else if (any(x==2,...)) return(2) else if (any(x==1,...)) return(1) else return(3))
   datos.y.indexes<-as.numeric(datos.indexes[,names(datos.indexes)=="rates"])
   
-  intensity<-as.numeric(memintensity(epi)$intensity.thresholds)
+  if (length(i.alternative.thresholds)==4) intensity<-i.alternative.thresholds else intensity<-as.numeric(memintensity(epi)$intensity.thresholds)
 
   if (i.graph.file.name=="") graph.name="series graph" else graph.name<-i.graph.file.name
 
