@@ -48,15 +48,15 @@
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
-#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
-#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
-#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International 
+#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
+#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
+#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International
 #' Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and 
-#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving 
+#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
+#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
 #' Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz 
-#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
+#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
+#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
 #' the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 #'
 #' @keywords influenza
@@ -78,12 +78,26 @@ full.series.graph<-function(i.data,
                             i.color.pattern=c("#C0C0C0","#606060","#000000","#808080","#000000","#001933",
                                               "#00C000","#800080","#FFB401",
                                               "#8c6bb1","#88419d","#810f7c","#4d004b"),...){
-  
+
   if (any(is.na(i.range.x))) i.range.x<-as.numeric(rownames(i.data)[c(1,NROW(i.data))])
-  
-  epi<-memmodel(i.data, i.seasons=NA,...)
-  i.data<-i.data[names(i.data) %in% names(epi$data)]
-  
+
+  if (NCOL(i.data)>1){
+    epi<-memmodel(i.data, i.seasons=NA,...)
+    epidata<-epi$data
+    epiindex<-epi$season.indexes[,,1]
+    epithresholds<-memintensity(epi)$intensity.thresholds
+    i.data<-i.data[names(i.data) %in% names(epi$data)]
+  }else{
+    # I need the epi object to extract the data dataframe, which includes the original data + filled missing data and
+    # the timing (which would be extracted with memtiming also)
+    epi<-memmodel(cbind(i.data,i.data), i.seasons=NA,...)
+    epidata<-epi$data[1]
+    epiindex<-epi$season.indexes[,1,1]
+    epithresholds<-NA
+    i.data<-i.data[names(i.data) %in% names(epi$data)]
+  }
+  rm("epi")
+
   datos<-transformdata.back(i.data,i.name="rates",i.range.x=i.range.x,i.fun=sum)
   datos.x<-1:dim(datos)[1]
   semanas<-length(datos.x)
@@ -92,22 +106,31 @@ full.series.graph<-function(i.data,
   datos.y<-as.numeric(datos[,names(datos)=="rates"])
   range.x<-range(datos.x,na.rm=T)
 
-  datos.fixed<-transformdata.back(epi$data,i.name="rates",i.range.x=i.range.x,i.fun=sum)
+  datos.fixed<-transformdata.back(epidata,i.name="rates",i.range.x=i.range.x,i.fun=sum)
   datos.y.fixed<-as.numeric(datos.fixed[,names(datos.fixed)=="rates"])
 
   datos.missing<-datos.fixed
   datos.missing[!(is.na(datos) & !is.na(datos.fixed))]<-NA
   datos.y.missing<-as.numeric(datos.missing[,names(datos.missing)=="rates"])
 
-  indices<-as.data.frame(epi$season.indexes[,,1])
-  indices[is.na(epi$data)]<-NA
-  
+  indices<-as.data.frame(epiindex)
+  indices[is.na(epidata)]<-NA
+
   rownames(indices)<-rownames(i.data)
   names(indices)<-names(i.data)
   datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x=i.range.x,i.fun=function(x,...) if (all(is.na(x))) return(NA) else if (any(x==2,...)) return(2) else if (any(x==1,...)) return(1) else return(3))
   datos.y.indexes<-as.numeric(datos.indexes[,names(datos.indexes)=="rates"])
-  
-  if (length(i.alternative.thresholds)==4) intensity<-i.alternative.thresholds else intensity<-as.numeric(memintensity(epi)$intensity.thresholds)
+
+  if (length(i.alternative.thresholds)==4){
+    intensity<-i.alternative.thresholds
+  }else{
+    if (NCOL(i.data)>1){
+    intensity<-as.numeric(epithresholds)
+    }else{
+      i.plot.intensity<-F
+      intensity<-NA
+    }
+  }
 
   if (i.graph.file.name=="") graph.name="series graph" else graph.name<-i.graph.file.name
 
@@ -143,14 +166,14 @@ full.series.graph<-function(i.data,
       anchos<-c(NA,NA)
       colores<-c(i.color.pattern[7:8])
       puntos<-c(19,19)
-      colores.pt<-c(NA,NA)      
+      colores.pt<-c(NA,NA)
     }else{
       etiquetas<-c("Pre-epidemic","Epidemic","Post-epidemic")
       tipos<-c(NA,NA,NA)
       anchos<-c(NA,NA,NA)
       colores<-c(i.color.pattern[7:9])
       puntos<-c(19,19,19)
-      colores.pt<-c(NA,NA,NA)      
+      colores.pt<-c(NA,NA,NA)
     }
   # pre
   points(datos.x[datos.y.indexes==1],datos.y[datos.y.indexes==1],pch=19,type="p",col=i.color.pattern[7],cex=0.75)
@@ -177,8 +200,8 @@ full.series.graph<-function(i.data,
     tipos<-c(tipos,2,2,2,2)
     anchos<-c(anchos,2,2,2,2)
     colores<-c(colores,i.color.pattern[10:13])
-    puntos<-c(puntos,NA,NA,NA,NA)  
-    colores.pt<-c(colores.pt,NA,NA,NA,NA)  
+    puntos<-c(puntos,NA,NA,NA,NA)
+    colores.pt<-c(colores.pt,NA,NA,NA,NA)
     lines(x=datos.x[c(1,semanas)],y=rep(intensity[1],2),lty=2,,lwd=2,col=i.color.pattern[10])
     lines(x=datos.x[c(1,semanas)],y=rep(intensity[2],2),lty=2,,lwd=2,col=i.color.pattern[11])
     lines(x=datos.x[c(1,semanas)],y=rep(intensity[3],2),lty=2,,lwd=2,col=i.color.pattern[12])
@@ -203,7 +226,7 @@ full.series.graph<-function(i.data,
        cex.axis=0.5,
        line=0.2,
        col.axis=i.color.pattern[2],col=i.color.pattern[1])
-  
+
   axis(1,at=datos.x[datos.semanas %in% i.range.x],tcl=-0.3,
        tick=T,
        labels=F,
