@@ -126,18 +126,19 @@ memsurveillance<-function(i.current,
 
   # Acomodamos i.current al esquema
   current.season<-i.current
+  names(current.season)<-"rates"
   current.season$nombre.semana<-rownames(i.current)
   rownames(current.season)<-NULL
-  current.season<-merge(current.season,esquema.semanas,by="nombre.semana",all.y=T)
+  current.season<-merge(esquema.semanas,current.season,by="nombre.semana",all.x=T)
   current.season<-current.season[order(current.season$numero.semana),]
   rownames(current.season)<-NULL
 
   # limitamos a la semana del informe (i.week.report)
   if (!is.na(i.week.report) & any(i.week.report==as.numeric(esquema.semanas$nombre.semana))){
     semana.report<-((1:semanas)[i.week.report==as.numeric(esquema.semanas$nombre.semana)])[1]
-    if (!is.na(semana.report) & semana.report<semanas) current.season[(semana.report+1):semanas,]<-NA
+    if (!is.na(semana.report) & semana.report<semanas) current.season$rates[(semana.report+1):semanas]<-NA
   }else{
-    if (all(is.na(current.season[,2]))) semana.report<-semanas else semana.report<-max((1:semanas)[!is.na(current.season[,2])],na.rm=T)
+    if (all(is.na(current.season$rates))) semana.report<-semanas else semana.report<-max((1:semanas)[!is.na(current.season$rates)],na.rm=T)
   }
 
   # Preparacion de datos necesarios
@@ -147,7 +148,7 @@ memsurveillance<-function(i.current,
 
   # Si el inicio forzado de la epidemia es posterior a la semana del informe, quitamos
   if (!is.na(i.epidemic.start)) semana.inicio.forzado<-((1:semanas)[i.epidemic.start==as.numeric(esquema.semanas$nombre.semana)])[1] else semana.inicio.forzado<-NA
-  if (any(current.season[,2]>umbral.pre,na.rm=T)) semana.inicio.real<-min((1:semanas)[current.season[,2]>umbral.pre],na.rm=T) else semana.inicio.real<-NA
+  if (any(current.season$rates>umbral.pre,na.rm=T)) semana.inicio.real<-min((1:semanas)[current.season$rates>umbral.pre],na.rm=T) else semana.inicio.real<-NA
   if (!is.na(semana.inicio.forzado)){
     if (semana.inicio.forzado>semana.report) semana.inicio.forzado<-NA
   }
@@ -160,22 +161,22 @@ memsurveillance<-function(i.current,
     semana.inicio<-semana.inicio.real
   }
 
-  week.peak<-which.max(current.season[,2])
+  week.peak<-which.max(current.season$rates)
 
   if (!is.na(semana.inicio)){
     # if (!is.na(semana.inicio.real)){
-    #   # semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & semana.inicio.real<(1:semanas)]
+    #   # semana.fin.1<-(1:semanas)[current.season$rates<umbral.pos & semana.inicio.real<(1:semanas)]
     #   punto.de.busqueda<-max(semana.inicio,semana.inicio.real,na.rm=T)
-    #   semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & punto.de.busqueda<(1:semanas)]
+    #   semana.fin.1<-(1:semanas)[current.season$rates<umbral.pos & punto.de.busqueda<(1:semanas)]
     # }else{
-    #   semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & semana.inicio<(1:semanas)]
+    #   semana.fin.1<-(1:semanas)[current.season$rates<umbral.pos & semana.inicio<(1:semanas)]
     # }
     if (i.force.length){
       semana.fin<-semana.inicio+i.mean.length
       if (semana.fin>semanas) semana.fin<-NA
     }else{
       punto.de.busqueda<-max(semana.inicio,semana.inicio.real,week.peak,na.rm=T)
-      semana.fin.1<-(1:semanas)[current.season[,2]<umbral.pos & punto.de.busqueda<(1:semanas)]
+      semana.fin.1<-(1:semanas)[current.season$rates<umbral.pos & punto.de.busqueda<(1:semanas)]
       if (any(semana.fin.1,na.rm=T)) semana.fin<-min(semana.fin.1,na.rm=T) else semana.fin<-NA
     }
   }else{
@@ -225,7 +226,7 @@ memsurveillance<-function(i.current,
   umbrales<-c(umbrales.1,umbrales.2,umbrales.3)[1:semanas]
   intensidades.3<-array(dim=c(semanas,3))
   intensidades<-rbind(intensidades.1,intensidades.2,intensidades.3)[1:semanas,]
-  dgraf<-as.data.frame(cbind(current.season[,2],umbrales,intensidades))
+  dgraf<-as.data.frame(cbind(current.season$rates,umbrales,intensidades))
   names(dgraf)<-c("Value","Epidemic threshold",paste("Intensidad",1:3))
   if (i.graph.file.name=="") graph.name="mem surveillance graph" else graph.name<-i.graph.file.name
   etiquetas<-c("Weekly values","Epidemic","Medium","High","Very high")
@@ -253,9 +254,9 @@ memsurveillance<-function(i.current,
   # Marcas de inicio y fin
   # if (is.na(semana.inicio.forzado) & i.start.end.marks){
   if (i.start.end.marks){
-    if (!is.na(semana.inicio)) points(x=semana.inicio,y=current.season[semana.inicio,2],pch=1,bg="#FFFFFF",col="#FF0000",lwd=7)
+    if (!is.na(semana.inicio)) points(x=semana.inicio,y=current.season$rates[semana.inicio],pch=1,bg="#FFFFFF",col="#FF0000",lwd=7)
     if (!is.na(semana.fin) & i.pos.epidemic){
-      if (is.na(current.season[semana.fin,2])) points(x=semana.fin,y=0,pch=13,bg="#FFFFFF",col="#40FF40",lwd=7) else points(x=semana.fin,y=current.season[semana.fin,2],pch=1,bg="#FFFFFF",col="#40FF40",lwd=7)
+      if (is.na(current.season$rates[semana.fin])) points(x=semana.fin,y=0,pch=13,bg="#FFFFFF",col="#40FF40",lwd=7) else points(x=semana.fin,y=current.season$rates[semana.fin],pch=1,bg="#FFFFFF",col="#40FF40",lwd=7)
     }
   }
   # Ejes
@@ -398,7 +399,7 @@ memsurveillance<-function(i.current,
       season.scheme[semana.fin:n.season.scheme]<-3
     }
   }
-  season.scheme[is.na(current.season[,2])]<-NA
+  season.scheme[is.na(current.season$rates)]<-NA
 
   current.season$season.scheme<-season.scheme
 
