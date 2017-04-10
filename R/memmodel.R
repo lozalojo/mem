@@ -445,7 +445,7 @@ summary.mem<-function(object, ...){
   cat("\t\t+ Pre-epidemic values: ", if (is.na(object$param.n.max)) paste("Optimized: ",object$n.max,sep="") else {if (object$param.n.max==-1) paste("Optimized: ",object$n.max,sep="") else object$n.max},"\n")
   cat("\t\t+ Tails of CI: ", object$param.tails.threshold,"\n")
   cat("\t- Intensity thresholds calculation:\n")
-  cat("\t\t+ Number of values: ", if (object$param.n.max==-1) paste("Optimized: ",object$n.max,sep="") else object$n.max,"\n")
+  cat("\t\t+ Number of values: ", if (is.na(object$param.n.max)) paste("Optimized: ",object$n.max,sep="") else {if (object$param.n.max==-1) paste("Optimized: ",object$n.max,sep="") else object$n.max},"\n")
   cat("\t\t+ Tails of CI: ", object$param.tails.intensity,"\n")
   cat("\t\t+ Levels of CI: ", paste(c("Medium","High","Very high"),": ",round(object$epi.intervals[,1]*100,1),"%",sep=""),"\n")
   cat("\t- Bootstrap (if used):\n")
