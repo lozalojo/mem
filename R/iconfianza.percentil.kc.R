@@ -4,7 +4,6 @@
 iconfianza.percentil.kc<-function(datos,q=0.50,nivel=0.95,ic=T,colas=2){
   x<-datos[!is.na(datos)]
   n<-length(x)
-  cat("kc",nivel,colas,sep="-")
   if (n!=0){
     pnor<-qnorm((1-nivel)/colas,lower.tail=FALSE)
     j<-max(1,floor(n*q-pnor*sqrt(n*q*(1-q))))

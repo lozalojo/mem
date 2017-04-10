@@ -5,7 +5,6 @@ iconfianza.x<-function(datos,nivel=0.95,ic=T,colas=2){
   datos[datos==-Inf]<-NA
   datos[datos==Inf]<-NA
   n<-sum(!is.na(datos))
-  cat("x",nivel,colas,sep="-")
   if (n!=0){
     pnor<-qnorm((1-nivel)/colas,lower.tail=FALSE)
     med<-mean(datos,na.rm=T)
