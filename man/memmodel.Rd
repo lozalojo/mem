@@ -8,7 +8,7 @@
 memmodel(i.data, i.seasons = 10, i.type.threshold = 5,
   i.level.threshold = 0.95, i.tails.threshold = 1, i.type.intensity = 6,
   i.level.intensity = c(0.4, 0.9, 0.975), i.tails.intensity = 1,
-  i.type.curve = 2, i.level.curve = 0.95, i.type.other = 2,
+  i.type.curve = 2, i.level.curve = 0.95, i.type.other = 3,
   i.level.other = 0.95, i.method = 2, i.param = 2.8, i.n.max = -1,
   i.type.boot = "norm", i.iter.boot = 10000)
 }
