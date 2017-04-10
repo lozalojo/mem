@@ -138,15 +138,19 @@ memmodel<-function(i.data,
 
   # Calcular el optimo
 
-  if (i.n.max==-1){
+  if (is.na(i.n.max)){
     n.max<-max(1,round(30/anios,0))
-    #if (anios>=10) n.max=3 else n.max=5
-  }else if (i.n.max==0){
-    n.max=semanas
   }else{
-    n.max=i.n.max
+    if (i.n.max==-1){
+      n.max<-max(1,round(30/anios,0))
+      #if (anios>=10) n.max=3 else n.max=5
+    }else if (i.n.max==0){
+      n.max=semanas
+    }else{
+      n.max=i.n.max
+    }
   }
-
+  
   optimo<-apply(datos,2,memtiming,i.n.values=n.max,i.method=i.method,i.param=i.param)
 
   datos.duracion.real<-extraer.datos.optimo.map(optimo)
