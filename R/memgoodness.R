@@ -34,7 +34,7 @@
 #'
 #' @return
 #' \code{memgoodness} returns a list.
-#' An object of class \code{mem} is a list containing at least the following components:
+#' A list containing at least the following components:
 #'   \item{validity.data}{data for each value analysed.}
 #'   \item{results}{Total weeks, non-missing weeks, true positives, false positives
 #' true negatives, false negatives, sensitivity, specificity .}
@@ -49,15 +49,15 @@
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
-#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
-#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
-#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International 
+#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
+#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
+#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International
 #' Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and 
-#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving 
+#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
+#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
 #' Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz 
-#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
+#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
+#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
 #' the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 #'
 #' @keywords influenza
@@ -101,7 +101,7 @@ memgoodness<-function(i.data,
       for (i in 1:anios){
         indices.2<-(1:anios)-i
         indices.1<-abs(indices.2)
-        indices.modelo<-order(indices.1,indices.2)[2:11]
+        indices.modelo<-order(indices.1,indices.2)[2:(i.seasons+1)]
         indices.modelo<-sort(indices.modelo[!is.na(indices.modelo)])
         indices.actual<-i
         #cat(indices.actual,"\n")
@@ -141,8 +141,8 @@ memgoodness<-function(i.data,
   }else{
     # Metodo 1: secuencial
     if (anios>=i.min.seasons){
-      for (i in 6:anios){
-        indices.modelo<-max(1,i-10):(i-1)
+      for (i in i.min.seasons:anios){
+        indices.modelo<-max(1,i-i.seasons):(i-1)
         indices.actual<-i
         datos.actual<-i.data[indices.actual]
         datos.modelo<-memmodel(i.data[indices.modelo],
@@ -196,9 +196,9 @@ memgoodness<-function(i.data,
   resultado[13]<-(resultado[3]+resultado[5])/(resultado[3]+resultado[4]+resultado[5]+resultado[6])
   # Matthews correlation coefficient
   resultado[14]<-(resultado[3]*resultado[5]-resultado[4]*resultado[6])/sqrt((resultado[3]+resultado[4])*(resultado[3]+resultado[6])*(resultado[5]+resultado[4])*(resultado[5]+resultado[6]))
-  
+
   resultado[is.nan(resultado)]<-NA
-        
+
   memgoodness.output<-list(validity.data=validacion,
                           results=resultado,
                           param.data=i.data,

@@ -67,7 +67,7 @@ memgoodness(i.data, i.seasons = 10, i.type.threshold = 5,
 }
 \value{
 \code{memgoodness} returns a list.
-An object of class \code{mem} is a list containing at least the following components:
+A list containing at least the following components:
   \item{validity.data}{data for each value analysed.}
   \item{results}{Total weeks, non-missing weeks, true positives, false positives
 true negatives, false negatives, sensitivity, specificity .}
@@ -87,15 +87,15 @@ epi.good$results
 
 }
 \references{
-Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
-Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
-International Congress Series, Options for the Control of Influenza V. Proceedings of the International 
+Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
+Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
+International Congress Series, Options for the Control of Influenza V. Proceedings of the International
 Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and 
-Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving 
+Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
+Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
 Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz 
-de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
+Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
+de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
 the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 }
 \author{
