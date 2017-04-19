@@ -95,6 +95,9 @@ memgoodness<-function(i.data,
   validacion<-array(dim=c(14,anios))
   colnames(validacion)<-names(i.data)
 
+  if (is.na(i.seasons)) i.seasons<-anios
+  if (is.null(i.seasons)) i.seasons<-anios
+
   if (!(i.goodness.method=="sequential")){
     # Metodo 2: cruzada
     if (anios>=i.min.seasons){
@@ -107,22 +110,22 @@ memgoodness<-function(i.data,
         #cat(indices.actual,"\n")
         datos.actual<-i.data[indices.actual]
         datos.modelo<-memmodel(i.data[indices.modelo],
-                                i.seasons,
-                                i.type.threshold,
-                                i.level.threshold,
-                                i.tails.threshold,
-                                i.type.intensity,
-                                i.level.intensity,
-                                i.tails.intensity,
-                                i.type.curve,
-                                i.level.curve,
-                                i.type.other,
-                                i.level.other,
-                                i.method,
-                                i.param,
-                                i.n.max,
-                                i.type.boot,
-                                i.iter.boot)
+                               i.seasons=i.seasons,
+                               i.type.threshold=i.type.threshold,
+                               i.level.threshold=i.level.threshold,
+                               i.tails.threshold=i.tails.threshold,
+                               i.type.intensity=i.type.intensity,
+                               i.level.intensity=i.level.intensity,
+                               i.tails.intensity=i.tails.intensity,
+                               i.type.curve=i.type.curve,
+                               i.level.curve=i.level.curve,
+                               i.type.other=i.type.other,
+                               i.level.other=i.level.other,
+                               i.method=i.method,
+                               i.param=i.param,
+                               i.n.max=i.n.max,
+                               i.type.boot=i.type.boot,
+                               i.iter.boot=i.iter.boot)
         validacion.i<-calcular.indicadores(i.current=datos.actual,
                                            i.umbral.pre=datos.modelo$pre.post.intervals[1,3],
                                            i.umbral.pos=datos.modelo$pre.post.intervals[2,3],
@@ -146,22 +149,22 @@ memgoodness<-function(i.data,
         indices.actual<-i
         datos.actual<-i.data[indices.actual]
         datos.modelo<-memmodel(i.data[indices.modelo],
-                               i.seasons,
-                               i.type.threshold,
-                               i.level.threshold,
-                               i.tails.threshold,
-                               i.type.intensity,
-                               i.level.intensity,
-                               i.tails.intensity,
-                               i.type.curve,
-                               i.level.curve,
-                               i.type.other,
-                               i.level.other,
-                               i.method,
-                               i.param,
-                               i.n.max,
-                               i.type.boot,
-                               i.iter.boot)
+                               i.seasons=i.seasons,
+                               i.type.threshold=i.type.threshold,
+                               i.level.threshold=i.level.threshold,
+                               i.tails.threshold=i.tails.threshold,
+                               i.type.intensity=i.type.intensity,
+                               i.level.intensity=i.level.intensity,
+                               i.tails.intensity=i.tails.intensity,
+                               i.type.curve=i.type.curve,
+                               i.level.curve=i.level.curve,
+                               i.type.other=i.type.other,
+                               i.level.other=i.level.other,
+                               i.method=i.method,
+                               i.param=i.param,
+                               i.n.max=i.n.max,
+                               i.type.boot=i.type.boot,
+                               i.iter.boot=i.iter.boot)
         validacion.i<-calcular.indicadores(i.current=datos.actual,
                                            i.umbral.pre=datos.modelo$pre.post.intervals[1,3],
                                            i.umbral.pos=datos.modelo$pre.post.intervals[2,3],
