@@ -68,7 +68,7 @@ memstability<-function(i.data, i.seasons=10, ...){
     }
     stability.data<-data.frame(stability.data, row.names=NULL, stringsAsFactors = F)
     rm("stability.data.i")
-    names(stability.data)<-c("seasons","durationll","duration","durationul","startll","start","startul","percentagell","percentage","percentageul","epidemic","postepidemic","medium","high","veryhigh")
+    names(stability.data)<-c("number","durationll","duration","durationul","startll","start","startul","percentagell","percentage","percentageul","epidemic","postepidemic","medium","high","veryhigh")
   }
   memstability.output<-list(stability.data=stability.data,
                             stability.seasons=stability.seasons,

@@ -102,7 +102,7 @@ memevolution<-function(i.data, i.seasons=10, i.evolution.method="sequential", ..
       }
     }
     evolution.data<-data.frame(season=names(evolution.seasons),evolution.data, row.names=NULL, stringsAsFactors = F)
-    names(evolution.data)<-c("seasons","durationll","duration","durationul","startll","start","startul","percentagell","percentage","percentageul","epidemic","postepidemic","medium","high","veryhigh")
+    names(evolution.data)<-c("season","number","durationll","duration","durationul","startll","start","startul","percentagell","percentage","percentageul","epidemic","postepidemic","medium","high","veryhigh")
   }
   memevolution.output<-list(evolution.data=evolution.data,
                             evolution.seasons=evolution.seasons,
