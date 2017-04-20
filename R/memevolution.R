@@ -7,7 +7,7 @@
 #' @name memevolution
 #'
 #' @param i.data Data frame of input data.
-#' @param i.seasons Maximum number of seasons to use.
+#' @param i.evolution.seasons Maximum number of seasons to use.
 #' @param i.evolution.method method to calculate evolution.
 #' @param ... other parameters passed to memmodel.
 #'
@@ -40,15 +40,15 @@
 #' @keywords influenza
 #'
 #' @export
-memevolution<-function(i.data, i.seasons=10, i.evolution.method="sequential", ...){
+memevolution<-function(i.data, i.evolution.seasons=10, i.evolution.method="sequential", ...){
 
   anios<-dim(i.data)[2]
   semanas<-dim(i.data)[1]
   evolution.data<-numeric()
   evolution.seasons<-logical()
 
-  if (is.na(i.seasons)) i.seasons<-anios
-  if (is.null(i.seasons)) i.seasons<-anios
+  if (is.na(i.evolution.seasons)) i.evolution.seasons<-anios
+  if (is.null(i.evolution.seasons)) i.evolution.seasons<-anios
 
   if (anios<2){
     evolution.data<-NULL
@@ -59,7 +59,7 @@ memevolution<-function(i.data, i.seasons=10, i.evolution.method="sequential", ..
       for (i in 1:anios){
         indices.2<-(1:anios)-i
         indices.1<-abs(indices.2)
-        indices.modelo<-order(indices.1,indices.2)[2:(i.seasons+1)]
+        indices.modelo<-order(indices.1,indices.2)[2:(i.evolution.seasons+1)]
         indices.modelo<-sort(indices.modelo[!is.na(indices.modelo)])
         datos.modelo<-memmodel(i.data[indices.modelo], i.seasons=NA, ...)
         evolution.data.i<-c(datos.modelo$n.seasons,
@@ -72,7 +72,7 @@ memevolution<-function(i.data, i.seasons=10, i.evolution.method="sequential", ..
         evolution.seasons<-rbind(evolution.seasons,1:anios %in% indices.modelo)
         rm("evolution.data.i")
       }
-      indices.modelo<-max(1,anios+1-i.seasons):anios
+      indices.modelo<-max(1,anios+1-i.evolution.seasons):anios
       datos.modelo<-memmodel(i.data[indices.modelo], i.seasons=NA, ...)
       evolution.data.i<-c(datos.modelo$n.seasons,
                           datos.modelo$ci.length[1,],
@@ -91,7 +91,7 @@ memevolution<-function(i.data, i.seasons=10, i.evolution.method="sequential", ..
       rownames(evolution.data)<-c(names(i.data),"next")
     }else{
       for (i in 3:(anios+1)){
-        indices.modelo<-max(1,i-i.seasons):(i-1)
+        indices.modelo<-max(1,i-i.evolution.seasons):(i-1)
         datos.modelo<-memmodel(i.data[indices.modelo], i.seasons=NA, ...)
         evolution.data.i<-c(datos.modelo$n.seasons,
                             datos.modelo$ci.length[1,],
@@ -114,7 +114,7 @@ memevolution<-function(i.data, i.seasons=10, i.evolution.method="sequential", ..
   memevolution.output<-list(evolution.data=evolution.data,
                             evolution.seasons=evolution.seasons,
                             param.data=i.data,
-                            param.seasons=i.seasons,
+                            param.evolution.seasons=i.evolution.seasons,
                             param.evolution.method=i.evolution.method)
   memevolution.output$call<-match.call()
   return(memevolution.output)

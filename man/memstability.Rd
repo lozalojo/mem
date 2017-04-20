@@ -4,12 +4,10 @@
 \alias{memstability}
 \title{Stability of indicators}
 \usage{
-memstability(i.data, i.seasons = 10, ...)
+memstability(i.data, ...)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
-
-\item{i.seasons}{Maximum number of seasons to use.}
 
 \item{...}{other parameters passed to memmodel.}
 }

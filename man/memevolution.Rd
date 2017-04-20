@@ -4,12 +4,13 @@
 \alias{memevolution}
 \title{evolution of estimators}
 \usage{
-memevolution(i.data, i.seasons = 10, i.evolution.method = "sequential", ...)
+memevolution(i.data, i.evolution.seasons = 10,
+  i.evolution.method = "sequential", ...)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
 
-\item{i.seasons}{Maximum number of seasons to use.}
+\item{i.evolution.seasons}{Maximum number of seasons to use.}
 
 \item{i.evolution.method}{method to calculate evolution.}
 

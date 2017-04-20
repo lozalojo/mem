@@ -7,7 +7,6 @@
 #' @name memstability
 #'
 #' @param i.data Data frame of input data.
-#' @param i.seasons Maximum number of seasons to use.
 #' @param ... other parameters passed to memmodel.
 #'
 #' @return
@@ -40,20 +39,17 @@
 #' @keywords influenza
 #'
 #' @export
-memstability<-function(i.data, i.seasons=10, ...){
+memstability<-function(i.data, ...){
   anios<-dim(i.data)[2]
   semanas<-dim(i.data)[1]
   stability.data<-numeric()
   stability.seasons<-logical()
 
-  if (is.na(i.seasons)) i.seasons<-anios
-  if (is.null(i.seasons)) i.seasons<-anios
-
   if (anios<2){
     stability.data<-NULL
     stability.seasons<-NULL
   }else{
-    for (i in 2:min(i.seasons,anios)){
+    for (i in 2:anios){
       indices.modelo<-(anios-i+1):anios
       datos.modelo<-memmodel(i.data[indices.modelo], i.seasons=NA, ...)
       stability.data.i<-c(datos.modelo$n.seasons,
@@ -76,8 +72,7 @@ memstability<-function(i.data, i.seasons=10, ...){
   }
   memstability.output<-list(stability.data=stability.data,
                             stability.seasons=stability.seasons,
-                          param.data=i.data,
-                          param.seasons=i.seasons)
+                          param.data=i.data)
   memstability.output$call<-match.call()
   return(memstability.output)
 }
