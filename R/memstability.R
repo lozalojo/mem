@@ -44,7 +44,7 @@ memstability<-function(i.data, i.seasons=10, ...){
   anios<-dim(i.data)[2]
   semanas<-dim(i.data)[1]
   stability.data<-numeric()
-  stability.seasons<-list()
+  stability.seasons<-logical()
 
   if (is.na(i.seasons)) i.seasons<-anios
   if (is.null(i.seasons)) i.seasons<-anios
@@ -63,12 +63,16 @@ memstability<-function(i.data, i.seasons=10, ...){
         datos.modelo$epidemic.thresholds,
         datos.modelo$intensity.thresholds)
       stability.data<-rbind(stability.data,stability.data.i)
-      stability.seasons[[i-1]]<-names(i.data)[indices.modelo]
-      names(stability.seasons)[i-1]<-as.character(datos.modelo$n.seasons)
+      stability.seasons<-rbind(stability.seasons,1:anios %in% indices.modelo)
+    rm("stability.data.i")
     }
     stability.data<-data.frame(stability.data, row.names=NULL, stringsAsFactors = F)
-    rm("stability.data.i")
     names(stability.data)<-c("number","durationll","duration","durationul","startll","start","startul","percentagell","percentage","percentageul","epidemic","postepidemic","medium","high","veryhigh")
+    rownames(stability.data)<-stability.data$number
+    stability.seasons<-data.frame(stability.seasons, row.names=NULL, stringsAsFactors = F)
+    names(stability.seasons)<-names(i.data)
+    rownames(stability.seasons)<-stability.data$number
+    stability.data$number<-NULL
   }
   memstability.output<-list(stability.data=stability.data,
                             stability.seasons=stability.seasons,

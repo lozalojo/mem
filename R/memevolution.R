@@ -45,7 +45,7 @@ memevolution<-function(i.data, i.seasons=10, i.evolution.method="sequential", ..
   anios<-dim(i.data)[2]
   semanas<-dim(i.data)[1]
   evolution.data<-numeric()
-  evolution.seasons<-list()
+  evolution.seasons<-logical()
 
   if (is.na(i.seasons)) i.seasons<-anios
   if (is.null(i.seasons)) i.seasons<-anios
@@ -69,8 +69,7 @@ memevolution<-function(i.data, i.seasons=10, i.evolution.method="sequential", ..
                             datos.modelo$epidemic.thresholds,
                             datos.modelo$intensity.thresholds)
         evolution.data<-rbind(evolution.data,evolution.data.i)
-        evolution.seasons[[i]]<-names(i.data)[indices.modelo]
-        names(evolution.seasons)[i]<-names(i.data)[i]
+        evolution.seasons<-rbind(evolution.seasons,1:anios %in% indices.modelo)
         rm("evolution.data.i")
       }
       indices.modelo<-max(1,anios+1-i.seasons):anios
@@ -82,9 +81,14 @@ memevolution<-function(i.data, i.seasons=10, i.evolution.method="sequential", ..
                           datos.modelo$epidemic.thresholds,
                           datos.modelo$intensity.thresholds)
       evolution.data<-rbind(evolution.data,evolution.data.i)
-      evolution.seasons[[anios+1]]<-names(i.data)[indices.modelo]
-      names(evolution.seasons)[anios+1]<-"next"
+      evolution.seasons<-rbind(evolution.seasons,1:anios %in% indices.modelo)
       rm("evolution.data.i")
+      evolution.seasons<-data.frame(evolution.seasons, row.names=NULL, stringsAsFactors = F)
+      names(evolution.seasons)<-names(i.data)
+      rownames(evolution.seasons)<-c(names(i.data),"next")
+      evolution.data<-data.frame(evolution.data, row.names=NULL, stringsAsFactors = F)
+      names(evolution.data)<-c("number","durationll","duration","durationul","startll","start","startul","percentagell","percentage","percentageul","epidemic","postepidemic","medium","high","veryhigh")
+      rownames(evolution.data)<-c(names(i.data),"next")
     }else{
       for (i in 3:(anios+1)){
         indices.modelo<-max(1,i-i.seasons):(i-1)
@@ -96,13 +100,16 @@ memevolution<-function(i.data, i.seasons=10, i.evolution.method="sequential", ..
                             datos.modelo$epidemic.thresholds,
                             datos.modelo$intensity.thresholds)
         evolution.data<-rbind(evolution.data,evolution.data.i)
-        evolution.seasons[[i-2]]<-names(i.data)[indices.modelo]
-        if (i<=anios) names(evolution.seasons)[i-2]<-names(i.data)[i] else names(evolution.seasons)[i-2]<-"next"
+        evolution.seasons<-rbind(evolution.seasons,1:anios %in% indices.modelo)
         rm("evolution.data.i")
       }
+      evolution.seasons<-data.frame(evolution.seasons, row.names=NULL, stringsAsFactors = F)
+      names(evolution.seasons)<-names(i.data)
+      rownames(evolution.seasons)<-c(names(i.data)[3:anios],"next")
+      evolution.data<-data.frame(evolution.data, row.names=NULL, stringsAsFactors = F)
+      names(evolution.data)<-c("number","durationll","duration","durationul","startll","start","startul","percentagell","percentage","percentageul","epidemic","postepidemic","medium","high","veryhigh")
+      rownames(evolution.data)<-c(names(i.data)[3:anios],"next")
     }
-    evolution.data<-data.frame(season=names(evolution.seasons),evolution.data, row.names=NULL, stringsAsFactors = F)
-    names(evolution.data)<-c("season","number","durationll","duration","durationul","startll","start","startul","percentagell","percentage","percentageul","epidemic","postepidemic","medium","high","veryhigh")
   }
   memevolution.output<-list(evolution.data=evolution.data,
                             evolution.seasons=evolution.seasons,
