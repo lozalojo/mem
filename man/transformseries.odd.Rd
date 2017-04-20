@@ -4,7 +4,7 @@
 \alias{transformseries.odd}
 \title{fills in missing values inside the season with smoothing regression}
 \usage{
-transformseries.odd(x, mult)
+transformseries.odd(x, mult = 0)
 }
 \description{
 fills in missing values inside the season with smoothing regression
