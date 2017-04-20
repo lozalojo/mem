@@ -62,17 +62,20 @@ transformseries<-function(i.data, i.transformation=1){
       # in case other unit is used, first i detect the units x10, x100, x1000, x10000...
       mults<-0:25
       mult<-min(mults[10^mults>=max(i.data,na.rm=T)])
-      i.data.transf<-apply(i.data,2,transformseries.odd, mult=mult)
+      i.data.transf<-data.frame(apply(i.data,2,transformseries.odd, mult=mult),stringsAsFactors = F)
+      names(i.data.transf)<-names(i.data)
+      rownames(i.data.transf)<-rownames(i.data)
     }else if (i.transformation==3){
-      i.data.transf<-apply(i.data,2,fill.missing)
+      i.data.transf<-data.frame(apply(i.data,2,fill.missing),stringsAsFactors = F)
+      names(i.data.transf)<-names(i.data)
+      rownames(i.data.transf)<-rownames(i.data)
     }else if (i.transformation==4){
-      i.data.transf<-apply(i.data,2,suavizado,hsuav=-1)
+      i.data.transf<-data.frame(apply(i.data,2,suavizado,hsuav=-1),stringsAsFactors = F)
+      names(i.data.transf)<-names(i.data)
+      rownames(i.data.transf)<-rownames(i.data)
     }else{
       i.data.transf<-i.data
     }
   }
-  i.data.transf<-data.frame(i.data.transf,stringsAsFactors = F)
-  names(i.data.transf)<-names(i.data)
-  rownames(i.data.transf)<-rownames(i.data)
   return(i.data.transf)
 }
