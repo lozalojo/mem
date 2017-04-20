@@ -64,7 +64,7 @@ memevolution<-function(i.data, i.evolution.seasons=10, i.evolution.method="seque
         datos.modelo<-memmodel(i.data[indices.modelo], i.seasons=NA, ...)
         evolution.data.i<-c(datos.modelo$n.seasons,
                             datos.modelo$ci.length[1,],
-                            datos.modelo$ci.start[2,],
+                            datos.modelo$ci.start[1,],
                             datos.modelo$ci.percent,
                             datos.modelo$epidemic.thresholds,
                             datos.modelo$intensity.thresholds)
@@ -95,7 +95,7 @@ memevolution<-function(i.data, i.evolution.seasons=10, i.evolution.method="seque
         datos.modelo<-memmodel(i.data[indices.modelo], i.seasons=NA, ...)
         evolution.data.i<-c(datos.modelo$n.seasons,
                             datos.modelo$ci.length[1,],
-                            datos.modelo$ci.start[2,],
+                            datos.modelo$ci.start[1,],
                             datos.modelo$ci.percent,
                             datos.modelo$epidemic.thresholds,
                             datos.modelo$intensity.thresholds)
