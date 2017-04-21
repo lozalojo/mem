@@ -73,6 +73,12 @@ transformseries<-function(i.data, i.transformation=1){
       i.data.transf<-data.frame(apply(i.data,2,suavizado,hsuav=-1),stringsAsFactors = F)
       names(i.data.transf)<-names(i.data)
       rownames(i.data.transf)<-rownames(i.data)
+    }else if (i.transformation==5){
+      i.data.transf<-transformseries.twowaves(i.data)$data.observed
+      rownames(i.data.transf)<-rownames(i.data)
+    }else if (i.transformation==6){
+      i.data.transf<-transformseries.twowaves(i.data)$data.expected
+      rownames(i.data.transf)<-rownames(i.data)
     }else{
       i.data.transf<-i.data
     }

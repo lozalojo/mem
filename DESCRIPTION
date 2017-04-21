@@ -5,7 +5,8 @@ Version: 2.4
 Date: 2017-04-19
 Authors@R: person("Lozano", "Jose E.", email = "lozalojo@gmail.com", role = c("aut", "cre"))
 Depends:
-    R (>= 3.3.0),
+    R (>= 3.3.0)
+Imports:
     sm,
     boot,
     grDevices,
@@ -13,7 +14,8 @@ Depends:
     stats,
     sqldf,
     reshape2,
-    RColorBrewer
+    RColorBrewer,
+    mixtools
 Description: Modelization of influenza epidemics in order to monitor future
     activity.
 License: GPL (>= 2)
