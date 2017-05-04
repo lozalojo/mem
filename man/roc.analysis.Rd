@@ -4,16 +4,18 @@
 \alias{roc.analysis}
 \title{ROC analysis to find optimum parameter value}
 \usage{
-roc.analysis(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.graph.file = F,
-  i.graph.file.name = "", i.graph.title = "", i.graph.subtitle = "",
-  i.output = ".", ...)
+roc.analysis(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.graph = F,
+  i.graph.file = F, i.graph.file.name = "", i.graph.title = "",
+  i.graph.subtitle = "", i.output = ".", ...)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
 
 \item{i.param.values}{range of i.param values to test.}
 
-\item{i.graph.file}{T/F to produce the graph or not.}
+\item{i.graph}{create a graph with the outputs (T/F).}
+
+\item{i.graph.file}{write the graph to a file.}
 
 \item{i.graph.file.name}{name of the output file.}
 

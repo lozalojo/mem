@@ -8,11 +8,12 @@
 #'
 #' @param i.data Data frame of input data.
 #' @param i.param.values range of i.param values to test.
+#' @param i.graph create a graph with the outputs (T/F).
+#' @param i.graph.file write the graph to a file.
 #' @param i.graph.file.name name of the output file.
 #' @param i.graph.title title of the graph.
 #' @param i.graph.subtitle subtitle of the graph.
 #' @param i.output output directory.
-#' @param i.graph.file T/F to produce the graph or not.
 #' @param ... other paramaters to be used by memgoodness function.
 #'
 #' @return
@@ -47,6 +48,7 @@
 #' @export
 roc.analysis <- function(i.data,
                          i.param.values = seq(1.5, 4.5, 0.1),
+                         i.graph=F,
                          i.graph.file=F,
                          i.graph.file.name="",
                          i.graph.title="",
@@ -144,104 +146,107 @@ roc.analysis <- function(i.data,
     roc.analysis.output$call <- match.call()
 
 
-    colores<-c("#EBEAEA","#5B9BD5","#ED7D31")
+    if (i.graph){
 
-    if (i.graph.file.name=="") graph.name="roc analysis" else graph.name<-i.graph.file.name
-    if (i.graph.file) tiff(filename=paste(i.output,"/",graph.name,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
-                           compression="lzw",bg="white",res=300,antialias="none")
+      colores<-c("#EBEAEA","#5B9BD5","#ED7D31")
 
-    opar<-par(mar=c(5,3,3,3)+0.1,mgp=c(3,0.5,0),xpd=T,mfrow=c(2,2))
+      if (i.graph.file.name=="") graph.name="roc analysis" else graph.name<-i.graph.file.name
+      if (i.graph.file) tiff(filename=paste(i.output,"/",graph.name,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
+                             compression="lzw",bg="white",res=300,antialias="none")
 
-    if (any(!is.na(resultados$sensitivity)) & any(!is.na(resultados$specificity))){
-    d.x<-resultados$value
-    d.y<-cbind(resultados$sensitivity,resultados$specificity)
-    etiquetas<-c("Sensitivity","Specificity")
-    otick<-optimal.tickmarks(0,1,10)
-    range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
-    matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
-    points(d.x,d.y[,1],pch=19,type="p",col=colores[2],cex=0.5)
-    points(d.x,d.y[,2],pch=19,type="p",col=colores[3],cex=0.5)
-    axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-    axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-    mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
-    mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-    mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-    mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
-    legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
+      opar<-par(mar=c(5,3,3,3)+0.1,mgp=c(3,0.5,0),xpd=T,mfrow=c(2,2))
 
+      if (any(!is.na(resultados$sensitivity)) & any(!is.na(resultados$specificity))){
+        d.x<-resultados$value
+        d.y<-cbind(resultados$sensitivity,resultados$specificity)
+        etiquetas<-c("Sensitivity","Specificity")
+        otick<-optimal.tickmarks(0,1,10)
+        range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
+        matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
+        points(d.x,d.y[,1],pch=19,type="p",col=colores[2],cex=0.5)
+        points(d.x,d.y[,2],pch=19,type="p",col=colores[3],cex=0.5)
+        axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
+        axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
+        mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
+        mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
+        mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
+        mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
+        legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
+
+      }
+
+      if (any(!is.na(resultados$positive.predictive.value)) & any(!is.na(resultados$negative.predictive.value))){
+
+        d.x<-resultados$value
+        d.y<-cbind(resultados$positive.predictive.value,resultados$negative.predictive.value)
+        etiquetas<-c("Positive predictive value","Negative predictive value")
+        otick<-optimal.tickmarks(0,1,10)
+        range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
+        matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
+        points(d.x,d.y[,1],pch=19,type="p",col=colores[2],cex=0.5)
+        points(d.x,d.y[,2],pch=19,type="p",col=colores[3],cex=0.5)
+        axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
+        axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
+        mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
+        mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
+        mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
+        mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
+        legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
+      }
+      # d.x<-resultados$value
+      # d.y<-resultados$percent.agreement
+      # etiquetas<-c("Percent agreement")
+      # otick<-optimal.tickmarks(0,1,10)
+      # range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
+      # matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
+      # points(d.x,d.y,pch=19,type="p",col=colores[2],cex=0.5)
+      # axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
+      # axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
+      # mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
+      # mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
+      # mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
+      # mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
+      # legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
+
+      if (any(!is.na(resultados$percent.agreement)) & any(!is.na(resultados$matthews.correlation.coefficient))){
+
+        d.x<-resultados$value
+        d.y<-cbind(resultados$percent.agreement,resultados$matthews.correlation.coefficient)
+        etiquetas<-c("Percent agreement","Matthews correlation coefficient")
+        otick<-optimal.tickmarks(0,1,10)
+        range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
+        matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
+        points(d.x,d.y[,1],pch=19,type="p",col=colores[2],cex=0.5)
+        points(d.x,d.y[,2],pch=19,type="p",col=colores[3],cex=0.5)
+        axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
+        axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
+        mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
+        mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
+        mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
+        mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
+        legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
+      }
+
+      if (any(!is.na(resultados$specificity)) & any(!is.na(resultados$sensitivity))){
+
+        d.x<-1-resultados$specificity
+        d.y<-resultados$sensitivity[order(d.x)]
+        d.x<-d.x[order(d.x)]
+        otick<-optimal.tickmarks(0,1,10)
+        range.x<-c(otick$range[1],otick$range[2]+otick$by/2)
+        range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
+        matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,xlim=range.x,ylim=range.y,main=i.graph.title)
+        points(d.x,d.y,pch=19,type="p",col=colores[2],cex=0.5)
+        axis(1,at=otick$tickmarks,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
+        axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
+        mtext(1,text="1 - specificity",line=1.3,cex=0.8,col="#000040")
+        mtext(2,text="Sensitivity",line=1.3,cex=0.8,col="#000040")
+        mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
+        mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
+      }
+      par(opar)
+      if (i.graph.file) dev.off()
     }
-
-    if (any(!is.na(resultados$positive.predictive.value)) & any(!is.na(resultados$negative.predictive.value))){
-
-    d.x<-resultados$value
-    d.y<-cbind(resultados$positive.predictive.value,resultados$negative.predictive.value)
-    etiquetas<-c("Positive predictive value","Negative predictive value")
-    otick<-optimal.tickmarks(0,1,10)
-    range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
-    matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
-    points(d.x,d.y[,1],pch=19,type="p",col=colores[2],cex=0.5)
-    points(d.x,d.y[,2],pch=19,type="p",col=colores[3],cex=0.5)
-    axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-    axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-    mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
-    mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-    mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-    mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
-    legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
-    }
-    # d.x<-resultados$value
-    # d.y<-resultados$percent.agreement
-    # etiquetas<-c("Percent agreement")
-    # otick<-optimal.tickmarks(0,1,10)
-    # range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
-    # matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
-    # points(d.x,d.y,pch=19,type="p",col=colores[2],cex=0.5)
-    # axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-    # axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-    # mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
-    # mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-    # mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-    # mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
-    # legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
-
-    if (any(!is.na(resultados$percent.agreement)) & any(!is.na(resultados$matthews.correlation.coefficient))){
-
-    d.x<-resultados$value
-    d.y<-cbind(resultados$percent.agreement,resultados$matthews.correlation.coefficient)
-    etiquetas<-c("Percent agreement","Matthews correlation coefficient")
-    otick<-optimal.tickmarks(0,1,10)
-    range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
-    matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
-    points(d.x,d.y[,1],pch=19,type="p",col=colores[2],cex=0.5)
-    points(d.x,d.y[,2],pch=19,type="p",col=colores[3],cex=0.5)
-    axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-    axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-    mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
-    mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-    mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-    mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
-    legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
-    }
-
-    if (any(!is.na(resultados$specificity)) & any(!is.na(resultados$sensitivity))){
-
-    d.x<-1-resultados$specificity
-    d.y<-resultados$sensitivity[order(d.x)]
-    d.x<-d.x[order(d.x)]
-    otick<-optimal.tickmarks(0,1,10)
-    range.x<-c(otick$range[1],otick$range[2]+otick$by/2)
-    range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
-    matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,xlim=range.x,ylim=range.y,main=i.graph.title)
-    points(d.x,d.y,pch=19,type="p",col=colores[2],cex=0.5)
-    axis(1,at=otick$tickmarks,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-    axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-    mtext(1,text="1 - specificity",line=1.3,cex=0.8,col="#000040")
-    mtext(2,text="Sensitivity",line=1.3,cex=0.8,col="#000040")
-    mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-    mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
-    }
-    par(opar)
-    if (i.graph.file) dev.off()
 
     return(roc.analysis.output)
 }
