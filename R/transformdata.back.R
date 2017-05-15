@@ -62,7 +62,11 @@ transformdata.back<-function(i.data, i.name="rates", i.range.x=NA, i.cutoff=NA, 
   n.seasons<-dim(i.data)[2]
   n.weeks<-dim(i.data)[1]
   # dealing with season start and end, extracts information from rownames and gets season start/end
-  seasons<-data.frame(names(i.data),str_match(names(i.data),"(\\d{4})(?:.*(\\d{4}))?(?:.*\\(.*(\\d{1,}).*\\))?")[,-1],stringsAsFactors = F)
+  if (n.seasons>1){
+    seasons<-data.frame(names(i.data),matrix(str_match(names(i.data),"(\\d{4})(?:.*(\\d{4}))?(?:.*\\(.*(\\d{1,}).*\\))?"),nrow=n.seasons,byrow=F)[,-1],stringsAsFactors = F)
+  }else{
+    seasons<-data.frame(t(c(names(i.data),str_match(names(i.data),"(\\d{4})(?:.*(\\d{4}))?(?:.*\\(.*(\\d{1,}).*\\))?")[-1])),stringsAsFactors = F)
+  }
   names(seasons)<-c("column","anioi","aniof","aniow")
   seasons[is.na(seasons)]<-""
   seasons$aniof[seasons$aniof==""]<-seasons$anioi[seasons$aniof==""]
