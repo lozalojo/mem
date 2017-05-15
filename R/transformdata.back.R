@@ -95,7 +95,11 @@ transformdata.back<-function(i.data, i.name="rates", i.range.x=NA, i.cutoff=NA, 
     data.out<-rbind(data.out,data.out.i)
     rm("week.i","year.i","yrweek.i","data.i","data.out.i")
   }
-  data.out<-aggregate(data ~ year + week + yrweek,data=data.out,FUN=i.fun,na.rm=T)
+  data.out$dummy<-1
+  data.out.1<-aggregate(dummy ~ year + week + yrweek,data=data.out,FUN=sum,na.rm=T)
+  data.out.2<-aggregate(data ~ year + week + yrweek,data=data.out,FUN=i.fun,na.rm=T)
+  data.out<-merge(data.out.1,data.out.2,by=c("year","week","yrweek"),all.x=T, stringsAsFactors=F)
+  data.out$dummy<-NULL
   data.out$season<-""
   # To determine if the resulting dataset has seasons with one (2011) or two years (2011/2012) we have
   # to check if there exists values prior to the cutoff point.
