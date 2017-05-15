@@ -102,7 +102,7 @@ transformdata.back<-function(i.data, i.name="rates", i.range.x=NA, i.cutoff=NA, 
     i.range.x.values<-data.frame(week.lab=c(week.f:last.week,1:week.l),week.no=1:(last.week-week.f+1+week.l))
     data.out$season[data.out$week<i.cutoff]<-paste(data.out$year[data.out$week<i.cutoff]-1,data.out$year[data.out$week<i.cutoff],sep="/")
     data.out$season[data.out$week>=i.cutoff]<-paste(data.out$year[data.out$week>=i.cutoff],data.out$year[data.out$week>=i.cutoff]+1,sep="/")
-    data.out<-merge(expand.grid(season=unique(data.out$season),week=i.range.x.values$week.lab),data.out, all.x=T, by=c("season","week"))
+    data.out<-merge(expand.grid(season=unique(data.out$season),week=i.range.x.values$week.lab, stringsAsFactors = F),data.out, all.x=T, by=c("season","week"))
     data.out$year[data.out$week>=i.cutoff]<-as.numeric(substr(data.out$season[data.out$week>=i.cutoff],1,4))
     data.out$year[data.out$week<i.cutoff]<-as.numeric(substr(data.out$season[data.out$week<i.cutoff],6,9))
   }else{
@@ -112,12 +112,12 @@ transformdata.back<-function(i.data, i.name="rates", i.range.x=NA, i.cutoff=NA, 
     last.week<-53
     i.range.x.values<-data.frame(week.lab=week.f:week.l,week.no=1:(week.l-week.f+1))
     data.out$season<-paste(data.out$year,data.out$year,sep="/")
-    data.out<-merge(expand.grid(season=unique(data.out$season),week=i.range.x.values$week.lab),data.out, all.x=T, by=c("season","week"))
+    data.out<-merge(expand.grid(season=unique(data.out$season),week=i.range.x.values$week.lab, stringsAsFactors = F),data.out, all.x=T, by=c("season","week"))
     data.out$year<-as.numeric(substr(data.out$season,1,4))
   }
   data.out$yrweek<-data.out$year*100+data.out$week
-  data.out<-data.out[order(data.out$yrweek),]
   data.out<-data.out[!(data.out$week==53 & is.na(data.out$data)),]
+  data.out<-data.out[order(data.out$yrweek),]
   names(data.out)[names(data.out)=="data"]<-i.name
   return(data.out)
 }
