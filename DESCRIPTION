@@ -15,7 +15,8 @@ Imports:
     sqldf,
     reshape2,
     RColorBrewer,
-    mixtools
+    mixtools,
+    stringr
 Description: Modelization of influenza epidemics in order to monitor future
     activity.
 License: GPL (>= 2)

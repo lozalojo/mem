@@ -19,6 +19,7 @@
 #' @param i.plot.intensity Plot the intensity levels.
 #' @param i.alternative.thresholds Use alternative thresholds, instead of the ones modelled by the input data (epidemic + 3 intensity thresholds)
 #' @param i.color.pattern colors to use in the graph.
+#' @param i.cutoff week where a new season start (when two years in a season are involved)
 #' @param ... other parameters passed to memmodel.
 #'
 #' @return
@@ -65,7 +66,7 @@
 #' @importFrom grDevices dev.off rgb tiff
 #' @importFrom graphics abline axis legend matplot mtext par points text lines plot
 full.series.graph<-function(i.data,
-                            i.range.x=c(30,29),
+                            i.range.x=NA,
                             i.range.y=NA,
                             i.output=".",
                             i.graph.title="",
@@ -77,9 +78,12 @@ full.series.graph<-function(i.data,
                             i.alternative.thresholds=NA,
                             i.color.pattern=c("#C0C0C0","#606060","#000000","#808080","#000000","#001933",
                                               "#00C000","#800080","#FFB401",
-                                              "#8c6bb1","#88419d","#810f7c","#4d004b"),...){
+                                              "#8c6bb1","#88419d","#810f7c","#4d004b"),
+                            i.cutoff=NA,...){
 
-  if (any(is.na(i.range.x))) i.range.x<-as.numeric(rownames(i.data)[c(1,NROW(i.data))])
+  i.range.x.default<-c(max(1,min(as.numeric(rownames(i.data)[1:3]))),min(52,max(as.numeric(rownames(i.data)[(NROW(i.data)-2):NROW(i.data)]))))
+  if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-i.range.x.default
+  if (is.na(i.cutoff)) i.cutoff<-i.range.x[1]
 
   if (NCOL(i.data)>1){
     epi<-memmodel(i.data, i.seasons=NA,...)
@@ -98,7 +102,7 @@ full.series.graph<-function(i.data,
   }
   rm("epi")
 
-  datos<-transformdata.back(i.data,i.name="rates",i.range.x=i.range.x,i.fun=sum)
+  datos<-transformdata.back(i.data,i.name="rates",i.range.x=i.range.x,i.fun=sum, i.cutoff=i.cutoff)
   datos.x<-1:dim(datos)[1]
   semanas<-length(datos.x)
   datos.semanas<-as.numeric(datos$week)
@@ -106,7 +110,7 @@ full.series.graph<-function(i.data,
   datos.y<-as.numeric(datos[,names(datos)=="rates"])
   range.x<-range(datos.x,na.rm=T)
 
-  datos.fixed<-transformdata.back(epidata,i.name="rates",i.range.x=i.range.x,i.fun=sum)
+  datos.fixed<-transformdata.back(epidata,i.name="rates",i.range.x=i.range.x,i.fun=sum, i.cutoff=i.cutoff)
   datos.y.fixed<-as.numeric(datos.fixed[,names(datos.fixed)=="rates"])
 
   datos.missing<-datos.fixed
@@ -118,7 +122,7 @@ full.series.graph<-function(i.data,
 
   rownames(indices)<-rownames(i.data)
   names(indices)<-names(i.data)
-  datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x=i.range.x,i.fun=function(x,...) if (all(is.na(x))) return(NA) else if (any(x==2,...)) return(2) else if (any(x==1,...)) return(1) else return(3))
+  datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x=i.range.x, i.cutoff=i.cutoff, i.fun=function(x,...) if (all(is.na(x))) return(NA) else if (any(x==2,...)) return(2) else if (any(x==1,...)) return(1) else return(3))
   datos.y.indexes<-as.numeric(datos.indexes[,names(datos.indexes)=="rates"])
 
   if (length(i.alternative.thresholds)==4){
@@ -208,7 +212,10 @@ full.series.graph<-function(i.data,
     lines(x=datos.x[c(1,semanas)],y=rep(intensity[4],2),lty=2,,lwd=2,col=i.color.pattern[13])
   }
   # Ejes
-  posicion.temporadas<-as.numeric(rownames(i.data)[floor(dim(i.data)[1]/2)])
+  #posicion.temporadas<-as.numeric(rownames(i.data)[floor(dim(i.data)[1]/2)])
+  posicion.temporadas.m<-aggregate(datos.x, by=list(datos.temporadas), FUN=function(x) x[floor(length(x)/2)])$x
+  posicion.temporadas.f<-aggregate(datos.x, by=list(datos.temporadas), FUN=function(x) x[1])$x
+  posicion.temporadas.l<-aggregate(datos.x, by=list(datos.temporadas), FUN=function(x) x[length(x)])$x
   axis(1,at=datos.x[datos.semanas %in% c(40,50,10,20,30)],tcl=-0.3,
        tick=T,
        labels=F,
@@ -226,16 +233,15 @@ full.series.graph<-function(i.data,
        cex.axis=0.5,
        line=0.2,
        col.axis=i.color.pattern[2],col=i.color.pattern[1])
-
-  axis(1,at=datos.x[datos.semanas %in% i.range.x],tcl=-0.3,
+  axis(1,at=datos.x[c(posicion.temporadas.f,posicion.temporadas.l)],tcl=-0.3,
        tick=T,
        labels=F,
        cex.axis=0.7,
        line=1.7,
        col.axis=i.color.pattern[2],col=i.color.pattern[1])
-  axis(1,at=datos.x[datos.semanas==posicion.temporadas],
+  axis(1,at=datos.x[posicion.temporadas.m],
        tick=F,
-       labels=datos.temporadas[datos.semanas==posicion.temporadas],
+       labels=datos.temporadas[posicion.temporadas.m],
        cex.axis=0.5,
        line=1,
        col.axis=i.color.pattern[2],col=i.color.pattern[1])
