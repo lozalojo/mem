@@ -1,6 +1,6 @@
 #' Data transformation
 #'
-#' Function \code{transformdata} transforms data from week,rate1,...,rateN to year,week,rate
+#' Function \code{transformdata.back} transforms data from week,rate1,...,rateN to year,week,rate
 #' format.
 #'
 #' Yet to be written
@@ -20,7 +20,7 @@
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
 #' # Transform data
-#' newdata<-transformdata.back(flucyl)
+#' newdata<-transformdata.back(flucyl)$data
 #'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
@@ -47,6 +47,11 @@ transformdata.back<-function(i.data, i.name="rates", i.range.x=NA, i.cutoff=NA, 
   # Input scheme numbering
   week.f<-i.range.x[1]
   week.l<-i.range.x[2]
+  if (week.f < 1) week.f <- 1
+  if (week.f > 53) week.f <- 53
+  if (week.l < 1) week.l <- 1
+  if (week.l > 53) week.l <- 53
+  if (week.f == week.l) week.l <- week.l - 1
   last.week<-53
   if (week.f>week.l){
     i.range.x.values<-data.frame(week.lab=c(week.f:last.week,1:week.l),week.no=1:(last.week-week.f+1+week.l))
@@ -127,5 +132,9 @@ transformdata.back<-function(i.data, i.name="rates", i.range.x=NA, i.cutoff=NA, 
   data.out<-data.out[!(data.out$week==53 & is.na(data.out$data)),]
   data.out<-data.out[order(data.out$yrweek),]
   names(data.out)[names(data.out)=="data"]<-i.name
-  return(data.out)
+
+  transformdata.back.output <- list(data = data.out)
+  transformdata.back.output$call <- match.call()
+  return(transformdata.back.output)
+
 }

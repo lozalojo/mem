@@ -1,18 +1,17 @@
 Package: mem
 Type: Package
 Title: Moving Epidemic Method R Package
-Version: 2.4
-Date: 2017-04-19
+Version: 2.5
+Date: 2017-05-16
 Authors@R: person("Lozano", "Jose E.", email = "lozalojo@gmail.com", role = c("aut", "cre"))
 Depends:
-    R (>= 3.3.0)
+    R (>= 3.4.0)
 Imports:
     sm,
     boot,
     grDevices,
     graphics,
     stats,
-    sqldf,
     reshape2,
     RColorBrewer,
     mixtools,

@@ -21,7 +21,7 @@
 #' \describe{
 #'   \item{\code{year}}{a numeric vector - year.}
 #'   \item{\code{week}}{a numeric vector - week.}
-#'   \item{\code{rate}}{a numeric vector - standarised rates per 100,000 inhabitants.}
+#'   \item{\code{rates}}{a numeric vector - standarised rates per 100,000 inhabitants.}
 #' }
 #' @source
 #' Influenza Surveillance Programme. Castilla y Leon Health Sentinel Network. Consejeria
@@ -33,5 +33,5 @@
 #' \url{http://www.salud.jcyl.es/centinelas}).
 #' @examples
 #' data(flucylraw)
-#' plot(flucylraw$rate,type="l")
+#' plot(flucylraw$rates,type="l")
 NULL

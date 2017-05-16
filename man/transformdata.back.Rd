@@ -22,7 +22,7 @@ transformdata.back(i.data, i.name = "rates", i.range.x = NA,
 \code{transformdata.back} returns a data.frame with three columns, year, week and rate.
 }
 \description{
-Function \code{transformdata} transforms data from week,rate1,...,rateN to year,week,rate
+Function \code{transformdata.back} transforms data from week,rate1,...,rateN to year,week,rate
 format.
 }
 \details{
@@ -32,7 +32,7 @@ Yet to be written
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Transform data
-newdata<-transformdata.back(flucyl)
+newdata<-transformdata.back(flucyl)$data
 
 }
 \references{

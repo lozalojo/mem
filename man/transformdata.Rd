@@ -4,7 +4,7 @@
 \alias{transformdata}
 \title{Data transformation}
 \usage{
-transformdata(i.data, i.range.x = c(30, 29), i.name = "rate",
+transformdata(i.data, i.range.x = NA, i.name = "rates",
   i.max.na.per = 100)
 }
 \arguments{
@@ -31,7 +31,7 @@ Yet to be written
 # Castilla y Leon Influenza Rates data
 data(flucylraw)
 # Transform data
-newdata<-transformdata(flucylraw)$tdata
+newdata<-transformdata(flucylraw)$data
 epi<-memmodel(newdata)
 print(epi)
 summary(epi)

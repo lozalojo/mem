@@ -9,7 +9,7 @@ week and rate,
 \describe{
   \item{\code{year}}{a numeric vector - year.}
   \item{\code{week}}{a numeric vector - week.}
-  \item{\code{rate}}{a numeric vector - standarised rates per 100,000 inhabitants.}
+  \item{\code{rates}}{a numeric vector - standarised rates per 100,000 inhabitants.}
 }}
 \source{
 Influenza Surveillance Programme. Castilla y Leon Health Sentinel Network. Consejeria
@@ -34,7 +34,7 @@ The data set contains 8 surveillance seasons, from 2001/2002 to 2008/2009.
 }
 \examples{
 data(flucylraw)
-plot(flucylraw$rate,type="l")
+plot(flucylraw$rates,type="l")
 }
 \references{
 Castilla y Leon Health Sentinel Network Reports (Informes de la Red Centinela Sanitaria

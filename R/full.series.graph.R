@@ -102,7 +102,7 @@ full.series.graph<-function(i.data,
   }
   rm("epi")
 
-  datos<-transformdata.back(i.data,i.name="rates",i.range.x=i.range.x,i.fun=sum, i.cutoff=i.cutoff)
+  datos<-transformdata.back(i.data,i.name="rates",i.range.x=i.range.x,i.fun=sum, i.cutoff=i.cutoff)$data
   datos.x<-1:dim(datos)[1]
   semanas<-length(datos.x)
   datos.semanas<-as.numeric(datos$week)
@@ -110,7 +110,7 @@ full.series.graph<-function(i.data,
   datos.y<-as.numeric(datos[,names(datos)=="rates"])
   range.x<-range(datos.x,na.rm=T)
 
-  datos.fixed<-transformdata.back(epidata,i.name="rates",i.range.x=i.range.x,i.fun=sum, i.cutoff=i.cutoff)
+  datos.fixed<-transformdata.back(epidata,i.name="rates",i.range.x=i.range.x,i.fun=sum, i.cutoff=i.cutoff)$data
   datos.y.fixed<-as.numeric(datos.fixed[,names(datos.fixed)=="rates"])
 
   datos.missing<-datos.fixed
@@ -122,7 +122,7 @@ full.series.graph<-function(i.data,
 
   rownames(indices)<-rownames(i.data)
   names(indices)<-names(i.data)
-  datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x=i.range.x, i.cutoff=i.cutoff, i.fun=function(x,...) if (all(is.na(x))) return(NA) else if (any(x==2,...)) return(2) else if (any(x==1,...)) return(1) else return(3))
+  datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x=i.range.x, i.cutoff=i.cutoff, i.fun=function(x,...) if (all(is.na(x))) return(NA) else if (any(x==2,...)) return(2) else if (any(x==1,...)) return(1) else return(3))$data
   datos.y.indexes<-as.numeric(datos.indexes[,names(datos.indexes)=="rates"])
 
   if (length(i.alternative.thresholds)==4){

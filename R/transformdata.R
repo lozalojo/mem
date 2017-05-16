@@ -20,7 +20,7 @@
 #' # Castilla y Leon Influenza Rates data
 #' data(flucylraw)
 #' # Transform data
-#' newdata<-transformdata(flucylraw)$tdata
+#' newdata<-transformdata(flucylraw)$data
 #' epi<-memmodel(newdata)
 #' print(epi)
 #' summary(epi)
@@ -43,73 +43,69 @@
 #' @keywords influenza
 #'
 #' @export
-#' @importFrom sqldf sqldf
 #' @importFrom reshape2 dcast
 #' @importFrom stringr str_match
-transformdata <- function(i.data, i.range.x = c(30, 29), i.name = "rate", i.max.na.per = 100) {
-
-  if (any(is.na(i.range.x))) i.range.x<-as.numeric(rownames(i.data)[c(1,NROW(i.data))])
-
-  i.week.first <- i.range.x[1]
-  i.week.last <- i.range.x[2]
-
-  if (is.na(i.week.first) | is.na(i.week.last))
-    stop("Error in starting/ending week")
-
-  if (i.week.first < 1)
-    i.week.first <- 1
-  if (i.week.first > 53)
-    i.week.first <- 53
-  if (i.week.last < 1)
-    i.week.last <- 1
-  if (i.week.last > 53)
-    i.week.last <- 53
-  if (i.week.first == i.week.last)
-    i.week.last <- i.week.last - 1
-
+transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per = 100) {
+  i.range.x.default<-c(max(1,min(as.numeric(rownames(i.data)[1:3]))),min(52,max(as.numeric(rownames(i.data)[(NROW(i.data)-2):NROW(i.data)]))))
+  if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-i.range.x.default
+  # Input scheme numbering
+  week.f<-i.range.x[1]
+  week.l<-i.range.x[2]
+  if (week.f < 1) week.f <- 1
+  if (week.f > 53) week.f <- 53
+  if (week.l < 1) week.l <- 1
+  if (week.l > 53) week.l <- 53
+  if (week.f == week.l) week.l <- week.l - 1
   data <- subset(i.data, select = c("year", "week", i.name))
-  names(data)[names(data) == i.name] <- "rate"
-
-  if (i.week.first < i.week.last) {
-    # Formato de temporada único año (ej: 2010)
-    data$season <- as.character(data$year)
-    seasons <- data.frame(season = unique(data$season))
-    weeks <- data.frame(week = i.week.first:i.week.last,
-      week.no = 1:(i.week.last - i.week.first + 1))
-    esquema <- merge(weeks, seasons)
-  } else {
-    # Formato de temporada de dos años (ej: 2010/2011)
-    data$season <- ifelse(data$week < i.week.first, paste(as.character(data$year -
-      1), as.character(data$year), sep = "/"), paste(as.character(data$year),
-      as.character(data$year + 1), sep = "/"))
-    seasons.53 <- sqldf("select distinct season from data where week=53")
-    weeks.53 <- data.frame(week = c(i.week.first:53, 1:(i.week.last -
-      1)), week.no = 1:(53 + i.week.last - i.week.first))
-    seasons <- sqldf("select distinct season from data where season not in (select season from [seasons.53])")
-    weeks <- data.frame(week = c(i.week.first:52, 1:i.week.last),
-      week.no = 1:(53 + i.week.last - i.week.first))
-    esquema <- rbind(merge(weeks, seasons), merge(weeks.53,
-      seasons.53))
+  names(data)[names(data) == i.name] <- "rates"
+  data$season<-""
+  if (week.f>week.l){
+    i.range.x.length<-52-week.f+1+week.l
+    # Scheme numbering for seasons without season 53
+    i.range.x.values.52<-data.frame(week=c(week.f:52,1:week.l),week.no=1:i.range.x.length)
+    # Scheme numbering for seasons with season 53
+    i.range.x.values.53<-data.frame(week=c(week.f:53,1:(week.l-1)),week.no=1:i.range.x.length)
+    data$season[data$week<week.f]<-paste(data$year[data$week<week.f]-1,data$year[data$week<week.f],sep="/")
+    data$season[data$week>=week.f]<-paste(data$year[data$week>=week.f],data$year[data$week>=week.f]+1,sep="/")
+    seasons.all<-unique(data$season)
+    seasons.53<-unique(subset(data,data$week==53)$season)
+    seasons.52<-seasons.all[!(seasons.all %in% seasons.53)]
+    data.out<-rbind(merge(data.frame(season=seasons.52, stringsAsFactors = F),i.range.x.values.52, stringsAsFactors = F),
+                    merge(data.frame(season=seasons.53, stringsAsFactors = F),i.range.x.values.53, stringsAsFactors = F))
+    data.out<-merge(data.out,data,by=c("season","week"),all.x=T)
+    data.out$year[data.out$week>=week.f]<-as.numeric(substr(data.out$season[data.out$week>=week.f],1,4))
+    data.out$year[data.out$week<week.f]<-as.numeric(substr(data.out$season[data.out$week<week.f],6,9))
+  }else{
+    i.range.x.length<-week.l-week.f+1
+    if (week.l==53){
+      i.range.x.values.52<-data.frame(week=week.f:52,week.no=1:(i.range.x.length-1))
+      i.range.x.values.53<-data.frame(week=(week.f+1):53,week.no=1:(i.range.x.length-1))
+    }else{
+      i.range.x.values.52<-data.frame(week=week.f:week.l,week.no=1:i.range.x.length)
+      i.range.x.values.53<-data.frame(week=week.f:week.l,week.no=1:i.range.x.length)
+    }
+    data$season<-paste(data$year,data$year,sep="/")
+    seasons.all<-unique(data$season)
+    seasons.53<-unique(subset(data,data$week==53)$season)
+    seasons.52<-seasons.all[!(seasons.all %in% seasons.53)]
+    data.out<-rbind(merge(data.frame(season=seasons.52, stringsAsFactors = F),i.range.x.values.52, stringsAsFactors = F),
+                    merge(data.frame(season=seasons.53, stringsAsFactors = F),i.range.x.values.53, stringsAsFactors = F))
+    data.out<-merge(data.out,data,by=c("season","week"),all.x=T)
+    data.out$year<-as.numeric(substr(data.out$season,1,4))
   }
-  temp1 <- sqldf("select esquema.season, esquema.week, esquema.[week.no], data.rate from esquema left join data on (esquema.week=data.week and esquema.season=data.season)")
-  temp2 <- temp1[order(temp1$season, temp1$week.no), ]
-  temp3 <- dcast(temp2, formula = week.no ~ season, fun.aggregate = NULL,
-    value.var = "rate")
-  temp4 <- temp3[apply(temp3, 2, function(x) any(!is.na(x)))]
-  temp5 <- sqldf("select weeks.week, temp4.* from temp4 inner join weeks on (temp4.[week.no]=weeks.[week.no]) order by [week.no]")
+  data.out$yrweek<-data.out$year*100+data.out$week
+  data.out<-subset(data.out,!is.na(data.out$week.no))
+  data.out$week<-NULL
+  data.out <- dcast(data.out, formula = week.no ~ season, fun.aggregate = NULL,
+                    value.var = "rates")
+  data.out<-merge(i.range.x.values.52,data.out,by="week.no",all.x=T)
+  data.out <- data.out[apply(data.out, 2, function(x) sum(is.na(x))/length(x) < i.max.na.per/100)]
+  data.out <- data.out[order(data.out$week.no), ]
+  rownames(data.out) <- data.out$week
+  data.out$week <- NULL
+  data.out$week.no <- NULL
 
-  temp6 <- subset(temp5, !is.na(temp5$week))
-  row.names(temp6) <- temp6$week
-  temp6$week <- NULL
-  temp6$week.no <- NULL
-
-  # remove those seasons whose percentaje of NA is greater than
-  # a parameter
-
-  temp7 <- apply(temp6, 2, function(x) sum(is.na(x))/length(x))
-  temp8 <- temp6[temp7 < i.max.na.per/100]
-
-  transformdata.output <- list(tdata = temp8)
+  transformdata.output <- list(data = data.out)
   transformdata.output$call <- match.call()
   return(transformdata.output)
 }
