@@ -4,17 +4,17 @@
 \alias{transformdata.back}
 \title{Data transformation}
 \usage{
-transformdata.back(i.data, i.name = "rates", i.range.x = NA,
-  i.cutoff = NA, i.fun = mean)
+transformdata.back(i.data, i.name = "rates", i.cutoff.original = NA,
+  i.range.x.final = NA, i.fun = sum)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
 
 \item{i.name}{Name of the column that contains the values.}
 
-\item{i.range.x}{surveillance week range}
+\item{i.cutoff.original}{Cutoff point between seasons when they have two years}
 
-\item{i.cutoff}{week where a new season start (when two years in a season are involved)}
+\item{i.range.x.final}{Range of the surveillance period in the output dataset}
 
 \item{i.fun}{sumarize function}
 }

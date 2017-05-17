@@ -31,7 +31,7 @@ Yet to be written
 # Castilla y Leon Influenza Rates data
 data(flucylraw)
 # Transform data
-newdata<-transformdata(flucylraw)$data
+newdata<-transformdata(flucylraw, i.range.x=c(40,20))$data
 epi<-memmodel(newdata)
 print(epi)
 summary(epi)

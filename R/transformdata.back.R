@@ -9,8 +9,8 @@
 #'
 #' @param i.data Data frame of input data.
 #' @param i.name Name of the column that contains the values.
-#' @param i.range.x surveillance week range
-#' @param i.cutoff week where a new season start (when two years in a season are involved)
+#' @param i.cutoff.original Cutoff point between seasons when they have two years
+#' @param i.range.x.final Range of the surveillance period in the output dataset
 #' @param i.fun sumarize function
 #'
 #' @return
@@ -40,33 +40,20 @@
 #'
 #' @export
 #' @importFrom stats aggregate
-transformdata.back<-function(i.data, i.name="rates", i.range.x=NA, i.cutoff=NA, i.fun=mean){
-  i.range.x.default<-c(max(1,min(as.numeric(rownames(i.data)[1:3]))),min(52,max(as.numeric(rownames(i.data)[(NROW(i.data)-2):NROW(i.data)]))))
-  if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-i.range.x.default
-  if (is.na(i.cutoff)) i.cutoff<-i.range.x[1]
-  # Input scheme numbering
-  week.f<-i.range.x[1]
-  week.l<-i.range.x[2]
-  if (week.f < 1) week.f <- 1
-  if (week.f > 53) week.f <- 53
-  if (week.l < 1) week.l <- 1
-  if (week.l > 53) week.l <- 53
-  if (week.f == week.l) week.l <- week.l - 1
-  last.week<-53
-  if (week.f>week.l){
-    i.range.x.values<-data.frame(week.lab=c(week.f:last.week,1:week.l),week.no=1:(last.week-week.f+1+week.l))
-  }else{
-    i.range.x.values<-data.frame(week.lab=week.f:week.l,week.no=1:(week.l-week.f+1))
-  }
-  i.data$week.lab<-as.numeric(rownames(i.data))
-  i.data<-merge(i.data,i.range.x.values, all.y=T, all.x=F, by="week.lab")
-  i.data<-i.data[order(i.data$week.no),]
-  rownames(i.data)<-i.data$week.lab
-  i.data$week.lab<-NULL
-  i.data$week.no<-NULL
-  n.seasons<-dim(i.data)[2]
-  n.weeks<-dim(i.data)[1]
-  # dealing with season start and end, extracts information from rownames and gets season start/end
+#' @importFrom reshape2 melt
+transformdata.back<-function(i.data, i.name="rates", i.cutoff.original=NA, i.range.x.final=NA, i.fun=sum){
+  if (is.na(i.cutoff.original)) i.cutoff.original<-min(as.numeric(rownames(i.data)[1:3]))
+  if (i.cutoff.original < 1) i.cutoff.original <- 1
+  if (i.cutoff.original > 53) i.cutoff.original <- 53
+  if (any(is.na(i.range.x.final)) | !is.numeric(i.range.x.final) | length(i.range.x.final)!=2) i.range.x.final<-c(min(as.numeric(rownames(i.data)[1:3])),max(as.numeric(rownames(i.data)[(NROW(i.data)-2):NROW(i.data)])))
+  if (i.range.x.final[1] < 1) i.range.x.final[1] <- 1
+  if (i.range.x.final[1] > 53) i.range.x.final[1] <- 53
+  if (i.range.x.final[2] < 1) i.range.x.final[2] <- 1
+  if (i.range.x.final[2] > 53) i.range.x.final[2] <- 53
+  if (i.range.x.final[1] == i.range.x.final[2]) i.range.x.final[2] <- i.range.x.final[2] - 1
+  if (i.range.x.final[2]==0) i.range.x.final[2]<-53
+  n.seasons<-NCOL(i.data)
+  # First: analize names of seasons and seasons with week 53
   if (n.seasons>1){
     seasons<-data.frame(names(i.data),matrix(str_match(names(i.data),"(\\d{4})(?:.*(\\d{4}))?(?:.*\\(.*(\\d{1,}).*\\))?"),nrow=n.seasons,byrow=F)[,-1],stringsAsFactors = F)
   }else{
@@ -81,60 +68,52 @@ transformdata.back<-function(i.data, i.name="rates", i.range.x=NA, i.cutoff=NA, 
   seasons$season<-seasonsname
   rm("seasonsname")
   names(i.data)<-seasons$season
-  data.out<-data.frame()
-  for (i in 1:n.seasons){
-    week.i<-as.numeric(rownames(i.data))
-    data.i<-i.data[,i]
-    if (seasons$anioi[i]==seasons$aniof[i]){
-      year.i<-rep(as.numeric(seasons$anioi[i]),n.weeks)
-    }else{
-      year.i<-rep(NA,n.weeks)
-      year.i[week.i<i.cutoff]<-as.numeric(seasons$aniof[i])
-      year.i[week.i>=i.cutoff]<-as.numeric(seasons$anioi[i])
-    }
-    yrweek.i<-year.i*100+week.i
-    data.out.i<-data.frame(year=year.i,
-                           week=week.i,
-                           yrweek=yrweek.i,
-                           data=data.i,stringsAsFactors = F)
-    data.out<-rbind(data.out,data.out.i)
-    rm("week.i","year.i","yrweek.i","data.i","data.out.i")
-  }
-  data.out$dummy<-1
-  data.out.1<-aggregate(dummy ~ year + week + yrweek,data=data.out,FUN=sum,na.rm=T)
-  data.out.2<-aggregate(data ~ year + week + yrweek,data=data.out,FUN=i.fun,na.rm=T)
-  data.out<-merge(data.out.1,data.out.2,by=c("year","week","yrweek"),all.x=T, stringsAsFactors=F)
-  data.out$dummy<-NULL
-  data.out$season<-""
-  # To determine if the resulting dataset has seasons with one (2011) or two years (2011/2012) we have
-  # to check if there exists values prior to the cutoff point.
-  if (any(data.out$week<i.cutoff)){
-    # two years per season
-    week.f<-max(i.cutoff,min(data.out$week[data.out$week>=i.cutoff]))
-    week.l<-min(i.cutoff-1,max(data.out$week[data.out$week<i.cutoff]))
-    i.range.x.values<-data.frame(week.lab=c(week.f:last.week,1:week.l),week.no=1:(last.week-week.f+1+week.l))
-    data.out$season[data.out$week<i.cutoff]<-paste(data.out$year[data.out$week<i.cutoff]-1,data.out$year[data.out$week<i.cutoff],sep="/")
-    data.out$season[data.out$week>=i.cutoff]<-paste(data.out$year[data.out$week>=i.cutoff],data.out$year[data.out$week>=i.cutoff]+1,sep="/")
-    data.out<-merge(expand.grid(season=unique(data.out$season),week=i.range.x.values$week.lab, stringsAsFactors = F),data.out, all.x=T, by=c("season","week"))
-    data.out$year[data.out$week>=i.cutoff]<-as.numeric(substr(data.out$season[data.out$week>=i.cutoff],1,4))
-    data.out$year[data.out$week<i.cutoff]<-as.numeric(substr(data.out$season[data.out$week<i.cutoff],6,9))
+  i.data$week<-as.numeric(row.names(i.data))
+  # Second: Transform the data, summarize (to avoid duplicates) and remove na's
+  data.out<-melt(i.data, "week", variable="season", value.name = "data", na.rm = T)
+  # adds year, based in the i.cutoff.original value
+  data.out$year<-NA
+  data.out$year[data.out$week<i.cutoff.original]<-as.numeric(substr(data.out$season,6,9))[data.out$week<i.cutoff.original]
+  data.out$year[data.out$week>=i.cutoff.original]<-as.numeric(substr(data.out$season,1,4))[data.out$week>=i.cutoff.original]
+  data.out$season<-NULL
+  # we aggregate in case data comes from two sources, for example when there are two parts of the same epidemic, notated as (1) and (2)
+  data.out<-aggregate(data ~ year + week, data=data.out, FUN=i.fun, na.rm=T)
+  # Third: create the structure of the final dataset, considering the i.range.x.final
+  week.f<-i.range.x.final[1]
+  week.l<-i.range.x.final[2]
+  if (week.f>week.l){
+    i.range.x.values.52<-data.frame(week=c(week.f:52,1:week.l),week.no=1:(52-week.f+1+week.l))
+    i.range.x.values.53<-data.frame(week=c(week.f:53,1:week.l),week.no=1:(53-week.f+1+week.l))
+    data.out$season<-""
+    data.out$season[data.out$week<week.f]<-paste(data.out$year-1,data.out$year,sep="/")[data.out$week<week.f]
+    data.out$season[data.out$week>=week.f]<-paste(data.out$year,data.out$year+1,sep="/")[data.out$week>=week.f]
+    seasons.all<-unique(data.out$season)
+    seasons.53<-unique(subset(data.out,data.out$week==53 & !is.na(data.out$data))$season)
+    seasons.52<-seasons.all[!(seasons.all %in% seasons.53)]
+    data.scheme<-rbind(merge(data.frame(season=seasons.52, stringsAsFactors = F),i.range.x.values.52, stringsAsFactors = F),
+                       merge(data.frame(season=seasons.53, stringsAsFactors = F),i.range.x.values.53, stringsAsFactors = F))
+    data.scheme$year<-NA
+    data.scheme$year[data.scheme$week<week.f]<-as.numeric(substr(data.scheme$season,6,9))[data.scheme$week<week.f]
+    data.scheme$year[data.scheme$week>=week.f]<-as.numeric(substr(data.scheme$season,1,4))[data.scheme$week>=week.f]
   }else{
-    # one year per season
-    week.f<-min(data.out$week)
-    week.l<-max(data.out$week)
-    last.week<-53
-    i.range.x.values<-data.frame(week.lab=week.f:week.l,week.no=1:(week.l-week.f+1))
+    i.range.x.values.52<-data.frame(week=week.f:min(52,week.l),week.no=1:(min(52,week.l)-week.f+1))
+    i.range.x.values.53<-data.frame(week=week.f:week.l,week.no=1:(week.l-week.f+1))
+    data.out$season<-""
     data.out$season<-paste(data.out$year,data.out$year,sep="/")
-    data.out<-merge(expand.grid(season=unique(data.out$season),week=i.range.x.values$week.lab, stringsAsFactors = F),data.out, all.x=T, by=c("season","week"))
-    data.out$year<-as.numeric(substr(data.out$season,1,4))
+    seasons.all<-unique(data.out$season)
+    seasons.53<-unique(subset(data.out,data.out$week==53 & !is.na(data.out$data))$season)
+    seasons.52<-seasons.all[!(seasons.all %in% seasons.53)]
+    data.scheme<-rbind(merge(data.frame(season=seasons.52, stringsAsFactors = F),i.range.x.values.52, stringsAsFactors = F),
+                       merge(data.frame(season=seasons.53, stringsAsFactors = F),i.range.x.values.53, stringsAsFactors = F))
+    data.scheme$year<-NA
+    data.scheme$year<-as.numeric(substr(data.scheme$season,1,4))
   }
-  data.out$yrweek<-data.out$year*100+data.out$week
-  data.out<-data.out[!(data.out$week==53 & is.na(data.out$data)),]
-  data.out<-data.out[order(data.out$yrweek),]
-  names(data.out)[names(data.out)=="data"]<-i.name
-
-  transformdata.back.output <- list(data = data.out)
+  data.final<-merge(data.scheme,data.out,by=c("season","year","week"), all.x=T)
+  data.final$yrweek<-data.final$year*100+data.final$week
+  data.final$week.no<-NULL
+  data.final<-data.final[order(data.final$yrweek),]
+  names(data.final)[names(data.final)=="data"]<-i.name
+  transformdata.back.output <- list(data = data.final)
   transformdata.back.output$call <- match.call()
   return(transformdata.back.output)
-
 }

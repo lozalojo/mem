@@ -19,7 +19,6 @@
 #' @param i.plot.intensity Plot the intensity levels.
 #' @param i.alternative.thresholds Use alternative thresholds, instead of the ones modelled by the input data (epidemic + 3 intensity thresholds)
 #' @param i.color.pattern colors to use in the graph.
-#' @param i.cutoff week where a new season start (when two years in a season are involved)
 #' @param ... other parameters passed to memmodel.
 #'
 #' @return
@@ -79,11 +78,18 @@ full.series.graph<-function(i.data,
                             i.color.pattern=c("#C0C0C0","#606060","#000000","#808080","#000000","#001933",
                                               "#00C000","#800080","#FFB401",
                                               "#8c6bb1","#88419d","#810f7c","#4d004b"),
-                            i.cutoff=NA,...){
+                            ...){
 
-  i.range.x.default<-c(max(1,min(as.numeric(rownames(i.data)[1:3]))),min(52,max(as.numeric(rownames(i.data)[(NROW(i.data)-2):NROW(i.data)]))))
-  if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-i.range.x.default
-  if (is.na(i.cutoff)) i.cutoff<-i.range.x[1]
+  i.cutoff.original<-min(as.numeric(rownames(i.data)[1:3]))
+  if (i.cutoff.original < 1) i.cutoff.original <- 1
+  if (i.cutoff.original > 53) i.cutoff.original <- 53
+  if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-c(min(as.numeric(rownames(i.data)[1:3])),max(as.numeric(rownames(i.data)[(NROW(i.data)-2):NROW(i.data)])))
+  if (i.range.x[1] < 1) i.range.x[1] <- 1
+  if (i.range.x[1] > 53) i.range.x[1] <- 53
+  if (i.range.x[2] < 1) i.range.x[2] <- 1
+  if (i.range.x[2] > 53) i.range.x[2] <- 53
+  if (i.range.x[1] == i.range.x[2]) i.range.x[2] <- i.range.x[2] - 1
+  if (i.range.x[2]==0) i.range.x[2]<-53
 
   if (NCOL(i.data)>1){
     epi<-memmodel(i.data, i.seasons=NA,...)
@@ -102,7 +108,7 @@ full.series.graph<-function(i.data,
   }
   rm("epi")
 
-  datos<-transformdata.back(i.data,i.name="rates",i.range.x=i.range.x,i.fun=sum, i.cutoff=i.cutoff)$data
+  datos<-transformdata.back(i.data,i.name="rates",i.range.x.final=i.range.x, i.cutoff.original=i.cutoff.original,i.fun=sum)$data
   datos.x<-1:dim(datos)[1]
   semanas<-length(datos.x)
   datos.semanas<-as.numeric(datos$week)
@@ -110,7 +116,7 @@ full.series.graph<-function(i.data,
   datos.y<-as.numeric(datos[,names(datos)=="rates"])
   range.x<-range(datos.x,na.rm=T)
 
-  datos.fixed<-transformdata.back(epidata,i.name="rates",i.range.x=i.range.x,i.fun=sum, i.cutoff=i.cutoff)$data
+  datos.fixed<-transformdata.back(epidata,i.name="rates",i.range.x.final=i.range.x, i.cutoff.original=i.cutoff.original,i.fun=sum)$data
   datos.y.fixed<-as.numeric(datos.fixed[,names(datos.fixed)=="rates"])
 
   datos.missing<-datos.fixed
@@ -122,7 +128,7 @@ full.series.graph<-function(i.data,
 
   rownames(indices)<-rownames(i.data)
   names(indices)<-names(i.data)
-  datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x=i.range.x, i.cutoff=i.cutoff, i.fun=function(x,...) if (all(is.na(x))) return(NA) else if (any(x==2,...)) return(2) else if (any(x==1,...)) return(1) else return(3))$data
+  datos.indexes<-transformdata.back(indices,i.name="rates",i.range.x.final=i.range.x, i.cutoff.original=i.cutoff.original, i.fun=function(x,...) if (all(is.na(x))) return(NA) else if (any(x==2,...)) return(2) else if (any(x==1,...)) return(1) else return(3))$data
   datos.y.indexes<-as.numeric(datos.indexes[,names(datos.indexes)=="rates"])
 
   if (length(i.alternative.thresholds)==4){

@@ -20,7 +20,7 @@
 #' # Castilla y Leon Influenza Rates data
 #' data(flucylraw)
 #' # Transform data
-#' newdata<-transformdata(flucylraw)$data
+#' newdata<-transformdata(flucylraw, i.range.x=c(40,20))$data
 #' epi<-memmodel(newdata)
 #' print(epi)
 #' summary(epi)
@@ -46,16 +46,16 @@
 #' @importFrom reshape2 dcast
 #' @importFrom stringr str_match
 transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per = 100) {
-  i.range.x.default<-c(max(1,min(as.numeric(rownames(i.data)[1:3]))),min(52,max(as.numeric(rownames(i.data)[(NROW(i.data)-2):NROW(i.data)]))))
-  if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-i.range.x.default
+  if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-c(min(as.numeric(rownames(i.data)[1:3])),max(as.numeric(rownames(i.data)[(NROW(i.data)-2):NROW(i.data)])))
+  if (i.range.x[1] < 1) i.range.x[1] <- 1
+  if (i.range.x[1] > 53) i.range.x[1] <- 53
+  if (i.range.x[2] < 1) i.range.x[2] <- 1
+  if (i.range.x[2] > 53) i.range.x[2] <- 53
+  if (i.range.x[1] == i.range.x[2]) i.range.x[2] <- i.range.x[2] - 1
+  if (i.range.x[2]==0) i.range.x[2]<-53
   # Input scheme numbering
   week.f<-i.range.x[1]
   week.l<-i.range.x[2]
-  if (week.f < 1) week.f <- 1
-  if (week.f > 53) week.f <- 53
-  if (week.l < 1) week.l <- 1
-  if (week.l > 53) week.l <- 53
-  if (week.f == week.l) week.l <- week.l - 1
   data <- subset(i.data, select = c("year", "week", i.name))
   names(data)[names(data) == i.name] <- "rates"
   data$season<-""
