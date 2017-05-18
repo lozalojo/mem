@@ -42,10 +42,10 @@
 #' @importFrom stats aggregate
 #' @importFrom reshape2 melt
 transformdata.back<-function(i.data, i.name="rates", i.cutoff.original=NA, i.range.x.final=NA, i.fun=sum){
-  if (is.na(i.cutoff.original)) i.cutoff.original<-min(as.numeric(rownames(i.data)[1:3]))
+  if (is.na(i.cutoff.original)) i.cutoff.original<-min(as.numeric(rownames(i.data)[1:(min(3,NROW(i.data)))]))
   if (i.cutoff.original < 1) i.cutoff.original <- 1
   if (i.cutoff.original > 53) i.cutoff.original <- 53
-  if (any(is.na(i.range.x.final)) | !is.numeric(i.range.x.final) | length(i.range.x.final)!=2) i.range.x.final<-c(min(as.numeric(rownames(i.data)[1:3])),max(as.numeric(rownames(i.data)[(NROW(i.data)-2):NROW(i.data)])))
+  if (any(is.na(i.range.x.final)) | !is.numeric(i.range.x.final) | length(i.range.x.final)!=2) i.range.x.final<-c(min(as.numeric(rownames(i.data)[1:(min(3,NROW(i.data)))])),max(as.numeric(rownames(i.data)[(min(1,NROW(i.data)-2)):NROW(i.data)])))
   if (i.range.x.final[1] < 1) i.range.x.final[1] <- 1
   if (i.range.x.final[1] > 53) i.range.x.final[1] <- 53
   if (i.range.x.final[2] < 1) i.range.x.final[2] <- 1
