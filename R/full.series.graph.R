@@ -83,7 +83,7 @@ full.series.graph<-function(i.data,
   i.cutoff.original<-min(as.numeric(rownames(i.data)[1:3]))
   if (i.cutoff.original < 1) i.cutoff.original <- 1
   if (i.cutoff.original > 53) i.cutoff.original <- 53
-  if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-c(min(as.numeric(rownames(i.data)[1:3])),max(as.numeric(rownames(i.data)[(NROW(i.data)-2):NROW(i.data)])))
+  if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-c(min(as.numeric(rownames(i.data)[1:(min(3,NROW(i.data)))])),max(as.numeric(rownames(i.data)[(max(1,NROW(i.data)-2)):NROW(i.data)])))
   if (i.range.x[1] < 1) i.range.x[1] <- 1
   if (i.range.x[1] > 53) i.range.x[1] <- 53
   if (i.range.x[2] < 1) i.range.x[2] <- 1
