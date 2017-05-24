@@ -228,8 +228,8 @@ memgoodness<-function(i.data,
   names(maximos)<-maximos.seasons
   rownames(maximos)<-c("Peak","Peak week","Epidemic threshold","Medium threshold","High threshold","Very high threshold","Level")
 
-  temp1<-data.frame(description=c("Baseline","Low","Medium","High","Very high"),level=1:5)
-  temp2<-data.frame(table(as.numeric(maximos[7,]), exclude=c(NA, NaN)))
+  temp1<-data.frame(description=c("Baseline","Low","Medium","High","Very high"),level=1:5,stringsAsFactors = F)
+  temp2<-data.frame(table(as.numeric(maximos[7,]), exclude=c(NA, NaN)),stringsAsFactors = F)
   names(temp2)<-c("level","count")
   temp3<-merge(temp1,temp2,all.x=T)
   temp3$count[is.na(temp3$count)]<-0
