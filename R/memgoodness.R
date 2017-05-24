@@ -234,7 +234,7 @@ memgoodness<-function(i.data,
   temp3<-merge(temp1,temp2,all.x=T)
   temp3$count[is.na(temp3$count)]<-0
   temp3$percentage<-temp3$count/sum(temp3$count)
-  temp4<-data.frame(level=c(0,-1),description=c("No data","Total"),count=c(NCOL(maximos)-sum(temp3$count),NCOL(maximos)), percentage=c((NCOL(maximos)-sum(temp3$count))/NCOL(maximos),1),stringsAsFactors = F)
+  temp4<-data.frame(level=c(0,-1),description=c("No data","Total"),count=c(NCOL(maximos)-sum(temp3$count),NCOL(maximos)), percentage=c((NCOL(maximos)-sum(temp3$count))/NCOL(maximos),NCOL(maximos)),stringsAsFactors = F)
   maximos.resultados<-rbind(temp3,temp4)
 
   memgoodness.output<-list(validity.data=validacion,
