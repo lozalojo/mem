@@ -38,6 +38,8 @@
 #'   \item{validity.data}{data for each value analysed.}
 #'   \item{results}{Total weeks, non-missing weeks, true positives, false positives
 #' true negatives, false negatives, sensitivity, specificity .}
+#'   \item{peaks}{distribution of the levels of intensity of the peaks.}
+#'   \item{peaks.data}{Peak value, week of the peak value, epidemic and intensity thresholds and intensity level of each season analysed.}
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data
@@ -45,6 +47,7 @@
 #' # Goodness of fit
 #' epi.good<-memgoodness(flucyl,i.detection.values=seq(2.5,2.8,0.1))
 #' epi.good$results
+#' epi.good$peaks
 #'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
@@ -92,8 +95,11 @@ memgoodness<-function(i.data,
   anios<-dim(i.data)[2]
   semanas<-dim(i.data)[1]
   #validacion<-array(dim=c(12,anios),dimnames=c("year","indicator"))
-  validacion<-array(dim=c(14,anios))
+  validacion<-array(NA,dim=c(14,anios))
   colnames(validacion)<-names(i.data)
+
+  maximos<-numeric()
+  maximos.seasons<-character()
 
   if (is.na(i.seasons)) i.seasons<-anios
   if (is.null(i.seasons)) i.seasons<-anios
@@ -139,6 +145,14 @@ memgoodness<-function(i.data,
                                            i.graph.name=paste(i.prefix,"[mem] Cross ",i,sep=""))
         validacion[,i]<-validacion.i$indicadores.t
         rownames(validacion)<-rownames(validacion.i$indicadores.t)
+        # peak
+        peak.i<-max.fix.na(datos.actual)
+        peak.week.i<-as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i==datos.actual])])
+        umbrales.i<-memintensity(datos.modelo)$intensity.thresholds
+        if (umbrales.i[1]>umbrales.i[2]) umbrales.i[2]<-umbrales.i[1]*1.0000001
+        level.i<-as.numeric(cut(peak.i,c(-Inf,umbrales.i,Inf)))
+        maximos<-cbind(maximos,c(peak.i,peak.week.i,umbrales.i,level.i))
+        maximos.seasons<-c(maximos.seasons,names(i.data)[indices.actual])
       }
     }
   }else{
@@ -178,6 +192,14 @@ memgoodness<-function(i.data,
                                            i.graph.name=paste(i.prefix,"[mem] Seque ",i,sep=""))
         validacion[,i]<-validacion.i$indicadores.t
         rownames(validacion)<-rownames(validacion.i$indicadores.t)
+        # peak
+        peak.i<-max.fix.na(datos.actual)
+        peak.week.i<-as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i==datos.actual])])
+        umbrales.i<-memintensity(datos.modelo)$intensity.thresholds
+        if (umbrales.i[1]>umbrales.i[2]) umbrales.i[2]<-umbrales.i[1]*1.0000001
+        level.i<-as.numeric(cut(peak.i,c(-Inf,umbrales.i,Inf)))
+        maximos<-cbind(maximos,c(peak.i,peak.week.i,umbrales.i,level.i))
+        maximos.seasons<-c(maximos.seasons,names(i.data)[indices.actual])
       }
     }
   }
@@ -202,8 +224,23 @@ memgoodness<-function(i.data,
 
   resultado[is.nan(resultado)]<-NA
 
+  maximos<-data.frame(maximos,stringsAsFactors = F)
+  names(maximos)<-maximos.seasons
+  rownames(maximos)<-c("Peak","Peak week","Epidemic threshold","Medium threshold","High threshold","Very high threshold","Level")
+
+  temp1<-data.frame(description=c("Baseline","Low","Medium","High","Very high"),level=1:5)
+  temp2<-data.frame(table(as.numeric(maximos[7,]), exclude=c(NA, NaN)))
+  names(temp2)<-c("level","count")
+  temp3<-merge(temp1,temp2,all.x=T)
+  temp3$count[is.na(temp3$count)]<-0
+  temp3$percentage<-temp3$count/sum(temp3$count)
+  temp4<-data.frame(level=c(0,-1),description=c("No data","Total"),count=c(NCOL(maximos)-sum(temp3$count),NCOL(maximos)), percentage=c((NCOL(maximos)-sum(temp3$count))/NCOL(maximos),1),stringsAsFactors = F)
+  maximos.resultados<-rbind(temp3,temp4)
+
   memgoodness.output<-list(validity.data=validacion,
                           results=resultado,
+                          peaks=maximos.resultados,
+                          peaks.data=maximos,
                           param.data=i.data,
                           param.seasons=i.seasons,
                           param.type.threshold=i.type.threshold,

@@ -71,6 +71,8 @@ A list containing at least the following components:
   \item{validity.data}{data for each value analysed.}
   \item{results}{Total weeks, non-missing weeks, true positives, false positives
 true negatives, false negatives, sensitivity, specificity .}
+  \item{peaks}{distribution of the levels of intensity of the peaks.}
+  \item{peaks.data}{Peak value, week of the peak value, epidemic and intensity thresholds and intensity level of each season analysed.}
 }
 \description{
 Function \code{memgoodness} perform the goodness of fit of the mem
@@ -84,6 +86,7 @@ data(flucyl)
 # Goodness of fit
 epi.good<-memgoodness(flucyl,i.detection.values=seq(2.5,2.8,0.1))
 epi.good$results
+epi.good$peaks
 
 }
 \references{
