@@ -94,7 +94,6 @@ memgoodness<-function(i.data,
 
   anios<-dim(i.data)[2]
   semanas<-dim(i.data)[1]
-  #validacion<-array(dim=c(12,anios),dimnames=c("year","indicator"))
   validacion<-array(NA,dim=c(14,anios))
   colnames(validacion)<-names(i.data)
 
@@ -224,17 +223,19 @@ memgoodness<-function(i.data,
 
   resultado[is.nan(resultado)]<-NA
 
-  maximos<-data.frame(maximos,stringsAsFactors = F)
-  names(maximos)<-maximos.seasons
-  rownames(maximos)<-c("Peak","Peak week","Epidemic threshold","Medium threshold","High threshold","Very high threshold","Level")
+  temp1<-data.frame(Description=c("Baseline","Low","Medium","High","Very high"),Level=1:5,stringsAsFactors = F)
+  maximos<-data.frame(t(maximos),stringsAsFactors = F)
+  rownames(maximos)<-maximos.seasons
+  names(maximos)<-c("Peak","Peak week","Epidemic threshold","Medium threshold","High threshold","Very high threshold","Level")
+  maximos<-merge(maximos,temp1,by="Level",all.x=T)
+  maximos<-maximos[c(2:7,1,8)]
 
-  temp1<-data.frame(description=c("Baseline","Low","Medium","High","Very high"),level=1:5,stringsAsFactors = F)
-  temp2<-data.frame(table(as.numeric(maximos[7,]), exclude=c(NA, NaN)),stringsAsFactors = F)
-  names(temp2)<-c("level","count")
+  temp2<-data.frame(table(as.numeric(maximos[,7]), exclude=c(NA, NaN)),stringsAsFactors = F)
+  names(temp2)<-c("Level","Count")
   temp3<-merge(temp1,temp2,all.x=T)
-  temp3$count[is.na(temp3$count)]<-0
-  temp3$percentage<-temp3$count/sum(temp3$count)
-  temp4<-data.frame(level=c(0,-1),description=c("No data","Total"),count=c(NCOL(maximos)-sum(temp3$count),NCOL(maximos)), percentage=c((NCOL(maximos)-sum(temp3$count))/NCOL(maximos),NCOL(maximos)),stringsAsFactors = F)
+  temp3$Count[is.na(temp3$Count)]<-0
+  temp3$Percentage<-temp3$Count/sum(temp3$Count)
+  temp4<-data.frame(Level=c(0,-1),Description=c("No data seasons","Total seasons"),Count=c(NCOL(maximos)-sum(temp3$Count),NCOL(maximos)), Percentage=c((NCOL(maximos)-sum(temp3$Count))/NCOL(maximos),1),stringsAsFactors = F)
   maximos.resultados<-rbind(temp3,temp4)
 
   memgoodness.output<-list(validity.data=validacion,
