@@ -225,9 +225,12 @@ memgoodness<-function(i.data,
 
   temp1<-data.frame(Description=c("Baseline","Low","Medium","High","Very high"),Level=1:5,stringsAsFactors = F)
   maximos<-data.frame(t(maximos),stringsAsFactors = F)
-  rownames(maximos)<-maximos.seasons
   names(maximos)<-c("Peak","Peak week","Epidemic threshold","Medium threshold","High threshold","Very high threshold","Level")
+  maximos$id  <- 1:NROW(maximos)
   maximos<-merge(maximos,temp1,by="Level",all.x=T)
+  maximos<-maximos[order(maximos$id), ]
+  rownames(maximos)<-maximos.seasons
+  maximos$id<-NULL
   maximos<-maximos[c(2:7,1,8)]
 
   temp2<-data.frame(table(as.numeric(maximos[,7]), exclude=c(NA, NaN)),stringsAsFactors = F)
