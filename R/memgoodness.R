@@ -146,7 +146,7 @@ memgoodness<-function(i.data,
         rownames(validacion)<-rownames(validacion.i$indicadores.t)
         # peak
         peak.i<-max.fix.na(datos.actual)
-        peak.week.i<-as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i==datos.actual])])
+        peak.week.i<-as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i==datos.actual], na.rm=T)])
         umbrales.i<-memintensity(datos.modelo)$intensity.thresholds
         if (umbrales.i[1]>umbrales.i[2]) umbrales.i[2]<-umbrales.i[1]*1.0000001
         level.i<-as.numeric(cut(peak.i,c(-Inf,umbrales.i,Inf)))
