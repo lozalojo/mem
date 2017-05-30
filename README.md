@@ -7,8 +7,6 @@
 [![CRAN](http://www.r-pkg.org/badges/version/mem?color=009999)](https://cran.r-project.org/package=mem)
 [![License](https://img.shields.io/badge/license-GPL%20%28%3E=%202%29-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html)
 
-https://camo.githubusercontent.com/722c4acc7df40661d9dfd2e03c731e11170a727c/68747470733a2f2f696d672e736869656c64732e696f2f62616467652f6c6963656e73652d47504c2532302532382533453d253230332532392d6c69676874677265792e7376673f7374796c653d666c6174
-
 ## Overview
 
 This is the R package of the Moving Epidemics Method
