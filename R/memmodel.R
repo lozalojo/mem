@@ -87,15 +87,15 @@
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
-#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
-#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
-#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International 
+#' Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
+#' Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
+#' International Congress Series, Options for the Control of Influenza V. Proceedings of the International
 #' Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and 
-#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving 
+#' Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
+#' Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
 #' Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz 
-#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
+#' Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
+#' de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
 #' the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 #'
 #' @keywords influenza
@@ -150,7 +150,7 @@ memmodel<-function(i.data,
       n.max=i.n.max
     }
   }
-  
+
   optimo<-apply(datos,2,memtiming,i.n.values=n.max,i.method=i.method,i.param=i.param)
 
   datos.duracion.real<-extraer.datos.optimo.map(optimo)
@@ -336,18 +336,6 @@ memmodel<-function(i.data,
 
   pre.post.intervalos<-rbind(pre.i,post.i)
 
-  ## Ademas, añadimos las estimaciones de las lineas basicas antes y despues
-
-  #lineas.basicas<-array(dim=c(semanas,3))
-  #
-  #for (i in 1:(inicio.medio-1)){
-  #	lineas.basicas[i,]<-pre.post.intervalos[1,1:3]
-  #}
-  #
-  #for (i in ((inicio.medio+duracion.media):semanas)){
-  #	lineas.basicas[i,]<-pre.post.intervalos[2,1:3]
-  #}
-
   memmodel.output<-list(pre.post.intervals=pre.post.intervalos,
     ci.length=ic.duracion,
     ci.percent=ic.porcentaje,
@@ -431,7 +419,7 @@ summary.mem<-function(object, ...){
   cat("\t- General:\n")
   cat("\t\t+ Number of seasons restriction: ", if (object$param.seasons==-1 | is.na(object$param.seasons)) "Unrestricted (maximum)" else paste("Restricted to ",object$param.seasons,sep=""),"\n")
   cat("\t\t+ Number of seasons used: ", object$n.seasons,"\n")
-  cat("\t\t+ Seasons used: ", paste(names(object$data),collapse=","),"\n")  
+  cat("\t\t+ Seasons used: ", paste(names(object$data),collapse=","),"\n")
   cat("\t\t+ Number of weeks: ", object$n.weeks,"\n")
   cat("\t- Confidence intervals:\n")
   cat("\t\t+ Epidemic threshold: ", output.ci(object$param.type.threshold,object$param.level.threshold,object$param.tails.threshold),"\n")

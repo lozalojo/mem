@@ -4,8 +4,8 @@ Title: The Moving Epidemics Method R Package
 Version: 2.5
 Date: 2017-05-30
 Authors@R: person("Lozano", "Jose E.", email = "lozalojo@gmail.com", role = c("aut", "cre"))
-Author: Jose E. Lozano [aut, cre]
-Maintainer: Jose E. Lozano <lozalojo@gmail.com>
+Author: Lozano Jose E. [aut, cre]
+Maintainer: Lozano Jose E. <lozalojo@gmail.com>
 Depends:
     R (>= 3.4.0)
 Imports:
@@ -15,8 +15,7 @@ Imports:
     RColorBrewer,
     mixtools,
     stringr
-Description: Modelization of influenza epidemics in order to monitor future
-    activity.
+Description: Modelisation of influenza epidemics in order to monitor future activity.
 License: GPL (>= 2)
 URL: https://github.com/lozalojo/mem
 RoxygenNote: 6.0.1

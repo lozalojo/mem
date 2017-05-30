@@ -5,7 +5,7 @@
 optimal.tickmarks<-function(i.min,i.max,i.number.ticks=10,
                             i.valid.ticks=apply(expand.grid(c(1,2,2.5,5), 10^(-10:10)), 1, FUN = function(x) {x[1] * x[2]}),
                             i.include.min=F,i.include.max=F){
-  # Y ahora calculo el tickmark que más se acerca a esos 10 tickmarks objetivo.
+  # Y ahora calculo el tickmark que mas se acerca a esos 10 tickmarks objetivo.
   # Opcion 1: libre, puedo poner ticks fuera de c(i.min,i.max)
   if (!i.include.min){
     ticks.min<-floor(i.min/i.valid.ticks)
@@ -18,7 +18,7 @@ optimal.tickmarks<-function(i.min,i.max,i.number.ticks=10,
     salto<-i.valid.ticks[posicion.ticks]
     # Tickmarks
     tickmarks<-seq(ini,fin,salto)
-    # El número de ticks resultante
+    # El numero de ticks resultante
     numero.ticks<-length(tickmarks)
     # Rango
     range.y<-c(ini,fin)
@@ -32,7 +32,7 @@ optimal.tickmarks<-function(i.min,i.max,i.number.ticks=10,
     salto<-i.valid.ticks[posicion.ticks]
     # Tickmarks
     tickmarks<-seq(ini,fin,salto)
-    # El número de ticks resultante
+    # El numero de ticks resultante
     numero.ticks<-length(tickmarks)
     if (i.include.max) {
       fin<-i.max
@@ -40,7 +40,7 @@ optimal.tickmarks<-function(i.min,i.max,i.number.ticks=10,
     }
     # Rango
     range.y<-c(ini,fin)
-  }  
+  }
   # Y la secuencia para definir el eje Y final
   return(list(by=salto,number=numero.ticks,range=range.y,tickmarks=tickmarks))
 }
