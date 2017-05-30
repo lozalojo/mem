@@ -1,0 +1,22 @@
+language: R
+cache: packages
+sudo: true
+dist: trusty
+
+r:
+  - release
+  - devel
+
+env:
+  global:
+  - _R_CHECK_FORCE_SUGGESTS_=false
+
+r_packages:
+  - covr
+
+after_success:
+  - Rscript -e 'library(covr); codecov()'
+
+before_install:
+  - sudo apt-get --yes --force-yes update -qq
+  - Rscript -e 'update.packages(ask = FALSE)'
