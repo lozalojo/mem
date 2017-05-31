@@ -86,14 +86,14 @@ memsurveillance.animated<-function(i.current,
                     i.output=i.output,
                     i.graph.file.name=paste(i.animated.graph.file.name,"_",i,sep=""),
                     i.range.y = c(0,y.max),...)
-    shell(paste("convert  \"",i.output,"/",i.animated.graph.file.name,"_",i,".tiff\" -resize 800x600 \"",i.output,"/",i.animated.graph.file.name,"_",i,".png\"",sep=""))
+    system(paste("convert  \"",i.output,"/",i.animated.graph.file.name,"_",i,".tiff\" -resize 800x600 \"",i.output,"/",i.animated.graph.file.name,"_",i,".png\"",sep=""))
     file.remove(paste(i.output,"/",i.animated.graph.file.name,"_",i,".tiff",sep=""))
   }
   if (i.animated.graph.file.name=="") graph.name=paste(i.output,"/animated graph.gif",sep="") else graph.name<-paste(i.output,"/",i.animated.graph.file.name,".gif",sep="")
   command<-paste("convert -delay ",i.delay," -loop ",i.loop,sep="")
   for (i in 1:NROW(i.current)) command<-paste(command," \"",i.output,"/",i.animated.graph.file.name,"_",i,".png\"",sep="")
   command<-paste(command, " \"",graph.name,"\"",sep="")
-  if (i.animated.graph.file) shell(command)
+  if (i.animated.graph.file) system(command)
   if (i.remove) for (i in 1:NROW(i.current)) file.remove(paste(i.output,"/",i.animated.graph.file.name,"_",i,".png",sep=""))
 
   #file.rename("Animated surveillance.gif",graph.name)
