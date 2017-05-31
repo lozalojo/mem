@@ -259,7 +259,7 @@ full.series.graph<-function(i.data,
   mtext(1,text="Week",line=2.5,cex=0.8,col=i.color.pattern[3])
   mtext(2,text="Weekly value",line=1.3,cex=0.8,col=i.color.pattern[3])
   mtext(3,text=i.graph.subtitle,cex=0.8,col=i.color.pattern[6])
-  mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
+  mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),
         line=0.75,cex=0.6,col="#404040")
 
   xa<-"topright"

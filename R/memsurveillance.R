@@ -285,7 +285,7 @@ memsurveillance<-function(i.current,
   mtext(1,text="Week",line=2.5,cex=0.8,col="#000040")
   mtext(2,text="Weekly value",line=1.3,cex=0.8,col="#000040")
   mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-  mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
+  mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),
         line=0.75,cex=0.6,col="#404040")
   # Etiquetas de los 4 umbrales
   if (!i.no.labels){

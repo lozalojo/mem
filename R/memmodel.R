@@ -498,7 +498,7 @@ plot.mem<-function(x,...){
   mtext(1,text="Week",line=2,cex=0.8,col="#000040")
   axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
   mtext(2,text="Weekly rate",line=1.3,cex=0.8,col="#000040")
-  mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
+  mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),
         line=0.75,cex=0.6,col="#404040")
   i.temporada<-x$ci.start[1,2]
   f.temporada<-x$ci.start[1,2]+x$mean.length-1
@@ -559,7 +559,7 @@ plot.mem<-function(x,...){
   # mtext(1,text="Week",line=2,cex=0.8,col="#000040")
   # axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
   # mtext(2,text="Weekly rate",line=1.3,cex=0.8,col="#000040")
-  # mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
+  # mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),
   #       line=0.75,cex=0.6,col="#404040")
   # xa<-c(i.temporada/2,1+rep(f.temporada,n.niveles))
   # ya<-c(lineas.basicas[1,3],limites.niveles)

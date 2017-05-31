@@ -170,7 +170,7 @@ roc.analysis <- function(i.data,
         mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
         mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
         mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-        mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
+        mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
         legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
 
       }
@@ -190,7 +190,7 @@ roc.analysis <- function(i.data,
         mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
         mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
         mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-        mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
+        mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
         legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
       }
       # d.x<-resultados$value
@@ -205,7 +205,7 @@ roc.analysis <- function(i.data,
       # mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
       # mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
       # mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-      # mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
+      # mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
       # legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
 
       if (any(!is.na(resultados$percent.agreement)) & any(!is.na(resultados$matthews.correlation.coefficient))){
@@ -223,7 +223,7 @@ roc.analysis <- function(i.data,
         mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
         mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
         mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-        mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
+        mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
         legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
       }
 
@@ -242,7 +242,7 @@ roc.analysis <- function(i.data,
         mtext(1,text="1 - specificity",line=1.3,cex=0.8,col="#000040")
         mtext(2,text="Sensitivity",line=1.3,cex=0.8,col="#000040")
         mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-        mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
+        mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
       }
       par(opar)
       if (i.graph.file) dev.off()

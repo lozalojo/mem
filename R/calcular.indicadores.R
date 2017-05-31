@@ -253,7 +253,7 @@ calcular.indicadores<-function(i.current,
       axis(1,at=seq(2,semanas,2),tick=F,mgp=c(3, 0.5, 0),
            labels=nombre.semana[seq(2,semanas,2)],cex.axis=0.6,line=0.60,col.axis="#404040",col="#C0C0C0")
       mtext(1,text="Week",line=2.5,cex=0.8,col="#000040")
-      mtext(4,text=paste("mem R library - Jos",rawToChar(as.raw(233))," E. Lozano - https://github.com/lozalojo/mem",sep=""),
+      mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),
             line=7,cex=0.6,col="#404040")
       # Etiquetas de los 4 umbrales
 
