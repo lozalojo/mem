@@ -19,5 +19,5 @@ after_success:
 
 before_install:
   - sudo apt-get --yes --force-yes update -qq
-  - sudo apt-get install --yes imagemagick
+  - sudo apt-get install --yes libmagick++-dev
   - Rscript -e 'update.packages(ask = FALSE)'

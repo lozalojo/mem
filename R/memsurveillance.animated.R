@@ -15,7 +15,7 @@
 #' @param i.output Directory where graph is saved.
 #' @param i.animated.graph.file If a animated gif should be produced, or just the intermediate graphics
 #' @param i.animated.graph.file.name Name of the animated graph.
-#' @param i.delay Delay between frames of the animated gif.
+#' @param i.fps Number of frames per second of the animated gif.
 #' @param i.loop Number of loops for the animated dif, 0 for Infinite.
 #' @param i.remove Remove partial graphs.
 #' @param ... Additional parameters parsed to memsurveillance.
@@ -37,7 +37,8 @@
 #' # Set the working directory to whererever you want to store the graph file
 #' setwd(".")
 #' m1<-a<-memsurveillance.animated(cur, i.animated.graph.file.name="Animated",
-#' i.epidemic.thresholds = e.thr,i.intensity.thresholds = i.thr, i.pos.epidemic = TRUE)
+#' i.epidemic.thresholds = e.thr,i.intensity.thresholds = i.thr, i.pos.epidemic = TRUE,
+#' i.animated.graph.file = FALSE)
 #'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
@@ -58,13 +59,14 @@
 #' @export
 #' @importFrom grDevices dev.off rgb tiff
 #' @importFrom graphics abline axis legend matplot mtext par points text lines
+#' @importFrom magick image_read image_write image_animate
 memsurveillance.animated<-function(i.current,
                                    i.epidemic.thresholds=NA,
                                    i.intensity.thresholds=NA,
                                    i.output=".",
                                    i.animated.graph.file = T,
-                                   i.animated.graph.file.name="",
-                                   i.delay=100,
+                                   i.animated.graph.file.name="animated",
+                                   i.fps=2,
                                    i.loop=0,
                                    i.remove=T,...){
 
@@ -86,15 +88,24 @@ memsurveillance.animated<-function(i.current,
                     i.output=i.output,
                     i.graph.file.name=paste(i.animated.graph.file.name,"_",i,sep=""),
                     i.range.y = c(0,y.max),...)
-    system(paste("convert  \"",i.output,"/",i.animated.graph.file.name,"_",i,".tiff\" -resize 800x600 \"",i.output,"/",i.animated.graph.file.name,"_",i,".png\"",sep=""))
-    file.remove(paste(i.output,"/",i.animated.graph.file.name,"_",i,".tiff",sep=""))
+    #shell(paste("convert  \"",i.output,"/",i.animated.graph.file.name,"_",i,".tiff\" -resize 800x600 \"",i.output,"/",i.animated.graph.file.name,"_",i,".png\"",sep=""))
+    #file.remove(paste(i.output,"/",i.animated.graph.file.name,"_",i,".tiff",sep=""))
+    if (i.animated.graph.file){
+      imgfile<-(paste(i.output,"/",i.animated.graph.file.name,"_",i,".tiff",sep=""))
+      if (i==1) imgfilem<-magick::image_read(imgfile) else imgfilem<-c(imgfilem,magick::image_read(imgfile))
+    }
   }
   if (i.animated.graph.file.name=="") graph.name=paste(i.output,"/animated graph.gif",sep="") else graph.name<-paste(i.output,"/",i.animated.graph.file.name,".gif",sep="")
-  command<-paste("convert -delay ",i.delay," -loop ",i.loop,sep="")
-  for (i in 1:NROW(i.current)) command<-paste(command," \"",i.output,"/",i.animated.graph.file.name,"_",i,".png\"",sep="")
-  command<-paste(command, " \"",graph.name,"\"",sep="")
-  if (i.animated.graph.file) system(command)
-  if (i.remove) for (i in 1:NROW(i.current)) file.remove(paste(i.output,"/",i.animated.graph.file.name,"_",i,".png",sep=""))
+  #command<-paste("convert -delay ",i.delay," -loop ",i.loop,sep="")
+  #for (i in 1:NROW(i.current)) command<-paste(command," \"",i.output,"/",i.animated.graph.file.name,"_",i,".png\"",sep="")
+  #command<-paste(command, " \"",graph.name,"\"",sep="")
+  #if (i.animated.graph.file) shell(command)
+  if (i.animated.graph.file){
+    anim <- magick::image_animate(imgfilem, fps = i.fps, loop = i.loop)
+    magick::image_write(anim, path = graph.name)
+  }
+  #if (i.remove) for (i in 1:NROW(i.current)) file.remove(paste(i.output,"/",i.animated.graph.file.name,"_",i,".png",sep=""))
+  if (i.remove) for (i in 1:NROW(i.current)) file.remove(paste(i.output,"/",i.animated.graph.file.name,"_",i,".tiff",sep=""))
 
   #file.rename("Animated surveillance.gif",graph.name)
   cat(graph.name,"\n")
@@ -105,7 +116,7 @@ memsurveillance.animated<-function(i.current,
                                         param.output=i.output,
                                         param.animated.graph.file=i.animated.graph.file,
                                         param.animated.graph.file.name=i.animated.graph.file.name,
-                                        param.delay=i.delay,
+                                        param.fps=i.fps,
                                         param.loop=i.loop,
                                         param.remove=i.remove)
   memsurveillance.animated.output$call<-match.call()
