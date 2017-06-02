@@ -13,6 +13,16 @@ This is the R package of the Moving Epidemics Method
 
 ## Installation
 
+The package can be installed from the official R repositories (*CRAN*) using the built-in install function:
+
+```
+# install the mem CRAN version
+install.packages("mem")
+```
+
+To install the lastest development version of *mem*, it is recommended to install it from the sources at github.
+
+
 ```
 # in case you dont have devtools installed, install it
 install.packages(devtools)
