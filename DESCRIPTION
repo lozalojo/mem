@@ -1,7 +1,7 @@
 Package: mem
 Type: Package
 Title: The Moving Epidemics Method R Package
-Version: 2.6
+Version: 2.6.20170605
 Date: 2017-06-05
 Authors@R: person("Lozano", "Jose E.", email = "lozalojo@gmail.com", role = c("aut", "cre"))
 Author: Lozano Jose E. [aut, cre]
