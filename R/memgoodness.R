@@ -148,6 +148,7 @@ memgoodness<-function(i.data,
         peak.i<-max.fix.na(datos.actual)
         peak.week.i<-as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i==datos.actual], na.rm=T)])
         umbrales.i<-memintensity(datos.modelo)$intensity.thresholds
+        if (is.na(umbrales.i[1])) umbrales.i[1]<-0
         if (umbrales.i[1]>umbrales.i[2]) umbrales.i[2]<-umbrales.i[1]*1.0000001
         level.i<-as.numeric(cut(peak.i,c(-Inf,umbrales.i,Inf)))
         maximos<-cbind(maximos,c(peak.i,peak.week.i,umbrales.i,level.i))
@@ -195,6 +196,7 @@ memgoodness<-function(i.data,
         peak.i<-max.fix.na(datos.actual)
         peak.week.i<-as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i==datos.actual])])
         umbrales.i<-memintensity(datos.modelo)$intensity.thresholds
+        if (is.na(umbrales.i[1])) umbrales.i[1]<-0
         if (umbrales.i[1]>umbrales.i[2]) umbrales.i[2]<-umbrales.i[1]*1.0000001
         level.i<-as.numeric(cut(peak.i,c(-Inf,umbrales.i,Inf)))
         maximos<-cbind(maximos,c(peak.i,peak.week.i,umbrales.i,level.i))
