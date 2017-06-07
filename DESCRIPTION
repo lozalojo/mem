@@ -3,7 +3,7 @@ Type: Package
 Title: The Moving Epidemics Method R Package
 Version: 2.7.20170606
 Date: 2017-06-05
-Authors@R: person("Lozano", "Jose E.", email = "lozalojo@gmail.com", role = c("aut", "cre"))
+Authors@R: person(given = "Jose E.", family = "Lozano", email = "lozalojo@gmail.com", role = c("aut", "cre"))
 Depends:
     R (>= 3.4.0)
 Imports:
