@@ -70,7 +70,9 @@ memsurveillance.animated<-function(i.current,
                                    i.loop=0,
                                    i.remove=T,...){
 
-  if (is.null(dim(i.current))) stop('Incorrect number of dimensions, input must be a data.frame.') else if (!(ncol(i.current)==1)) stop('Incorrect number of dimensions, only one season required.')
+  if (!requireNamespace("magick", quietly = TRUE)) stop('magick package needed for this function to work. Please install it.', call. = FALSE)
+
+  if (is.null(dim(i.current))) stop('Incorrect number of dimensions, input must be a data.frame.', call. = FALSE) else if (!(ncol(i.current)==1)) stop('Incorrect number of dimensions, only one season required.', call. = FALSE)
 
   y.max<-max(i.current,na.rm=T)
 
