@@ -55,7 +55,7 @@ e.thr<-epi$epidemic.thresholds
 i.thr<-epi$intensity.thresholds
 # Set the working directory to whererever you want to store the graph file
 setwd(".")
-m1<-a<-memsurveillance.animated(cur, i.animated.graph.file.name="Animated",
+m1<-memsurveillance.animated(cur, i.animated.graph.file.name="Animated",
 i.epidemic.thresholds = e.thr,i.intensity.thresholds = i.thr, i.pos.epidemic = TRUE,
 i.animated.graph.file = FALSE)
 
