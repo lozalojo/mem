@@ -1,4 +1,4 @@
-# The Moving Epidemics Method R Package
+# The Moving Epidemic Method R Package
 
 [![Travis-CI Build Status](https://travis-ci.org/lozalojo/mem.svg?branch=master)](https://travis-ci.org/lozalojo/mem)
 [![Coverage Status](https://img.shields.io/codecov/c/github/lozalojo/mem/master.svg)](https://codecov.io/github/lozalojo/mem?branch=master)
@@ -10,7 +10,7 @@
 
 ## Overview
 
-This is the R package of the Moving Epidemics Method
+This is the R package of the Moving Epidemic Method
 
 ## Installation
 
@@ -44,10 +44,10 @@ help("mem")
 
 ## References
 
-Vega T., Lozano J.E. (2004) Modelling influenza epidemic - can we detect the beginning 
-and predict the intensity and duration? International Congress Series 1263 (2004) 
-281-283.
+Vega T., Lozano J.E. (2004) Modelling influenza epidemic - can we detect the beginning and predict the intensity and duration? International Congress Series 1263 (2004) 281-283.
 
-Vega T., Lozano J.E. (2012) Influenza surveillance in Europe: establishing epidemic 
-thresholds by the Moving Epidemic Method. Influenza and Other Respiratory Viruses, 
-DOI:10.1111/j.1750-2659.2012.00422.x.
+Vega T., Lozano J.E. (2012) Influenza surveillance in Europe: establishing epidemic thresholds by the Moving Epidemic Method. Influenza and Other Respiratory Viruses, DOI:10.1111/j.1750-2659.2012.00422.x.
+
+Lozano, Jose E. mem R package: First version of the MEM R library [Internet]. Valladolid, Spain: Foundation Institute of Health Sciences Studies of Castilla y Leon; 2014. Available from: https://cran.r-project.org/web/packages/mem/index.html
+
+Lozano, Jose E. lozalojo/mem: Second release of the MEM R library. Zenodo [Internet]. [cited 2017 Feb 1]; Available from: https://zenodo.org/record/165983
