@@ -440,7 +440,7 @@ summary.mem<-function(object, ...){
   cat("\t\t+ Technique: ", if (is.na(object$param.type.boot)) "-" else object$param.type.boot,"\n")
   cat("\t\t+ Bootstrap samples: ", if (is.na(object$param.iter.boot)) "-" else object$param.iter.boot,"\n")
   cat("\nEpidemic description:\n")
-  cat("\t- Typical influenza season lasts ",round(object$ci.length[1,2],2)," weeks. CL ",100*object$param.level,"% of\t[",round(object$ci.length[1,1],2),",",round(object$ci.length[1,3],2),"]\n")
+  cat("\t- Typical influenza season lasts ",round(object$ci.length[1,2],2)," weeks. ",100*object$param.level.other,"%CI \t[",round(object$ci.length[1,1],2),",",round(object$ci.length[1,3],2),"]\n")
   cat("\t- This optimal ",object$mean.length," weeks influenza season includes the",round(object$ci.percent[2],2),"% of the total sum of rates\n\n")
   cat("\nEpidemic threshold:\n")
   print(threshold)
