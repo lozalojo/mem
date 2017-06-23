@@ -14,14 +14,14 @@ This is the R package of the Moving Epidemic Method
 
 ## Installation
 
-The package can be installed from the official R repositories (*CRAN*) using the built-in install function:
+To install the lastest stable version from the official R repositories (*CRAN*):
 
 ```
 # install the mem CRAN version
 install.packages("mem")
 ```
 
-To install the lastest development version of *mem*, it is recommended to install it from the sources at github.
+To install the lastest development version of *mem*.
 
 
 ```
@@ -44,10 +44,10 @@ help("mem")
 
 ## References
 
-Vega T., Lozano J.E. (2004) Modelling influenza epidemic - can we detect the beginning and predict the intensity and duration? International Congress Series 1263 (2004) 281-283.
+Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic—can we detect the beginning and predict the intensity and duration? Int Congr Ser. 2004 Jun;1263:281–3. 
 
-Vega T., Lozano J.E. (2012) Influenza surveillance in Europe: establishing epidemic thresholds by the Moving Epidemic Method. Influenza and Other Respiratory Viruses, DOI:10.1111/j.1750-2659.2012.00422.x.
+Vega T, Lozano JE, Meerhoff T, Snacken R, Mott J, Ortiz de Lejarazu R, et al. Influenza surveillance in Europe: establishing epidemic thresholds by the moving epidemic method. Influenza Other Respir Viruses. 2013 Jul;7(4):546–58. DOI:10.1111/j.1750-2659.2012.00422.x.
 
-Lozano, Jose E. mem R package: First version of the MEM R library [Internet]. Valladolid, Spain: Foundation Institute of Health Sciences Studies of Castilla y Leon; 2014. Available from: https://cran.r-project.org/web/packages/mem/index.html
+Vega T, Lozano JE, Meerhoff T, Snacken R, Beaute J, Jorgensen P, et al. Influenza surveillance in Europe: comparing intensity levels calculated using the moving epidemic method. Influenza Other Respir Viruses. 2015 Sep;9(5):234–46. DOI:10.1111/irv.12330.
 
-Lozano, Jose E. lozalojo/mem: Second release of the MEM R library. Zenodo [Internet]. [cited 2017 Feb 1]; Available from: https://zenodo.org/record/165983
+Lozano JE. lozalojo/mem: Second release of the MEM R library. Zenodo [Internet]. [cited 2017 Feb 1]; Available from: https://zenodo.org/record/165983. DOI:10.5281/zenodo.165983
