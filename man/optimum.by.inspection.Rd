@@ -4,12 +4,26 @@
 \alias{optimum.by.inspection}
 \title{Inspection calcultation of the optimum}
 \usage{
-optimum.by.inspection(i.data, i.detection.values = seq(1.5, 4.5, 0.1))
+optimum.by.inspection(i.data, i.param.values = seq(1.5, 4.5, 0.1),
+  i.graph = T, i.graph.file = F, i.graph.file.name = "",
+  i.graph.title = "", i.graph.subtitle = "", i.output = ".")
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
 
-\item{i.detection.values}{values to use in the i.param value of \code{memtiming}.}
+\item{i.param.values}{values to use in the i.param value of \code{memtiming}.}
+
+\item{i.graph}{create a graph with the outputs (T/F).}
+
+\item{i.graph.file}{write the graph to a file.}
+
+\item{i.graph.file.name}{name of the output file.}
+
+\item{i.graph.title}{title of the graph.}
+
+\item{i.graph.subtitle}{subtitle of the graph.}
+
+\item{i.output}{output directory.}
 }
 \value{
 \code{optimum.by.inspection} returns a list.
@@ -30,20 +44,20 @@ To be written
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Inspection. It runs interactively (uncomment to run)
-#opt.ins<-optimum.by.inspection(flucyl,i.detection.values=seq(2.0,3.0,0.1))
+#opt.ins<-optimum.by.inspection(flucyl,i.param.values=seq(2.0,3.0,0.1))
 #opt.ins$optimum.data
 
 }
 \references{
-Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
-Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
-International Congress Series, Options for the Control of Influenza V. Proceedings of the International 
+Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
+Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
+International Congress Series, Options for the Control of Influenza V. Proceedings of the International
 Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and 
-Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving 
+Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
+Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
 Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz 
-de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
+Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
+de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
 the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 }
 \author{

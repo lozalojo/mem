@@ -81,7 +81,7 @@ calcular.indicadores.2.timings<-function(i.current,
     anchos<-c(3)
     colores<-c("#808080")
 
-      opar<-par(mar=c(4,4,1,8)+0.1,xpd=TRUE)
+      opar<-par(mar=c(4,4,3,8)+0.1,xpd=TRUE)
       #,mgp=c(3,0.5,0),xpd=T)
       # Grafico principal
       matplot(range.x,

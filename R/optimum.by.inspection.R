@@ -51,7 +51,7 @@
 #' @importFrom graphics identify
 optimum.by.inspection<-function(i.data,
                                 i.param.values=seq(1.5,4.5,0.1),
-                                i.graph=F,
+                                i.graph=T,
                                 i.graph.file=F,
                                 i.graph.file.name="",
                                 i.graph.title="",
@@ -202,19 +202,23 @@ optimum.by.inspection<-function(i.data,
 
     if (i.graph.file.name=="") graph.name="inspection analysis" else graph.name<-i.graph.file.name
 
+    graph.title<-nombre.anios[i]
+    if (i.graph.subtitle!="") graph.title<-paste(i.graph.subtitle," - ",graph.title,sep="")
+    if (i.graph.title!="") graph.title<-paste(i.graph.title,"\n",graph.title,sep="")
+
     for (i in 1:anios){
       cur<-i.data[i]
       i.timing.1.i<-i.timing.1[i,]
       curva.map<-calcular.map(as.vector(as.matrix(cur)))
-      i.param.deteccion<-optimo[1]
+      i.param.deteccion<-optimum$matthews
       i.param.deteccion.label<-format(round(i.param.deteccion,1),digits=3,nsmall=1)
       i.timing.2<-calcular.optimo(curva.map,2,i.param.deteccion)[4:5]
       dummmmyyyy<-calcular.indicadores.2.timings(cur, i.timing.1.i, i.timing.2,
                                                  i.timing.labels=c("inspection",i.param.deteccion.label),
-                                                 i.graph.title=nombre.anios[i],
-                                                 i.graph.file=T,
+                                                 i.graph.title=graph.title,
+                                                 i.graph.file=i.graph.file,
                                                  i.graph.file.name=paste(graph.name," - ",i,sep=""))
-      #dummmmyyyy<-readline("Press any key to continue\n")
+      if (!i.graph.file) dummmmyyyy<-readline("Press any key to continue\n")
     }
   }
 
