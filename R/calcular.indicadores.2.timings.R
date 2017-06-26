@@ -201,5 +201,11 @@ calcular.indicadores.2.timings<-function(i.current,
         cat("graph created: ",getwd(),"/",i.output,"/",graph.name,".tiff","\n",sep="")
       }
 
+  names(indicadores)<- c("weeks","non.missing.weeks","true.positives","false.positives",
+                                                 "true.negatives","false.negatives","sensitivity","specificity",
+                                                 "positive.predictive.value","negative.predictive.value",
+                                                 "positive.likehood.ratio","negative.likehood.ratio",
+                                                 "percent.agreement","matthews.correlation.coefficient")
+
   return(list(resultado.1=resultado.1,resultado.2=resultado.2,resultado.3=resultado.3,indicadores=indicadores))
 }
