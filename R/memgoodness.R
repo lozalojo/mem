@@ -141,7 +141,7 @@ memgoodness<-function(i.data,
                                            i.valores.parametro.deteccion=i.detection.values,
                                            i.output=i.output,
                                            i.graph=i.graph,
-                                           i.graph.name=paste(i.prefix,"[mem] Cross ",i,sep=""))
+                                           i.graph.name=paste(i.prefix," Goodness ",i,sep=""))
         validacion[,i]<-validacion.i$indicadores.t
         rownames(validacion)<-rownames(validacion.i$indicadores.t)
         # peak
@@ -189,7 +189,7 @@ memgoodness<-function(i.data,
                                            i.valores.parametro.deteccion=i.detection.values,
                                            i.output=i.output,
                                            i.graph=i.graph,
-                                           i.graph.name=paste(i.prefix,"[mem] Seque ",i,sep=""))
+                                           i.graph.name=paste(i.prefix," Goodness ",i,sep=""))
         validacion[,i]<-validacion.i$indicadores.t
         rownames(validacion)<-rownames(validacion.i$indicadores.t)
         # peak
