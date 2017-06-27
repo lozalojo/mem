@@ -270,7 +270,8 @@ memgoodness<-function(i.data,
                           param.weeks.above=i.weeks.above,
                           param.output=i.output,
                           param.graph=i.graph,
-                          param.prefix=i.prefix)
+                          param.prefix=i.prefix,
+                          param.min.seasons=i.min.seasons)
   memgoodness.output$call<-match.call()
   return(memgoodness.output)
 }

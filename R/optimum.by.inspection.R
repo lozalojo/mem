@@ -193,8 +193,17 @@ optimum.by.inspection<-function(i.data,
                          mixed = rankings.5, percent = rankings.6, matthews=rankings.7)
 
 
-  optimum.by.inspection.output <- list(optimum = optimum, rankings = rankings, insp.data = resultados,
-                                       param.data = i.data, param.param.values = i.param.values)
+  optimum.by.inspection.output <- list(optimum = optimum,
+                                       rankings = rankings,
+                                       insp.data = resultados,
+                                       param.data = i.data,
+                                       param.param.values = i.param.values,
+                                       param.graph=i.graph,
+                                       param.graph.file=i.graph.file,
+                                       param.graph.file.name=i.graph.file.name,
+                                       param.graph.title=i.graph.title,
+                                       param.graph.subtitle=i.graph.subtitle,
+                                       param.output=i.output)
   optimum.by.inspection.output$call <- match.call()
 
   # Graph all data
