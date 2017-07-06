@@ -19,7 +19,7 @@ removed.
 \section{Details}{
 
 \tabular{rl}{
-  \code{epitiming} \tab now a synonym for \code{\link{memtiming}}\cr
+  \code{epitiming} \tab now a synonym for \code{\link{memtiming}}
 }
 }
 

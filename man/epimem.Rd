@@ -28,7 +28,7 @@ removed.
 \section{Details}{
 
 \tabular{rl}{
-  \code{epimem} \tab now a synonym for \code{\link{memmodel}}\cr
+  \code{epimem} \tab now a synonym for \code{\link{memmodel}}
 }
 }
 

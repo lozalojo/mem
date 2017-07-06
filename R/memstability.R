@@ -12,8 +12,8 @@
 #' \code{memstability} returns a list.
 #' A list containing at least the following components:
 #' \itemize{
-#'   \item{stability.data}{data for each value analysed.}
-#'   \item{stability.seasons}{seasons used for each iteration.}
+#'   \item{stability.data} {data for each value analysed.}
+#'   \item{stability.seasons} {seasons used for each iteration.}
 #' }
 #'
 #' @details

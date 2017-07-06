@@ -33,17 +33,17 @@
 #' \code{memmodel} returns an object of class \code{mem}.
 #' An object of class \code{mem} is a list containing at least the following components:
 #' \itemize{
-#'   \item{i.data}{input data}
-#'   \item{pre.post.intervals}{Pre/post confidence intervals (Threhold is the upper limit
+#'   \item{i.data} {input data}
+#'   \item{pre.post.intervals} {Pre/post confidence intervals (Threhold is the upper limit
 #'   of the confidence interval).}
-#'   \item{ci.length}{Mean epidemic length confidence interval.}
-#'   \item{ci.percent}{Mean covered percentage confidence interval.}
-#'   \item{mean.length}{Mean length.}
-#'   \item{moving.epidemics}{Moving epidemic rates.}
-#'   \item{mean.start}{Mean epidemic start.}
-#'   \item{epi.intervals}{Epidemic levels of intensity.}
-#'   \item{typ.curve}{Typical epidemic curve.}
-#'   \item{n.max}{Effective number of pre epidemic values.}
+#'   \item{ci.length} {Mean epidemic length confidence interval.}
+#'   \item{ci.percent} {Mean covered percentage confidence interval.}
+#'   \item{mean.length} {Mean length.}
+#'   \item{moving.epidemics} {Moving epidemic rates.}
+#'   \item{mean.start} {Mean epidemic start.}
+#'   \item{epi.intervals} {Epidemic levels of intensity.}
+#'   \item{typ.curve} {Typical epidemic curve.}
+#'   \item{n.max} {Effective number of pre epidemic values.}
 #' }
 #'
 #' @details
@@ -62,12 +62,12 @@
 #' All three parameters must be a number between \code{1} and \code{6}:
 #'
 #' \itemize{
-#' \item {1}{Arithmetic mean and mean confidence interval.}
-#' \item {2}{Geometric mean and mean confidence interval.}
-#' \item {3}{Median and the KC Method to calculate its confidence interval.}
-#' \item {4}{Median and bootstrap confidence interval.}
-#' \item {5}{Arithmetic mean and point confidence interval (standard deviations).}
-#' \item {6}{Geometric mean and point confidence interval (standard deviations).}
+#' \item{1} {Arithmetic mean and mean confidence interval.}
+#' \item{2} {Geometric mean and mean confidence interval.}
+#' \item{3} {Median and the KC Method to calculate its confidence interval.}
+#' \item{4} {Median and bootstrap confidence interval.}
+#' \item{5} {Arithmetic mean and point confidence interval (standard deviations).}
+#' \item{6} {Geometric mean and point confidence interval (standard deviations).}
 #' }
 #'
 #' Option \code{4} uses two more parameters: \code{i.type.boot} indicates which bootstrap

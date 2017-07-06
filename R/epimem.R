@@ -17,7 +17,7 @@
 #'
 #' @section Details:
 #' \tabular{rl}{
-#'   \code{epimem} \tab now a synonym for \code{\link{memmodel}}\cr
+#'   \code{epimem} \tab now a synonym for \code{\link{memmodel}}
 #' }
 #'
 epimem <- function(i.data, i.tails=1, i.levels=c(0.40,0.90,0.975), i.type=2, i.level=0.95, ...) {

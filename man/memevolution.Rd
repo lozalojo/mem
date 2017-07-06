@@ -20,7 +20,7 @@ memevolution(i.data, i.evolution.seasons = 10,
 \code{memevolution} returns a list.
 A list containing at least the following components:
 \itemize{
-  \item{evolution.data}{data for each value analysed.}
+  \item{evolution.data} {data for each value analysed.}
 }
 }
 \description{

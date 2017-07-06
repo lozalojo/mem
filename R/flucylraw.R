@@ -28,7 +28,7 @@
 #' de Sanidad. Junta de Castilla y Leon 2001-2008.
 #' @references
 #' Castilla y Leon Health Sentinel Network Reports (Informes de la Red Centinela Sanitaria
-#' de Castilla y Leon: \url{http://www.salud.jcyl.es/centinelas}).\cr
+#' de Castilla y Leon: \url{http://www.salud.jcyl.es/centinelas}).
 #' Influenza Surveillance Programme (Programa de vigilancia de la gripe:
 #' \url{http://www.salud.jcyl.es/centinelas}).
 #' @examples
