@@ -1,42 +1,10 @@
-#' Methods for influenza modelization
+#' @title Methods for influenza modelization
 #'
+#' @description
 #' Function \code{memmodel} is used to calculate the threshold for influenza epidemic using historical
 #' records (surveillance rates).\cr
 #' The method to calculate the threshold is described in the Moving Epidemics Method (MEM) used to
 #' monitor influenza activity in a weekly surveillance system.
-#'
-#' Input data is a data frame containing rates that represent historical influenza surveillance
-#' data. It can start and end at any given week (tipically at week 40th), and rates can be
-#' expressed as per 100,000 inhabitants (or per consultations, if population is not
-#' available) or any other scale.\cr
-#' Parameters \code{i.type}, \code{i.type.threshold} and \code{i.type.curve} defines how to
-#' calculate confidence intervals along the process.\cr
-#' \code{i.type.curve} is used for calculating the typical influenza curve,
-#' \code{i.type.threshold} is used to calculate the pre and post epidemic threshold and
-#' \code{i.type} is used for any other confidende interval used in the method.\cr
-#' All three parameters must be a number between \code{1} and \code{6}:\cr
-#' \tabular{rlll}{
-#' \tab \code{1} \tab Arithmetic mean and mean confidence interval.\cr
-#' \tab \code{2} \tab Geometric mean and mean confidence interval.\cr
-#' \tab \code{3} \tab Median and the KC Method to calculate its confidence interval.\cr
-#' \tab \code{4} \tab Median and bootstrap confidence interval.\cr
-#' \tab \code{5} \tab Arithmetic mean and point confidence interval (standard deviations).\cr
-#' \tab \code{6} \tab Geometric mean and point confidence interval (standard deviations).\cr
-#' }
-#' Option \code{4} uses two more parameters: \code{i.type.boot} indicates which bootstrap
-#' method to use. The values are the same of those of the \code{\link{boot.ci}} function.
-#' Parameter \code{i.iter.boot} indicates the number of bootstrap samples to use. See
-#' \code{\link{boot}} for more information about this topic.\cr
-#' Parameters \code{i.level}, \code{i.level.threshold} and \code{i.level.curve} indicates,
-#' respectively, the level of the confidence intervals described above.\cr
-#' The \code{i.n.max} parameter indicates how many pre epidemic values to use to calculate
-#' the threshold. A value of -1 indicates the program to use an appropiate number of points
-#' depending on the number of seasons provided as input. \code{i.tails} tells the program
-#' to use {1} or {2} tailed confidence intervals when calculating the threshold (1 is
-#' recommended).\cr
-#' Parameters \code{i.method} and \code{i.param} indicates how to find the optimal timing
-#' of the epidemics. See \code{\link{memtiming}} for details on the values this parameters
-#' can have.
 #'
 #' @name memmodel
 #'
@@ -74,6 +42,82 @@
 #'   \item{epi.intervals }{Epidemic levels of intensity.}
 #'   \item{typ.curve }{Typical epidemic curve.}
 #'   \item{n.max }{Effective number of pre epidemic values.}
+#'
+#' @details
+#'
+#' Input data is a data frame containing rates that represent historical influenza surveillance
+#' data. It can start and end at any given week (tipically at week 40th), and rates can be
+#' expressed as per 100,000 inhabitants (or per consultations, if population is not
+#' available) or any other scale.\cr
+#' Parameters \code{i.type}, \code{i.type.threshold} and \code{i.type.curve} defines how to
+#' calculate confidence intervals along the process.\cr
+#' \code{i.type.curve} is used for calculating the typical influenza curve,
+#' \code{i.type.threshold} is used to calculate the pre and post epidemic threshold and
+#' \code{i.type} is used for any other confidende interval used in the method.\cr
+#' All three parameters must be a number between \code{1} and \code{6}:\cr
+#' \tabular{rlll}{
+#' \tab \code{1} \tab Arithmetic mean and mean confidence interval.\cr
+#' \tab \code{2} \tab Geometric mean and mean confidence interval.\cr
+#' \tab \code{3} \tab Median and the KC Method to calculate its confidence interval.\cr
+#' \tab \code{4} \tab Median and bootstrap confidence interval.\cr
+#' \tab \code{5} \tab Arithmetic mean and point confidence interval (standard deviations).\cr
+#' \tab \code{6} \tab Geometric mean and point confidence interval (standard deviations).\cr
+#' }
+#' Option \code{4} uses two more parameters: \code{i.type.boot} indicates which bootstrap
+#' method to use. The values are the same of those of the \code{\link{boot.ci}} function.
+#' Parameter \code{i.iter.boot} indicates the number of bootstrap samples to use. See
+#' \code{\link{boot}} for more information about this topic.\cr
+#' Parameters \code{i.level}, \code{i.level.threshold} and \code{i.level.curve} indicates,
+#' respectively, the level of the confidence intervals described above.\cr
+#' The \code{i.n.max} parameter indicates how many pre epidemic values to use to calculate
+#' the threshold. A value of -1 indicates the program to use an appropiate number of points
+#' depending on the number of seasons provided as input. \code{i.tails} tells the program
+#' to use {1} or {2} tailed confidence intervals when calculating the threshold (1 is
+#' recommended).\cr
+#' Parameters \code{i.method} and \code{i.param} indicates how to find the optimal timing
+#' of the epidemics. See \code{\link{memtiming}} for details on the values this parameters
+#' can have.
+#'
+#' It is important to know how to arrange information in order to use with memapp. The key points are:
+#'
+#' \itemize{
+#'   \item One single epidemic wave each season.
+#'   \item Never delete a rate inside an epidemic.
+#'   \item Accommodate week 53.
+#'   \item Do not inflate missing values with zeroes.
+#' }
+#'
+#' Data must contain information from the historical series. Surveillance period can start and end at
+#' any given week (typically start at week 40th and ends at week 20th), and data can have any units and
+#' can be expressed in any scale (typically rates per 100,000 inhabitants or consultations).
+#'
+#' The table must have one row per epidemiological week and one column per surveillance season. A season
+#' is a full surveillance period from the beginning to the end, where occurs at some point one single
+#' epidemic wave on it. No epidemic wave can be spared in two consecutive seasons. If so, you have to
+#' redefine the start and end of the season defined in your dataset. If a season have two waves, it must
+#' be split in two periods and must be named accordingly with the seasons name conventions described
+#' below. Each cell contains the value for a given week in a given season.
+#'
+#' The first column should contain the names of the weeks. When the season contains two different calendar
+#' years, the week will go from 40th of the first year to 52nd, and then from 1st to 20th. When the season
+#' contains one year, the weeks will go from 1st to 52nd.
+#'
+#' Note: If there is no column with week names, the application will name the weeks numbering from 1 to
+#' the number of rows.
+#'
+#' \itemize{
+#'   \item In the northern hemisphere countries, the surveillance period usually goes from
+#' week 40 to 20 of the following year (notation: season 2016/2017).
+#'   \item In the southern hemisphere countries, the surveillance period usually goes from
+#' week 18 to 39 same year (notation: season 2017).
+#' }
+#'
+#' The first row must contain the names of the seasons. This application understand the naming of a
+#' season when it contains one or two four digits year separated by / and one one-digit number
+#' between parenthesis to identify the wave number. The wave number part in a name of a season is
+#' used when a single surveillance period has two epidemic waves that have to be separated in order
+#' to have reliable results. In this case, each wave is placed in different columns and named ending
+#' with (1) for the first period, (2) for the second, and so on.
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data

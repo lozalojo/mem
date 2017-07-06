@@ -1,8 +1,7 @@
-#' evolution of estimators
+#' @title Evolution of estimators
 #'
+#' @description
 #' Function \code{memevolution} analyzes the evolution of mem estimators
-#'
-#' To be written
 #'
 #' @name memevolution
 #'
@@ -15,6 +14,39 @@
 #' \code{memevolution} returns a list.
 #' A list containing at least the following components:
 #'   \item{evolution.data}{data for each value analysed.}
+#'
+#' @details
+#'
+#' Shows the evolution of some indicators across time. The indicators are: duration of the epidemic,
+#' start of the epidemic, epidemic percentage, pre-epidemic, post-epidemic and intensity thresholds.
+#'
+#' Values per season are the estimates of the indicator for this specific season calculated according the
+#' \link{memmodel} options: cross or sequential (validation option), maximum number of seasons to use in calculations.
+#' In \link{memmodel} is it also possible to select the method used to calculate indicators and the level of
+#' confidence of the confidence intervals.
+#'
+#' To clarify how it is calculated, the \code{evolution.seasons} showss for each x-axis point the seasons
+#' selected to calculate thresholds. Each row is a different season and in each column it is shown if that
+#' specific season has been used to calculate the indicators. If \code{TRUE}, it has been used, if \code{NO}, it hasn't.
+#' In the last row, called Next, the indicators are calculated for the upcoming next season.
+#'
+#' Note that if you select sequential validation, first points in the graphs calculate thresholds
+#' using less data (there are less seasons before the current data than the max. seasons value), and
+#' this will affect the range of confidence intervals.
+#'
+#' There are four indicators:
+#'
+#' \itemize{
+#'   \item Duration: Average duration of the epidemic and its confidence interval.
+#'   \item Start: Average start of the epidemic and its confidence interval.
+#'   \item Percentage: the epidemic percentage. The sum of the values (cases/rates) in the epidemic period
+#' divided by the total sum of values of the whole surveillance period. It's a coverage percentage
+#' of the epidemic period. And its confidence interval.
+#'   \item Thresholds: pre-epidemic, post-epidemic and intensity thresholds.
+#' }
+#'
+#' The confidence intervals for these indicators are calculated using the other CI and other CI.
+#' level parameters of \link{memmodel}.
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data

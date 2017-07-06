@@ -101,6 +101,47 @@ recommended).\cr
 Parameters \code{i.method} and \code{i.param} indicates how to find the optimal timing
 of the epidemics. See \code{\link{memtiming}} for details on the values this parameters
 can have.
+
+It is important to know how to arrange information in order to use with memapp. The key points are:
+
+\itemize{
+  \item One single epidemic wave each season.
+  \item Never delete a rate inside an epidemic.
+  \item Accommodate week 53.
+  \item Do not inflate missing values with zeroes.
+}
+
+Data must contain information from the historical series. Surveillance period can start and end at
+any given week (typically start at week 40th and ends at week 20th), and data can have any units and
+can be expressed in any scale (typically rates per 100,000 inhabitants or consultations).
+
+The table must have one row per epidemiological week and one column per surveillance season. A season
+is a full surveillance period from the beginning to the end, where occurs at some point one single
+epidemic wave on it. No epidemic wave can be spared in two consecutive seasons. If so, you have to
+redefine the start and end of the season defined in your dataset. If a season have two waves, it must
+be split in two periods and must be named accordingly with the seasons name conventions described
+below. Each cell contains the value for a given week in a given season.
+
+The first column should contain the names of the weeks. When the season contains two different calendar
+years, the week will go from 40th of the first year to 52nd, and then from 1st to 20th. When the season
+contains one year, the weeks will go from 1st to 52nd.
+
+Note: If there is no column with week names, the application will name the weeks numbering from 1 to
+the number of rows.
+
+\itemize{
+  \item In the northern hemisphere countries, the surveillance period usually goes from
+week 40 to 20 of the following year (notation: season 2016/2017).
+  \item In the southern hemisphere countries, the surveillance period usually goes from
+week 18 to 39 same year (notation: season 2017).
+}
+
+The first row must contain the names of the seasons. This application understand the naming of a
+season when it contains one or two four digits year separated by / and one one-digit number
+between parenthesis to identify the wave number. The wave number part in a name of a season is
+used when a single surveillance period has two epidemic waves that have to be separated in order
+to have reliable results. In this case, each wave is placed in different columns and named ending
+with (1) for the first period, (2) for the second, and so on.
 }
 \examples{
 # Castilla y Leon Influenza Rates data
