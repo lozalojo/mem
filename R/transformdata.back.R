@@ -1,9 +1,8 @@
-#' Data transformation
+#' @title Data transformation
 #'
+#' @description
 #' Function \code{transformdata.back} transforms data from week,rate1,...,rateN to year,week,rate
 #' format.
-#'
-#' Yet to be written
 #'
 #' @name transformdata.back
 #'
@@ -15,6 +14,13 @@
 #'
 #' @return
 #' \code{transformdata.back} returns a data.frame with three columns, year, week and rate.
+#'
+#' @details
+#' Transforms data from the season in each column format (the one that uses \link{mem})
+#' to the format year, week, rate in a 3 columns data.frame.
+#'
+#' Allows to set the cutoff point to separate between two seasons when one season has
+#' two different years.
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data

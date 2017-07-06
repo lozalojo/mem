@@ -1,5 +1,6 @@
-#' Inspection calcultation of the optimum
+#' @title Inspection calcultation of the optimum
 #'
+#' @description
 #' Function \code{optimum.by.inspection} perform an analysis of mem parameters
 #' to find the one that fits better a panel of experts inspection criterium.
 #'

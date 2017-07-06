@@ -2,7 +2,7 @@
 % Please edit documentation in R/roc.analysis.R
 \name{roc.analysis}
 \alias{roc.analysis}
-\title{ROC analysis to find optimum parameter value}
+\title{Analysis of different indicators to find the optimum value of the window parameter}
 \usage{
 roc.analysis(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.graph = F,
   i.graph.file = F, i.graph.file.name = "", i.graph.title = "",
@@ -30,14 +30,21 @@ roc.analysis(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.graph = F,
 \value{
 \code{roc.analysis} returns a list.
 An object of class \code{mem} is a list containing at least the following components:
+\itemize{
   \item{optimum}{optimum value.}
   \item{results}{Detailed results of each iteration.}
+}
 }
 \description{
 Function \code{roc.analysis} perform a ROC analysis
 }
 \details{
-To be written
+Optimize is an iterative process that calculates goodness indicators using different window
+parameters for the fixed criterium and compares all estimators in order to find the optimum
+window parameter.
+
+The output shows the different window parameters and their respective indicators to decide
+which one is better for your data.
 }
 \examples{
 # Castilla y Leon Influenza Rates data

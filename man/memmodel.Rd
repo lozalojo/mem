@@ -50,21 +50,24 @@ memmodel(i.data, i.seasons = 10, i.type.threshold = 5,
 \value{
 \code{memmodel} returns an object of class \code{mem}.
 An object of class \code{mem} is a list containing at least the following components:
-  \item{i.data }{input data}
-  \item{pre.post.intervals }{Pre/post confidence intervals (Threhold is the upper limit
+\itemize{
+  \item{i.data}{input data}
+  \item{pre.post.intervals}{Pre/post confidence intervals (Threhold is the upper limit
   of the confidence interval).}
-  \item{ci.length }{Mean epidemic length confidence interval.}
-  \item{ci.percent }{Mean covered percentage confidence interval.}
-  \item{mean.length }{Mean length.}
-  \item{moving.epidemics }{Moving epidemic rates.}
-  \item{mean.start }{Mean epidemic start.}
-  \item{epi.intervals }{Epidemic levels of intensity.}
-  \item{typ.curve }{Typical epidemic curve.}
-  \item{n.max }{Effective number of pre epidemic values.}
+  \item{ci.length}{Mean epidemic length confidence interval.}
+  \item{ci.percent}{Mean covered percentage confidence interval.}
+  \item{mean.length}{Mean length.}
+  \item{moving.epidemics}{Moving epidemic rates.}
+  \item{mean.start}{Mean epidemic start.}
+  \item{epi.intervals}{Epidemic levels of intensity.}
+  \item{typ.curve}{Typical epidemic curve.}
+  \item{n.max}{Effective number of pre epidemic values.}
+}
 }
 \description{
 Function \code{memmodel} is used to calculate the threshold for influenza epidemic using historical
-records (surveillance rates).\cr
+records (surveillance rates).
+
 The method to calculate the threshold is described in the Moving Epidemics Method (MEM) used to
 monitor influenza activity in a weekly surveillance system.
 }
@@ -72,32 +75,40 @@ monitor influenza activity in a weekly surveillance system.
 Input data is a data frame containing rates that represent historical influenza surveillance
 data. It can start and end at any given week (tipically at week 40th), and rates can be
 expressed as per 100,000 inhabitants (or per consultations, if population is not
-available) or any other scale.\cr
+available) or any other scale.
+
 Parameters \code{i.type}, \code{i.type.threshold} and \code{i.type.curve} defines how to
-calculate confidence intervals along the process.\cr
+calculate confidence intervals along the process.
+
 \code{i.type.curve} is used for calculating the typical influenza curve,
 \code{i.type.threshold} is used to calculate the pre and post epidemic threshold and
-\code{i.type} is used for any other confidende interval used in the method.\cr
-All three parameters must be a number between \code{1} and \code{6}:\cr
-\tabular{rlll}{
-\tab \code{1} \tab Arithmetic mean and mean confidence interval.\cr
-\tab \code{2} \tab Geometric mean and mean confidence interval.\cr
-\tab \code{3} \tab Median and the KC Method to calculate its confidence interval.\cr
-\tab \code{4} \tab Median and bootstrap confidence interval.\cr
-\tab \code{5} \tab Arithmetic mean and point confidence interval (standard deviations).\cr
-\tab \code{6} \tab Geometric mean and point confidence interval (standard deviations).\cr
+\code{i.type} is used for any other confidende interval used in the method.
+
+All three parameters must be a number between \code{1} and \code{6}:
+
+\itemize{
+\item {1}{Arithmetic mean and mean confidence interval.}
+\item {2}{Geometric mean and mean confidence interval.}
+\item {3}{Median and the KC Method to calculate its confidence interval.}
+\item {4}{Median and bootstrap confidence interval.}
+\item {5}{Arithmetic mean and point confidence interval (standard deviations).}
+\item {6}{Geometric mean and point confidence interval (standard deviations).}
 }
+
 Option \code{4} uses two more parameters: \code{i.type.boot} indicates which bootstrap
 method to use. The values are the same of those of the \code{\link{boot.ci}} function.
 Parameter \code{i.iter.boot} indicates the number of bootstrap samples to use. See
-\code{\link{boot}} for more information about this topic.\cr
+\code{\link{boot}} for more information about this topic.
+
 Parameters \code{i.level}, \code{i.level.threshold} and \code{i.level.curve} indicates,
-respectively, the level of the confidence intervals described above.\cr
+respectively, the level of the confidence intervals described above.
+
 The \code{i.n.max} parameter indicates how many pre epidemic values to use to calculate
 the threshold. A value of -1 indicates the program to use an appropiate number of points
 depending on the number of seasons provided as input. \code{i.tails} tells the program
 to use {1} or {2} tailed confidence intervals when calculating the threshold (1 is
-recommended).\cr
+recommended).
+
 Parameters \code{i.method} and \code{i.param} indicates how to find the optimal timing
 of the epidemics. See \code{\link{memtiming}} for details on the values this parameters
 can have.
@@ -105,10 +116,10 @@ can have.
 It is important to know how to arrange information in order to use with memapp. The key points are:
 
 \itemize{
-  \item One single epidemic wave each season.
-  \item Never delete a rate inside an epidemic.
-  \item Accommodate week 53.
-  \item Do not inflate missing values with zeroes.
+\item One single epidemic wave each season.
+\item Never delete a rate inside an epidemic.
+\item Accommodate week 53.
+\item Do not inflate missing values with zeroes.
 }
 
 Data must contain information from the historical series. Surveillance period can start and end at
@@ -130,9 +141,9 @@ Note: If there is no column with week names, the application will name the weeks
 the number of rows.
 
 \itemize{
-  \item In the northern hemisphere countries, the surveillance period usually goes from
+\item In the northern hemisphere countries, the surveillance period usually goes from
 week 40 to 20 of the following year (notation: season 2016/2017).
-  \item In the southern hemisphere countries, the surveillance period usually goes from
+\item In the southern hemisphere countries, the surveillance period usually goes from
 week 18 to 39 same year (notation: season 2017).
 }
 
@@ -154,16 +165,19 @@ plot(epi)
 
 }
 \references{
-Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
-Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
-International Congress Series, Options for the Control of Influenza V. Proceedings of the International
-Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
-Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
-Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
-de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
-the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
+Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we
+detect the beginning and predict the intensity and duration? Int Congr Ser. 2004 Jun;1263:281-3.
+
+Vega T, Lozano JE, Meerhoff T, Snacken R, Mott J, Ortiz de Lejarazu R, et al. Influenza surveillance
+in Europe: establishing epidemic thresholds by the moving epidemic method. Influenza Other Respir
+Viruses. 2013 Jul;7(4):546-58. DOI:10.1111/j.1750-2659.2012.00422.x.
+
+Vega T, Lozano JE, Meerhoff T, Snacken R, Beaute J, Jorgensen P, et al. Influenza surveillance in
+Europe: comparing intensity levels calculated using the moving epidemic method. Influenza Other
+Respir Viruses. 2015 Sep;9(5):234-46. DOI:10.1111/irv.12330.
+
+Lozano JE. lozalojo/mem: Second release of the MEM R library. Zenodo [Internet]. [cited 2017 Feb 1];
+Available from: \url{https://zenodo.org/record/165983}. DOI:10.5281/zenodo.165983
 }
 \author{
 Jose E. Lozano \email{lozalojo@gmail.com}

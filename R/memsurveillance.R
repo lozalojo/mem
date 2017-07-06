@@ -1,11 +1,7 @@
-#' Creates the surveillance graph of the current season
+#' @title Creates the surveillance graph of the current season
 #'
+#' @description
 #' Function \code{memsurveillance} creates a surveillance graph for the current season.
-#'
-#' Input data must be the current season and an object of class \code{mem}. The output
-#' graph contains the weekly rates series along with the epidemic and intensity threshols
-#' located at the exact situation where the epidemic started. If there is no epidemic yet,
-#' only the epidemic threshold is placed.
 #'
 #' @name memsurveillance
 #'
@@ -33,6 +29,27 @@
 #'
 #' @return
 #' \code{memsurveillance} writes a tiff graph of the surveillance of this season.
+#'
+#' @details
+#' Input data must be the current season and an object of class \code{mem}. The output
+#' graph contains the weekly rates series along with the epidemic and intensity threshols
+#' located at the exact situation where the epidemic started. If there is no epidemic yet,
+#' only the epidemic threshold is placed.
+#'
+#' Surveillance consist on:
+#' \enumerate{
+#' \item Draw weekly values along with the pre-epidemic threshold.
+#' \item When the weekly value rises above the threshold a marker of the start of
+#' the epidemic is placed and the intensity thresholds are drawn.
+#' \item When the weekly value goes down the post-epidemic threshold, the marker of
+#' the end of the epidemic is placed and the post-epidemic threshold is added to the graph.
+#' }
+#' The Surveillance Week allows select the week to use in the surveillance, the values of
+#' the surveillance season are shown only up to this week, and the program will ignore
+#' values past this week.
+#'
+#' The Force epidemic start allows to force the placement of the epidemic start marker
+#' at a given week instead of using the first week above the epidemic threshold.
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data

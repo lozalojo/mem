@@ -1,7 +1,17 @@
-#' Transformation of series of data
+#' @title Transformation of series of data
 #'
+#' @description
 #' Function \code{transformseries} transforms whole datasets.
 #'
+#' @name transformseries
+#'
+#' @param i.data Historical data series.
+#' @param i.transformation Transformation to apply to the dataset.
+#'
+#' @return
+#' \code{transformseries} The transformed dataset.
+#'
+#' @details
 #' Input data must be a data.frame with each column a surveillance season and each
 #' row a week.
 #'
@@ -16,13 +26,16 @@
 #' \tab [6] \tab Two waves (expected)\cr
 #' }
 #'
-#' @name transformseries
+#' Fill missings sustitute missing values with predicted values from a loess regression fit.
+#' If does not impute leading or trailing missings, only missings in the middle of the season.
 #'
-#' @param i.data Historical data series.
-#' @param i.transformation Transformation to apply to the dataset.
+#' Odd calculates the odd: p divided by 1-p.
 #'
-#' @return
-#' \code{transformseries} The transformed dataset.
+#' Loess substitute the dataset with predicted values from a loess regression fit.
+#'
+#' Two waves (observed) is used when there are two waves per season. It divides the original
+#' dataset in two using a mixture of two normal distributions. The expected option uses the
+#' same procedure but also substitutes all data with predicted values of the mixture fit.
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data

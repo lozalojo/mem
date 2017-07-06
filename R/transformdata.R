@@ -1,9 +1,8 @@
-#' Data transformation
+#' @title Data transformation
 #'
+#' @description
 #' Function \code{transformdata} transforms data from year,week,rate to week,rate1,...,rateN
 #' suitable to use with mem.
-#'
-#' Yet to be written
 #'
 #' @name transformdata
 #'
@@ -15,6 +14,12 @@
 #' @return
 #' \code{transformdata} returns a data.frame where each column has a different season and
 #' rownames are the name of the epidemiological week.
+#'
+#' @details
+#'
+#' Transform data from format year, week, rate to a format suitable to be used
+#' with \link{mem}, that is, one column with each season in the dataset and the
+#' week names as rownames of the data.frame.
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data

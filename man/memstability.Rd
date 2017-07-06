@@ -14,14 +14,24 @@ memstability(i.data, ...)
 \value{
 \code{memstability} returns a list.
 A list containing at least the following components:
+\itemize{
   \item{stability.data}{data for each value analysed.}
   \item{stability.seasons}{seasons used for each iteration.}
+}
 }
 \description{
 Function \code{memstability} perform an analisys of stability of estimators
 }
 \details{
-To be written
+Shows the stability of the main indicators according the number of seasons used to calculate them.
+That allows to decide the minimum and maximum number of seasons to be included in the model for this
+specific country and parameter.
+
+These indicators are calculated for the next upcoming season, so for all the iterations are used the
+last number of seasons determined by the x-axis, so that 2 means 'last two seasons', 10 means
+'last ten seasons' and so on.
+
+The \code{stability.seasons} output shows data used to calculate each particular point in the graph.
 }
 \examples{
 # Castilla y Leon Influenza Rates data
@@ -32,16 +42,19 @@ stability$stability.data
 
 }
 \references{
-Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
-Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
-International Congress Series, Options for the Control of Influenza V. Proceedings of the International
-Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
-Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
-Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
-de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
-the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
+Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we
+detect the beginning and predict the intensity and duration? Int Congr Ser. 2004 Jun;1263:281-3.
+
+Vega T, Lozano JE, Meerhoff T, Snacken R, Mott J, Ortiz de Lejarazu R, et al. Influenza surveillance
+in Europe: establishing epidemic thresholds by the moving epidemic method. Influenza Other Respir
+Viruses. 2013 Jul;7(4):546-58. DOI:10.1111/j.1750-2659.2012.00422.x.
+
+Vega T, Lozano JE, Meerhoff T, Snacken R, Beaute J, Jorgensen P, et al. Influenza surveillance in
+Europe: comparing intensity levels calculated using the moving epidemic method. Influenza Other
+Respir Viruses. 2015 Sep;9(5):234-46. DOI:10.1111/irv.12330.
+
+Lozano JE. lozalojo/mem: Second release of the MEM R library. Zenodo [Internet]. [cited 2017 Feb 1];
+Available from: \url{https://zenodo.org/record/165983}. DOI:10.5281/zenodo.165983
 }
 \author{
 Jose E. Lozano \email{lozalojo@gmail.com}

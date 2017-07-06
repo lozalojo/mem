@@ -1,8 +1,7 @@
-#' Full process plots for mem
+#' @title Full process plots for mem
 #'
+#' @description
 #' Function \code{processPlots} creates graphs of all mem process
-#'
-#' To be written
 #'
 #' @name processPlots
 #'
@@ -12,6 +11,11 @@
 #'
 #' @return
 #' \code{processPlots} prints a set of graphs.
+#'
+#' @details
+#' Create plots related to the process of calculating MEM indicators to an
+#' output directory, showing the MAP curves and the slope of the MAP curve
+#' and how the timing is calculated.
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data

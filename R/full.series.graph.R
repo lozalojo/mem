@@ -1,9 +1,7 @@
-#' Creates the historical series graph of the datasets
+#' @title Creates the historical series graph of the datasets
 #'
-#' Function \code{full.series.graph} creates a graph with the whole data.
-#'
-#' Input data must be a data.frame with each column a surveillance season and each
-#' row a week.
+#' @description
+#' Function \code{full.series.graph} creates a graph with the whole dataset.
 #'
 #' @name full.series.graph
 #'
@@ -24,20 +22,29 @@
 #' @return
 #' \code{full.series.graph} writes a tiff graph of the full series of the dataset.
 #'
+#' @details
+#' Input data must be a data.frame with each column a surveillance season and each
+#' row a week.
+#'
+#' The resulting graph is a time series-like plot showing all the columns in the
+#' original dataset one after another.
+#'
 #' Color codes:
-#' 1: Axis.
-#' 2: Tickmarks.
-#' 3: Axis labels.
-#' 4: Series line.
-#' 5: Series dots (default).
-#' 6: Title and subtitle.
-#' 7: Series dots (pre-epidemic).
-#' 8: Series dots (epidemic).
-#' 9: Series dots (post-epidemic).
-#' 10: Epidemic threshold.
-#' 11: Medium threshold.
-#' 12: High threshold.
-#' 13: Very high threshold.
+#' \enumerate{
+#' \item Axis.
+#' \item Tickmarks.
+#' \item Axis labels.
+#' \item Series line.
+#' \item Series dots (default).
+#' \item Title and subtitle.
+#' \item Series dots (pre-epidemic).
+#' \item Series dots (epidemic).
+#' \item Series dots (post-epidemic).
+#' \item Epidemic threshold.
+#' \item Medium threshold.
+#' \item High threshold.
+#' \item Very high threshold.
+#' }
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data

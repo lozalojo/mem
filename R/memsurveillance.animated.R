@@ -1,11 +1,7 @@
-#' Creates the animated surveillance graph of the current season
+#' @title Creates the animated  graph of the surveillance of the current season
 #'
+#' @description
 #' Function \code{memsurveillance.animated} creates an animated surveillance graph for the current season.
-#'
-#' Input data must be the current season and an object of class \code{mem}. The output
-#' graph contains the weekly rates series along with the epidemic and intensity threshols
-#' located at the exact situation where the epidemic started. If there is no epidemic yet,
-#' only the epidemic threshold is placed.
 #'
 #' @name memsurveillance.animated
 #'
@@ -22,6 +18,14 @@
 #'
 #' @return
 #' \code{memsurveillance.animated} writes a gif graph of the surveillance of this season.
+#'
+#' @details
+#' Input data must be the current season and an object of class \code{mem}. The output
+#' graph contains the weekly rates series along with the epidemic and intensity threshols
+#' located at the exact situation where the epidemic started. If there is no epidemic yet,
+#' only the epidemic threshold is placed.
+#'
+#' See \link{memsurveillance} for more details
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data

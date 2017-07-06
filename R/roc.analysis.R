@@ -1,8 +1,7 @@
-#' ROC analysis to find optimum parameter value
+#' @title Analysis of different indicators to find the optimum value of the window parameter
 #'
+#' @description
 #' Function \code{roc.analysis} perform a ROC analysis
-#'
-#' To be written
 #'
 #' @name roc.analysis
 #'
@@ -19,8 +18,18 @@
 #' @return
 #' \code{roc.analysis} returns a list.
 #' An object of class \code{mem} is a list containing at least the following components:
+#' \itemize{
 #'   \item{optimum}{optimum value.}
 #'   \item{results}{Detailed results of each iteration.}
+#' }
+#'
+#' @details
+#' Optimize is an iterative process that calculates goodness indicators using different window
+#' parameters for the fixed criterium and compares all estimators in order to find the optimum
+#' window parameter.
+#'
+#' The output shows the different window parameters and their respective indicators to decide
+#' which one is better for your data.
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data

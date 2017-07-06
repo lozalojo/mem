@@ -20,7 +20,9 @@ processPlots(i.flu, i.output = ".", i.prefix = "")
 Function \code{processPlots} creates graphs of all mem process
 }
 \details{
-To be written
+Create plots related to the process of calculating MEM indicators to an
+output directory, showing the MAP curves and the slope of the MAP curve
+and how the timing is calculated.
 }
 \examples{
 # Castilla y Leon Influenza Rates data

@@ -31,6 +31,17 @@ Transformation options:
 \tab [5] \tab Two waves (observed)\cr
 \tab [6] \tab Two waves (expected)\cr
 }
+
+Fill missings sustitute missing values with predicted values from a loess regression fit.
+If does not impute leading or trailing missings, only missings in the middle of the season.
+
+Odd calculates the odd: p divided by 1-p.
+
+Loess substitute the dataset with predicted values from a loess regression fit.
+
+Two waves (observed) is used when there are two waves per season. It divides the original
+dataset in two using a mixture of two normal distributions. The expected option uses the
+same procedure but also substitutes all data with predicted values of the mixture fit.
 }
 \examples{
 # Castilla y Leon Influenza Rates data

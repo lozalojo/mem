@@ -25,7 +25,9 @@ Function \code{transformdata} transforms data from year,week,rate to week,rate1,
 suitable to use with mem.
 }
 \details{
-Yet to be written
+Transform data from format year, week, rate to a format suitable to be used
+with \link{mem}, that is, one column with each season in the dataset and the
+week names as rownames of the data.frame.
 }
 \examples{
 # Castilla y Leon Influenza Rates data

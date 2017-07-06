@@ -2,7 +2,7 @@
 % Please edit documentation in R/memsurveillance.animated.R
 \name{memsurveillance.animated}
 \alias{memsurveillance.animated}
-\title{Creates the animated surveillance graph of the current season}
+\title{Creates the animated  graph of the surveillance of the current season}
 \usage{
 memsurveillance.animated(i.current, i.epidemic.thresholds = NA,
   i.intensity.thresholds = NA, i.output = ".", i.animated.graph.file = T,
@@ -41,6 +41,8 @@ Input data must be the current season and an object of class \code{mem}. The out
 graph contains the weekly rates series along with the epidemic and intensity threshols
 located at the exact situation where the epidemic started. If there is no epidemic yet,
 only the epidemic threshold is placed.
+
+See \link{memsurveillance} for more details
 }
 \examples{
 # Castilla y Leon Influenza Rates data

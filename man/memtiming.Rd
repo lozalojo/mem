@@ -34,41 +34,48 @@ memtiming(i.data, i.n.values = 5, i.method = 2, i.param = 2.8)
 Function \code{memtiming} is used to find the optimal timing of an influenza epidemic
 in a set of weekly influenza surveillance rates. It provides the start and the end of
 the epidemic, also it returns a list of pre-epidemic and post-epidemic rates that can
-be used to calculate influenza baselines and thresholds.\cr
+be used to calculate influenza baselines and thresholds.
+}
+\details{
 The method to calculate the optimal timing of an epidemic is described as part of the
 \emph{Moving Epidemics Method} (MEM), used to monitor influenza activity in a weekly
 surveillance system.
-}
-\details{
+
 Input data is a vector of rates that represent a full influenza surveillance season.
 It can start and end at any week (tipically at week 40th), and rates can be expressed
 as per 100,000 inhabitants (or per consultations, if population is not available) or
-any other scale.\cr
+any other scale.
+
 The \code{i.n.values} parameter is used to get information from the pre-epidemic and
 post-epidemic period. The function will extract the highest pre/post values in order
 to use it later to calculate other influenza indicators, such as baseline activity or
 threshold for influenza epidemic.
+
 Depending of the value \code{i.method}, the function will use a different method to
 calculate the optimum epidemic timing.
-\tabular{rlll}{
-\tab [1] \tab original method\cr
-\tab [2] \tab fixed criterium method\cr
-\tab [3] \tab slope method\cr
-\tab [4] \tab second derivative method\cr
+
+\itemize{
+\item{1}{original method}
+\item{2}{fixed criterium method}
+\item{3}{slope method}
+\item{4}{second derivative method}
 }
-All methods are based upon the MAP curve, as described in the MEM Method.\cr
+
+All methods are based upon the MAP curve, as described in the MEM Method.
+
 The \emph{original method} uses the process shown in the original paper, which describes
 the MEM as it was created. The \emph{fixed criterium method} is an update of the MEM
 that uses the slope of the MAP curve fo find the optimum, which is the point where the
 slope is lower than a predefined value. The \emph{slope method} also calculates the
 slope of the MAP curve, but the optimum is the one that matches the global/mean slope.
 The \emph{second derivative method} calculates the second derivative and equals to zero
-to search an inflexion point in the original curve.\cr
+to search an inflexion point in the original curve.
+
 Two of the four methods require an additional parameter \code{i.param}: for the
 \emph{fixed criterium method} is the predefined value to find the optimum, which
 typically is 2.5-3.0\%, and for the \emph{original method} it is needed the window
 parameter to smooth the map curve. A value of \code{-1} indicates it should use
-\code{\link{h.select}} to select the window parameter. See \code{\link{sm}} for more
+\code{\link[sm]{h.select}} to select the window parameter. See \code{\link[sm]{sm}} for more
 information about this topic.
 }
 \examples{
@@ -82,15 +89,15 @@ plot(tim)
 
 }
 \references{
-Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004. 
-Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration? 
-International Congress Series, Options for the Control of Influenza V. Proceedings of the International 
+Vega Alonso, Tomas, Jose E Lozano Alonso, Raul Ortiz de Lejarazu, and Marisol Gutierrez Perez. 2004.
+Modelling Influenza Epidemic: Can We Detect the Beginning and Predict the Intensity and Duration?
+International Congress Series, Options for the Control of Influenza V. Proceedings of the International
 Conference on Options for the Control of Influenza V, 1263 (June): 281-83. doi:10.1016/j.ics.2004.02.121.\cr
-Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and 
-Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving 
+Vega, Tomas, Jose Eugenio Lozano, Tamara Meerhoff, Rene Snacken, Joshua Mott, Raul Ortiz de Lejarazu, and
+Baltazar Nunes. 2013. Influenza Surveillance in Europe: Establishing Epidemic Thresholds by the Moving
 Epidemic Method. Influenza and Other Respiratory Viruses 7 (4): 546-58. doi:10.1111/j.1750-2659.2012.00422.x.\cr
-Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz 
-de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using 
+Vega, Tomas, Jose E. Lozano, Tamara Meerhoff, Rene Snacken, Julien Beaute, Pernille Jorgensen, Raul Ortiz
+de Lejarazu, et al. 2015. Influenza Surveillance in Europe: Comparing Intensity Levels Calculated Using
 the Moving Epidemic Method. Influenza and Other Respiratory Viruses 9 (5): 234-46. doi:10.1111/irv.12330.
 }
 \author{

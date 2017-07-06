@@ -36,8 +36,7 @@ An object of class \code{mem} is a list containing at least the following compon
 \description{
 Function \code{optimum.by.inspection} perform an analysis of mem parameters
 to find the one that fits better a panel of experts inspection criterium.
-}
-\details{
+
 To be written
 }
 \examples{
