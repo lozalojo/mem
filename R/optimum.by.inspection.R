@@ -71,7 +71,7 @@ optimum.by.inspection<-function(i.data,
 
   i.timing.1<-array(dim=c(anios,2))
   resultados.i<-array(dim=c(anios,14,n.values),
-                      dimnames=list(year=names(i.data),indicator=LETTERS[1:14],parameter=i.param.values))
+                      dimnames=list(year=nombre.anios,indicator=LETTERS[1:14],parameter=i.param.values))
 
   col.points<-c("#FF0000","#40FF40")
   col.points.alpha<-add.alpha(col.points,alpha=0.4)
