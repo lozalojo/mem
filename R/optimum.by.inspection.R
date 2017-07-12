@@ -215,11 +215,12 @@ optimum.by.inspection<-function(i.data,
 
     if (i.graph.file.name=="") graph.name="inspection analysis" else graph.name<-i.graph.file.name
 
-    graph.title<-nombre.anios[i]
+    
     if (i.graph.subtitle!="") graph.title<-paste(i.graph.subtitle," - ",graph.title,sep="")
     if (i.graph.title!="") graph.title<-paste(i.graph.title,"\n",graph.title,sep="")
 
     for (i in 1:anios){
+      graph.title<-nombre.anios[i]
       cur<-i.data[i]
       i.timing.1.i<-i.timing.1[i,]
       curva.map<-calcular.map(as.vector(as.matrix(cur)))
@@ -230,7 +231,8 @@ optimum.by.inspection<-function(i.data,
                                                  i.timing.labels=c("inspection",i.param.deteccion.label),
                                                  i.graph.title=graph.title,
                                                  i.graph.file=i.graph.file,
-                                                 i.graph.file.name=paste(graph.name," - ",i,sep=""))
+                                                 i.graph.file.name=paste(graph.name," - ",i,sep=""),
+                                                 i.output=i.output)
       if (!i.graph.file) dummmmyyyy<-readline("Press any key to continue\n")
     }
   }
