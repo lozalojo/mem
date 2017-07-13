@@ -200,7 +200,7 @@ calcular.indicadores.2.timings<-function(i.current,
       par(opar)
       if (i.graph.file==T){
         dev.off()
-        cat("graph created: ",i.output,"/",graph.name,".png","\n",sep="")
+        # cat("graph created: ",i.output,"/",graph.name,".png","\n",sep="")
       }
 
   names(indicadores)<- c("weeks","non.missing.weeks","true.positives","false.positives",
