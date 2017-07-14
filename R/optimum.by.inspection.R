@@ -26,11 +26,13 @@
 #'   \item{inspection.data}{Detailed results of each iteration.}
 #'
 #' @examples
+#' \donttest{
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
 #' # Inspection. It runs interactively (uncomment to run)
-#' #opt.ins<-optimum.by.inspection(flucyl,i.param.values=seq(2.0,3.0,0.1))
-#' #opt.ins$optimum
+#' opt.ins<-optimum.by.inspection(flucyl,i.param.values=seq(2.0,3.0,0.1))
+#' opt.ins$optimum
+#' }
 #'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
@@ -215,7 +217,7 @@ optimum.by.inspection<-function(i.data,
 
     if (i.graph.file.name=="") graph.name="inspection analysis" else graph.name<-i.graph.file.name
 
-    
+
     if (i.graph.subtitle!="") graph.title<-paste(i.graph.subtitle," - ",graph.title,sep="")
     if (i.graph.title!="") graph.title<-paste(i.graph.title,"\n",graph.title,sep="")
 
