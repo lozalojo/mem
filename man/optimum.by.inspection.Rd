@@ -40,11 +40,13 @@ to find the one that fits better a panel of experts inspection criterium.
 To be written
 }
 \examples{
+\donttest{
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Inspection. It runs interactively (uncomment to run)
-#opt.ins<-optimum.by.inspection(flucyl,i.param.values=seq(2.0,3.0,0.1))
-#opt.ins$optimum
+opt.ins<-optimum.by.inspection(flucyl,i.param.values=seq(2.0,3.0,0.1))
+opt.ins$optimum
+}
 
 }
 \references{
