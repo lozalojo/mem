@@ -1,4 +1,4 @@
-#' fills in missing values inside the season with smoothing regression
+#' adjust a mixed model of two normal distributions
 #'
 #' @keywords internal
 #'
