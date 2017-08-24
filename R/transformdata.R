@@ -54,7 +54,8 @@
 #' @importFrom reshape2 dcast
 #' @importFrom stringr str_match
 transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per = 100) {
-  if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-c(min(as.numeric(rownames(i.data)[1:(min(3,NROW(i.data)))])),max(as.numeric(rownames(i.data)[(max(1,NROW(i.data)-2)):NROW(i.data)])))
+  if (is.null(i.range.x)) i.range.x<-NA
+  if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-c(min(as.numeric(i.data$week)),max(as.numeric(i.data$week)))
   if (i.range.x[1] < 1) i.range.x[1] <- 1
   if (i.range.x[1] > 53) i.range.x[1] <- 53
   if (i.range.x[2] < 1) i.range.x[2] <- 1
