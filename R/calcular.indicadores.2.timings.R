@@ -50,13 +50,14 @@ calcular.indicadores.2.timings<-function(i.current,
   if (!is.na(especificidad)) if (especificidad>0) neg.likehood.ratio<-(1-sensibilidad)/especificidad else neg.likehood.ratio<-NA
   if (true.pos+true.neg+false.pos+false.neg>0) percent.agreement<-(true.pos+true.neg)/(true.pos+true.neg+false.pos+false.neg) else percent.agreement<-NA
   if ((true.pos+false.pos)>0 & (true.pos+false.neg)>0 & (true.neg+false.pos)>0 & (true.neg+false.neg)>0) mcc<-(true.pos*true.neg-false.pos*false.neg)/(sqrt(true.pos+false.pos)*sqrt(true.pos+false.neg)*sqrt(true.neg+false.pos)*sqrt(true.neg+false.neg)) else mcc<-NA
+  youden<-sensibilidad+especificidad-1
 
   semanas.not.na<-sum(!is.na(i.current))
 
   indicadores<-data.frame(semanas=semanas,semanas.not.na=semanas.not.na,true.pos=true.pos,false.pos=false.pos,
                           true.neg=true.neg,false.neg=false.neg,sensibilidad=sensibilidad,especificidad=especificidad,
                           ppv=ppv,npv=npv,pos.likehood.ratio=pos.likehood.ratio,neg.likehood.ratio=neg.likehood.ratio,
-                          percent.agreement=percent.agreement,mcc=mcc)
+                          percent.agreement=percent.agreement,mcc=mcc, youden=youden)
 
     dgraf<-as.data.frame(i.current)
     names(dgraf)<-c("Rate")
@@ -207,7 +208,7 @@ calcular.indicadores.2.timings<-function(i.current,
                                                  "true.negatives","false.negatives","sensitivity","specificity",
                                                  "positive.predictive.value","negative.predictive.value",
                                                  "positive.likehood.ratio","negative.likehood.ratio",
-                                                 "percent.agreement","matthews.correlation.coefficient")
+                                                 "percent.agreement","matthews.correlation.coefficient","youdens.index")
 
   return(list(resultado.1=resultado.1,resultado.2=resultado.2,resultado.3=resultado.3,indicadores=indicadores))
 }

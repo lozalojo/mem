@@ -72,9 +72,6 @@ roc.analysis <- function(i.data,
     for (i in 1:n.values) {
         cat("[", format(round(100 * (i - 1)/n.values, 1), digits = 3, nsmall = 1), "%][Parameter: ", format(round(i.param.values[i],
             1), digits = 3, nsmall = 1), "] Analysis started (", i, " out of ", n.values, ")\n", sep = "")
-        # good.i<-memgoodness(i.data = i.data, i.method = 2,
-        #     i.param = i.param.values[i], i.prefix = paste(i.prefix.roc, "[", format(round(i.param.values[i],
-        #         1), digits = 3, nsmall = 1), "] ", sep = ""),...)
         good.i<-memgoodness(i.data = i.data, i.method = 2, i.param = i.param.values[i], i.graph=F, ...)
 
         resultados.i <- data.frame(value = i.param.values[i], t(good.i$results))
@@ -83,59 +80,58 @@ roc.analysis <- function(i.data,
 
     names(resultados) <- tolower(names(resultados))
 
+    # Ranking 1: Rank(sensitivity) + Rank(specificity)
     if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
       rankings.1<-NA
-      rankings.2<-NA
-      rankings.5<-NA
-        optimo.1 <- NA
-        optimo.2 <- NA
-        optimo.5 <- NA
+      optimo.1 <- NA
     } else {
-        # rankings.1<-rank(resultados$sensitivity,na.last=F)+rank(resultados$specificity,na.last=F)
-        # optimo.1<-i.param.values[which.max(rankings.1)]
-        rankings.1 <- rank(-resultados$sensitivity, na.last = T) + rank(-resultados$specificity, na.last = T)
-        optimo.1 <- i.param.values[which.min(rankings.1)]
-
-        # rankings.2<-rank(resultados$sensitivity*resultados$specificity,na.last=F)
-        # optimo.2<-i.param.values[which.max(rankings.2)]
-        rankings.2 <- rank(-resultados$sensitivity * resultados$specificity, na.last = T)
-        optimo.2 <- i.param.values[which.min(rankings.2)]
-
-        qf <- abs(resultados$sensitivity - resultados$specificity)
-        qe <- 2 - resultados$sensitivity - resultados$specificity
-        qs <- (1 - resultados$sensitivity)^2 + (1 - resultados$specificity)^2
-
-        rankings.5 <- rank(qf) + rank(qe) + rank(qs)
-        optimo.5 <- i.param.values[which.min(rankings.5)]
+      rankings.1 <- rank(-resultados$sensitivity, na.last = T) + rank(-resultados$specificity, na.last = T)
+      optimo.1 <- i.param.values[which.min(rankings.1)]
     }
+    # Ranking 2: Rank(sensitivity x Rank specificity)
+    if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
+      rankings.2<-NA
+      optimo.2 <- NA
+    } else {
+      rankings.2 <- rank(-resultados$sensitivity * resultados$specificity, na.last = T)
+      optimo.2 <- i.param.values[which.min(rankings.2)]
+    }
+    # Ranking 3: Rank(positive.likehood.ratio)
     if (!any(!is.na(resultados$positive.likehood.ratio))) {
       rankings.3<-NA
         optimo.3 <- NA
     } else {
-        # rankings.3<-rank(resultados$positive.likehood.ratio,na.last=F)
-        # optimo.3<-i.param.values[which.max(rankings.3)]
         rankings.3 <- rank(-resultados$positive.likehood.ratio, na.last = T)
         optimo.3 <- i.param.values[which.min(rankings.3)]
     }
+    # Ranking 4: Rank(negative.likehood.ratio)
     if (!any(!is.na(resultados$negative.likehood.ratio))) {
       rankings.4<-NA
         optimo.4 <- NA
     } else {
-        # rankings.4<-rank(resultados$negative.likehood.ratio,na.last=F)
-        # optimo.4<-i.param.values[which.max(rankings.4)]
         rankings.4 <- rank(-resultados$negative.likehood.ratio, na.last = T)
         optimo.4 <- i.param.values[which.min(rankings.4)]
     }
+    # Ranking 5: Rank(sensitivity-specificity) + Rank(sensitivity+specificity) + Rank(sensitivity^2+specificity^2)
+    if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
+      rankings.5<-NA
+      optimo.5 <- NA
+    } else {
+      qf <- abs(resultados$sensitivity - resultados$specificity)
+      qe <- 2 - resultados$sensitivity - resultados$specificity
+      qs <- (1 - resultados$sensitivity)^2 + (1 - resultados$specificity)^2
+      rankings.5 <- rank(qf) + rank(qe) + rank(qs)
+      optimo.5 <- i.param.values[which.min(rankings.5)]
+    }
+    # Ranking 6: Rank(percent.agreement)
     if (!any(!is.na(resultados$percent.agreement))) {
       rankings.6 <- NA
         optimo.6 <- NA
     } else {
-        # rankings.6<-rank(resultados$percent.agreement,na.last=F)
-        # optimo.6<-i.param.values[which.max(rankings.6)]
         rankings.6 <- rank(-resultados$percent.agreement, na.last = T)
         optimo.6 <- i.param.values[which.min(rankings.6)]
     }
-
+    # Ranking 7: Rank(matthews.correlation.coefficient)
     if (!any(!is.na(resultados$matthews.correlation.coefficient))) {
       rankings.7 <- NA
       optimo.7 <- NA
@@ -143,13 +139,20 @@ roc.analysis <- function(i.data,
       rankings.7 <- rank(-resultados$matthews.correlation.coefficient, na.last = T)
       optimo.7 <- i.param.values[which.min(rankings.7)]
     }
-
+    # Ranking 8: Rank(Youden's J statistic=Youden's index)
+    if (!any(!is.na(resultados$youdens.index))) {
+      rankings.8<-NA
+      optimo.8 <- NA
+    } else {
+      rankings.8 <- rank(-resultados$youdens.index, na.last = T)
+      optimo.8 <- i.param.values[which.min(rankings.8)]
+    }
 
     optimum <- data.frame(pos.likehood = optimo.3, neg.likehood = optimo.4, aditive = optimo.1, multiplicative = optimo.2,
-        mixed = optimo.5, percent = optimo.6, matthews=optimo.7)
+        mixed = optimo.5, percent = optimo.6, matthews=optimo.7, youden=optimo.8)
 
     rankings <- data.frame(pos.likehood = rankings.3, neg.likehood = rankings.4, aditive = rankings.1, multiplicative = rankings.2,
-                           mixed = rankings.5, percent = rankings.6, matthews=rankings.7)
+                           mixed = rankings.5, percent = rankings.6, matthews=rankings.7, youden=rankings.8)
 
 
     roc.analysis.output <- list(optimum = optimum, rankings = rankings, roc.data = resultados, param.data = i.data, param.param.values = i.param.values

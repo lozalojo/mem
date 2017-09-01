@@ -2,11 +2,11 @@
 % Please edit documentation in R/transformseries.twowaves.R
 \name{transformseries.twowaves}
 \alias{transformseries.twowaves}
-\title{fills in missing values inside the season with smoothing regression}
+\title{adjust a mixed model of two normal distributions}
 \usage{
 transformseries.twowaves(i.data, i.scale = 10000)
 }
 \description{
-fills in missing values inside the season with smoothing regression
+adjust a mixed model of two normal distributions
 }
 \keyword{internal}

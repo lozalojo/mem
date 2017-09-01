@@ -72,8 +72,8 @@ optimum.by.inspection<-function(i.data,
   n.values<-length(i.param.values)
 
   i.timing.1<-array(dim=c(anios,2))
-  resultados.i<-array(dim=c(anios,14,n.values),
-                      dimnames=list(year=nombre.anios,indicator=LETTERS[1:14],parameter=i.param.values))
+  resultados.i<-array(dim=c(anios,15,n.values),
+                      dimnames=list(year=nombre.anios,indicator=LETTERS[1:15],parameter=i.param.values))
 
   col.points<-c("#FF0000","#40FF40")
   col.points.alpha<-add.alpha(col.points,alpha=0.4)
@@ -124,65 +124,66 @@ optimum.by.inspection<-function(i.data,
   resultado[13]<-(resultado[3]+resultado[5])/(resultado[3]+resultado[4]+resultado[5]+resultado[6])
   # Matthews correlation coefficient
   resultado[14]<-(resultado[3]*resultado[5]-resultado[4]*resultado[6])/sqrt((resultado[3]+resultado[4])*(resultado[3]+resultado[6])*(resultado[5]+resultado[4])*(resultado[5]+resultado[6]))
+  # Youden's index
+  resultado[15]<-resultado[7]+resultado[8]-1
 
   resultado[resultado=="NaN"]<-NA
 
   resultados<-data.frame(value=i.param.values,resultado)
   names(resultados)<-c("value",tolower(colnames(resultado.j)))
 
+  # Ranking 1: Rank(sensitivity) + Rank(specificity)
   if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
     rankings.1<-NA
-    rankings.2<-NA
-    rankings.5<-NA
     optimo.1 <- NA
-    optimo.2 <- NA
-    optimo.5 <- NA
   } else {
-    # rankings.1<-rank(resultados$sensitivity,na.last=F)+rank(resultados$specificity,na.last=F)
-    # optimo.1<-i.param.values[which.max(rankings.1)]
     rankings.1 <- rank(-resultados$sensitivity, na.last = T) + rank(-resultados$specificity, na.last = T)
     optimo.1 <- i.param.values[which.min(rankings.1)]
-
-    # rankings.2<-rank(resultados$sensitivity*resultados$specificity,na.last=F)
-    # optimo.2<-i.param.values[which.max(rankings.2)]
+  }
+  # Ranking 2: Rank(sensitivity x Rank specificity)
+  if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
+    rankings.2<-NA
+    optimo.2 <- NA
+  } else {
     rankings.2 <- rank(-resultados$sensitivity * resultados$specificity, na.last = T)
     optimo.2 <- i.param.values[which.min(rankings.2)]
-
-    qf <- abs(resultados$sensitivity - resultados$specificity)
-    qe <- 2 - resultados$sensitivity - resultados$specificity
-    qs <- (1 - resultados$sensitivity)^2 + (1 - resultados$specificity)^2
-
-    rankings.5 <- rank(qf) + rank(qe) + rank(qs)
-    optimo.5 <- i.param.values[which.min(rankings.5)]
   }
+  # Ranking 3: Rank(positive.likehood.ratio)
   if (!any(!is.na(resultados$positive.likehood.ratio))) {
     rankings.3<-NA
     optimo.3 <- NA
   } else {
-    # rankings.3<-rank(resultados$positive.likehood.ratio,na.last=F)
-    # optimo.3<-i.param.values[which.max(rankings.3)]
     rankings.3 <- rank(-resultados$positive.likehood.ratio, na.last = T)
     optimo.3 <- i.param.values[which.min(rankings.3)]
   }
+  # Ranking 4: Rank(negative.likehood.ratio)
   if (!any(!is.na(resultados$negative.likehood.ratio))) {
     rankings.4<-NA
     optimo.4 <- NA
   } else {
-    # rankings.4<-rank(resultados$negative.likehood.ratio,na.last=F)
-    # optimo.4<-i.param.values[which.max(rankings.4)]
     rankings.4 <- rank(-resultados$negative.likehood.ratio, na.last = T)
     optimo.4 <- i.param.values[which.min(rankings.4)]
   }
+  # Ranking 5: Rank(sensitivity-specificity) + Rank(sensitivity+specificity) + Rank(sensitivity^2+specificity^2)
+  if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
+    rankings.5<-NA
+    optimo.5 <- NA
+  } else {
+    qf <- abs(resultados$sensitivity - resultados$specificity)
+    qe <- 2 - resultados$sensitivity - resultados$specificity
+    qs <- (1 - resultados$sensitivity)^2 + (1 - resultados$specificity)^2
+    rankings.5 <- rank(qf) + rank(qe) + rank(qs)
+    optimo.5 <- i.param.values[which.min(rankings.5)]
+  }
+  # Ranking 6: Rank(percent.agreement)
   if (!any(!is.na(resultados$percent.agreement))) {
     rankings.6 <- NA
     optimo.6 <- NA
   } else {
-    # rankings.6<-rank(resultados$percent.agreement,na.last=F)
-    # optimo.6<-i.param.values[which.max(rankings.6)]
     rankings.6 <- rank(-resultados$percent.agreement, na.last = T)
     optimo.6 <- i.param.values[which.min(rankings.6)]
   }
-
+  # Ranking 7: Rank(matthews.correlation.coefficient)
   if (!any(!is.na(resultados$matthews.correlation.coefficient))) {
     rankings.7 <- NA
     optimo.7 <- NA
@@ -190,13 +191,20 @@ optimum.by.inspection<-function(i.data,
     rankings.7 <- rank(-resultados$matthews.correlation.coefficient, na.last = T)
     optimo.7 <- i.param.values[which.min(rankings.7)]
   }
-
+  # Ranking 8: Rank(Youden's J statistic=Youden's index)
+  if (!any(!is.na(resultados$youdens.index))) {
+    rankings.8 <- NA
+    optimo.8 <- NA
+  } else {
+    rankings.8 <- rank(-resultados$youdens.index, na.last = T)
+    optimo.8 <- i.param.values[which.min(rankings.8)]
+  }
 
   optimum <- data.frame(pos.likehood = optimo.3, neg.likehood = optimo.4, aditive = optimo.1, multiplicative = optimo.2,
-                        mixed = optimo.5, percent = optimo.6, matthews=optimo.7)
+                        mixed = optimo.5, percent = optimo.6, matthews=optimo.7, youden=optimo.8)
 
   rankings <- data.frame(pos.likehood = rankings.3, neg.likehood = rankings.4, aditive = rankings.1, multiplicative = rankings.2,
-                         mixed = rankings.5, percent = rankings.6, matthews=rankings.7)
+                         mixed = rankings.5, percent = rankings.6, matthews=rankings.7, youden=rankings.8)
 
 
   optimum.by.inspection.output <- list(optimum = optimum,

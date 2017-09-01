@@ -139,7 +139,7 @@ memgoodness<-function(i.data,
 
   anios<-dim(i.data)[2]
   semanas<-dim(i.data)[1]
-  validacion<-array(NA,dim=c(14,anios))
+  validacion<-array(NA,dim=c(15,anios))
   colnames(validacion)<-names(i.data)
 
   maximos<-numeric()
@@ -267,6 +267,8 @@ memgoodness<-function(i.data,
   resultado[13]<-(resultado[3]+resultado[5])/(resultado[3]+resultado[4]+resultado[5]+resultado[6])
   # Matthews correlation coefficient
   resultado[14]<-(resultado[3]*resultado[5]-resultado[4]*resultado[6])/sqrt((resultado[3]+resultado[4])*(resultado[3]+resultado[6])*(resultado[5]+resultado[4])*(resultado[5]+resultado[6]))
+  # Youden's index
+  resultado[15]<-resultado[7]+resultado[8]-1
 
   resultado[is.nan(resultado)]<-NA
 

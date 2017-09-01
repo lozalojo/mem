@@ -2,11 +2,11 @@
 % Please edit documentation in R/transformseries.odd.R
 \name{transformseries.odd}
 \alias{transformseries.odd}
-\title{fills in missing values inside the season with smoothing regression}
+\title{odd transformation}
 \usage{
 transformseries.odd(x, mult = 0)
 }
 \description{
-fills in missing values inside the season with smoothing regression
+odd transformation
 }
 \keyword{internal}
