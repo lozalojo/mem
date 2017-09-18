@@ -11,7 +11,7 @@ memgoodness(i.data, i.seasons = 10, i.type.threshold = 5,
   i.level.other = 0.95, i.method = 2, i.param = 2.8, i.n.max = -1,
   i.type.boot = "norm", i.iter.boot = 10000,
   i.calculation.method = "default", i.goodness.method = "cross",
-  i.detection.values = seq(2, 3, 0.1), i.weeks.above = 1, i.output = ".",
+  i.detection.values = seq(2, 4, 0.1), i.weeks.above = 1, i.output = ".",
   i.graph = F, i.prefix = "", i.min.seasons = 6)
 }
 \arguments{

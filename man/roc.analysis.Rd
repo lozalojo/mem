@@ -4,7 +4,7 @@
 \alias{roc.analysis}
 \title{Analysis of different indicators to find the optimum value of the window parameter}
 \usage{
-roc.analysis(i.data, i.param.values = seq(1.5, 4.5, 0.1), i.graph = F,
+roc.analysis(i.data, i.param.values = seq(2, 4, 0.1), i.graph = F,
   i.graph.file = F, i.graph.file.name = "", i.graph.title = "",
   i.graph.subtitle = "", i.output = ".", ...)
 }
