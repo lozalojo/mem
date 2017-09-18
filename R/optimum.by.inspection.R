@@ -56,7 +56,7 @@
 #' @export
 #' @importFrom graphics identify
 optimum.by.inspection<-function(i.data,
-                                i.param.values=seq(1.5,4.5,0.1),
+                                i.param.values=seq(2.0,4.0,0.1),
                                 i.graph=T,
                                 i.graph.file=F,
                                 i.graph.file.name="",
