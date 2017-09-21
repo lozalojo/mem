@@ -74,11 +74,7 @@ transformseries<-function(i.data, i.transformation=1){
     if (i.transformation==1){
       i.data.transf<-i.data
     }else if (i.transformation==2){
-      # odd transformation requires p between 0 and 1, if I have percentage I have to divide by 100
-      # in case other unit is used, first i detect the units x10, x100, x1000, x10000...
-      mults<-0:25
-      mult<-min(mults[10^mults>=max(i.data,na.rm=T)])
-      i.data.transf<-data.frame(apply(i.data,2,transformseries.odd, mult=mult),stringsAsFactors = F)
+      i.data.transf<-data.frame(apply(i.data,2,transformseries.odd),stringsAsFactors = F)
       names(i.data.transf)<-names(i.data)
       rownames(i.data.transf)<-rownames(i.data)
     }else if (i.transformation==3){

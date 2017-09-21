@@ -4,7 +4,7 @@
 \alias{transformseries.odd}
 \title{odd transformation}
 \usage{
-transformseries.odd(x, mult = 0)
+transformseries.odd(x)
 }
 \description{
 odd transformation
