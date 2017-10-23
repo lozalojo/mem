@@ -1,6 +1,6 @@
 Package: mem
 Type: Package
-Title: The Moving Epidemic Method R Package
+Title: The Moving Epidemic Method
 Version: 2.12.20171023
 Date: 2017-10-23
 Authors@R: person(given = "Jose E.", family = "Lozano", email = "lozalojo@gmail.com", role = c("aut", "cre"))
@@ -19,7 +19,7 @@ Remotes:
   github::hadley/reshape,
   github::tidyverse/stringr,
   github::ropensci/magick
-Description: Tools to model influenza epidemics and to monitor influenza surveillance.
+Description: The Moving Epidemic Method, created by T Vega and JE Lozano (2012, 2015) <doi:10.1111/j.1750-2659.2012.00422.x>, <doi:10.1111/irv.12330>, allows the weekly assessment of the epidemic and intensity status to help in routine respiratory infections surveillance in health systems. Allows the comparison of different epidemic indicators, timing and shape with past epidemics and across different regions or countries with different surveillance systems. Also, it gives a measure of the performance of the method in terms of sensitivity and specificity of the alert week. 
 License: GPL (>= 2)
 URL: https://github.com/lozalojo/mem
 BugReports: https://github.com/lozalojo/mem/issues
