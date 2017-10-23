@@ -10,7 +10,16 @@
 
 ## Overview
 
-This is the R package of the Moving Epidemic Method
+The Moving Epidemics Method *MEM* is a tool developed in the *Health Sentinel Network of Castilla y León (Spain)* to help in the routine influenza surveillance in health systems. It gives a better understanding of the annual influenza epidemics and allows the weekly assessment of the epidemic status and intensity.
+
+Although in its conception it was originally created to be used with influenza data and health sentinel networks, MEM has been tested with different respiratory infectious diseases and surveillance systems so nowadays it could be used with any parameter which present a seasonal accumulation of cases that can be considered an epidemic.
+
+MEM development started in 2001 and the first record appeared in 2003 in the *Options for the Control of Influenza V*.
+It was presented to the baselines working group of the *European Influenza Surveillance Scheme (EISS)* in the *12th EISS Annual Meeting (Malaga, Spain, 2007)*, with whom started a collaboration that continued when, in 2008, was established the European Influenza Surveillance Network.
+
+In 2009 MEM is referenced in an official European document: the *Who European guidance for influenza surveillance in humans*. A year later MEM was implemented in *The European Surveillance System (TESSy)*, of the *European Centre for Disease Prevention and Control (ECDC)*, and in 2012, after a year piloting, in the *EuroFlu regional influenza surveillance* platform, of the *World Health Organization Regional Office for Europe (WHO-E)*.
+
+As a result of the collaboration with *ECDC* and *WHO-E*, two papers have been published, one related to the establishment of epidemic thresholds and other to the comparison of intensity levels in Europe.
 
 ## Installation
 
