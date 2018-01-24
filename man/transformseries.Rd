@@ -4,12 +4,14 @@
 \alias{transformseries}
 \title{Transformation of series of data}
 \usage{
-transformseries(i.data, i.transformation = 1)
+transformseries(i.data, i.transformation = 1, ...)
 }
 \arguments{
 \item{i.data}{Historical data series.}
 
 \item{i.transformation}{Transformation to apply to the dataset.}
+
+\item{...}{other paramaters to be used by functions to fit two waves.}
 }
 \value{
 \code{transformseries} The transformed dataset.

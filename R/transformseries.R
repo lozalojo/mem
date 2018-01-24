@@ -7,6 +7,7 @@
 #'
 #' @param i.data Historical data series.
 #' @param i.transformation Transformation to apply to the dataset.
+#' @param ... other paramaters to be used by functions to fit two waves.
 #'
 #' @return
 #' \code{transformseries} The transformed dataset.
@@ -63,7 +64,7 @@
 #' @keywords influenza
 #'
 #' @export
-transformseries<-function(i.data, i.transformation=1){
+transformseries<-function(i.data, i.transformation=1, ...){
   if (is.null(i.data)){
     i.data.transf<-i.data
   }else if (is.null(i.transformation)){
@@ -74,22 +75,22 @@ transformseries<-function(i.data, i.transformation=1){
     if (i.transformation==1){
       i.data.transf<-i.data
     }else if (i.transformation==2){
-      i.data.transf<-data.frame(apply(i.data,2,transformseries.odd),stringsAsFactors = F)
+      i.data.transf<-data.frame(apply(i.data, 2, transformseries.odd),stringsAsFactors = F)
       names(i.data.transf)<-names(i.data)
       rownames(i.data.transf)<-rownames(i.data)
     }else if (i.transformation==3){
-      i.data.transf<-data.frame(apply(i.data,2,fill.missing),stringsAsFactors = F)
+      i.data.transf<-data.frame(apply(i.data, 2, fill.missing),stringsAsFactors = F)
       names(i.data.transf)<-names(i.data)
       rownames(i.data.transf)<-rownames(i.data)
     }else if (i.transformation==4){
-      i.data.transf<-data.frame(apply(i.data,2,suavizado,hsuav=-1),stringsAsFactors = F)
+      i.data.transf<-data.frame(apply(i.data, 2, suavizado, hsuav=-1),stringsAsFactors = F)
       names(i.data.transf)<-names(i.data)
       rownames(i.data.transf)<-rownames(i.data)
     }else if (i.transformation==5){
-      i.data.transf<-transformseries.twowaves(i.data)$data.observed
+      i.data.transf<-transformseries.twowaves(i.data, ...)$data.observed
       rownames(i.data.transf)<-rownames(i.data)
     }else if (i.transformation==6){
-      i.data.transf<-transformseries.twowaves(i.data)$data.expected
+      i.data.transf<-transformseries.twowaves(i.data, ...)$data.expected
       rownames(i.data.transf)<-rownames(i.data)
     }else{
       i.data.transf<-i.data
