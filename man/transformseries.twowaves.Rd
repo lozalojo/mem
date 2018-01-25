@@ -4,7 +4,7 @@
 \alias{transformseries.twowaves}
 \title{adjust a mixed model of two normal distributions}
 \usage{
-transformseries.twowaves(i.data, i.scale = 1000)
+transformseries.twowaves(i.data, i.scale = 1000, i.model = "V")
 }
 \description{
 adjust a mixed model of two normal distributions
