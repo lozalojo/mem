@@ -2,7 +2,7 @@
 #'
 #' @keywords internal
 #'
-#' @importFrom mclust densityMclust cdensE
+#' @importFrom mclust densityMclust cdensE cdensV
 #' @importFrom stats dnorm
 transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V") {
   # seasons <- names(i.data)
