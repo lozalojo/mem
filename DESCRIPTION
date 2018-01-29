@@ -1,8 +1,8 @@
 Package: mem
 Type: Package
 Title: The Moving Epidemic Method
-Version: 2.12.20180125
-Date: 2018-01-25
+Version: 2.12.20180129
+Date: 2018-01-29
 Authors@R: person(given = "Jose E.", family = "Lozano", email = "lozalojo@gmail.com", role = c("aut", "cre"))
 Depends:
     R (>= 3.4.0)
@@ -12,6 +12,9 @@ Imports:
     reshape2,
     RColorBrewer,
     mclust,
+    ggplot2,
+    tidyr,
+    dplyr,
     stringr
 Suggests:
     magick
