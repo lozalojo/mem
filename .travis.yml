@@ -12,12 +12,12 @@ env:
   - _R_CHECK_FORCE_SUGGESTS_=false
 
 r_packages:
-  - covr
+  - devtools covr
 
 after_success:
   - Rscript -e 'library(covr); codecov()'
 
 before_install:
   - sudo apt-get --yes --force-yes update -qq
-  - sudo apt-get install --yes libmagick++-dev
+  - sudo apt-get install --yes libmagick++-dev imagemagick
   - Rscript -e 'update.packages(ask = FALSE)'
