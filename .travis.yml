@@ -4,6 +4,7 @@ sudo: true
 dist: trusty
 
 r:
+  - oldrel
   - release
   - devel
 
@@ -12,7 +13,8 @@ env:
   - _R_CHECK_FORCE_SUGGESTS_=false
 
 r_packages:
-  - devtools covr
+  - devtools
+  - covr
 
 after_success:
   - Rscript -e 'library(covr); codecov()'
