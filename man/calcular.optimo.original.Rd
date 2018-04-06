@@ -4,7 +4,7 @@
 \alias{calcular.optimo.original}
 \title{calculates optimum: original method: second derivative + axis change}
 \usage{
-calcular.optimo.original(i.curva.map, i.hsuav)
+calcular.optimo.original(i.curva.map)
 }
 \description{
 calculates optimum: original method: second derivative + axis change
