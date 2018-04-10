@@ -5,7 +5,8 @@ calcular.optimo.original<-function(i.curva.map){
   x<-i.curva.map[,1]
   y<-i.curva.map[,2]
   y.d<-diff(y)
-  x.d<-x[-length(x)]
+  #x.d<-x[-length(x)]
+  x.d<-x[2:length(x)]
   y.s<-suavizado(y.d)
   x.n<-normalizar(x.d)
   y.n<-normalizar(y.s)
@@ -13,5 +14,6 @@ calcular.optimo.original<-function(i.curva.map){
   v<-sqrt(x.n^2+y.n^2-u^2)
   optimo<-which.min(v)
   resultados<-i.curva.map[x==optimo,]
-  return(resultados)
+  datos<-data.frame(weeks=x.d, slope=y.s)
+  return(list(resultados=resultados, datos=datos, umbral=NA))
 }

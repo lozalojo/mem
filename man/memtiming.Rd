@@ -23,6 +23,7 @@ An object of class \code{epidemic} is a list containing at least the following c
   \item{i.data }{input data}
   \item{data }{data with missing rates filled with data from smothing regression}
   \item{map.curve }{MAP curve}
+  \item{slope.curve }{slope of the MAP curve}
   \item{optimum.map }{optimum}
   \item{pre.epi }{pre-epidemic highest rates}
   \item{epi }{epidemic highest rates}

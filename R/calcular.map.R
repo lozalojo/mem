@@ -17,5 +17,6 @@ calcular.map<-function(i.datos){
   }
   sumaanual<-sum(datos,na.rm=TRUE)
   maxsumasemanas[,2]<-100*maxsumasemanas[,3]/sumaanual
+  maxsumasemanas <- rbind(rep(0,5), maxsumasemanas)
   return(maxsumasemanas)
 }

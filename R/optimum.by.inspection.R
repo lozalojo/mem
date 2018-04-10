@@ -100,7 +100,7 @@ optimum.by.inspection<-function(i.data,
     for (j in 1:n.values){
         i.param.deteccion<-i.param.values[j]
         i.param.deteccion.label<-format(round(i.param.deteccion,1),digits=3,nsmall=1)
-        i.timing.2<-calcular.optimo(curva.map,2,i.param.deteccion)[4:5]
+        i.timing.2<-calcular.optimo(curva.map,2,i.param.deteccion)$resultados[4:5]
         resultado.j<-calcular.indicadores.2.timings(cur,i.timing.1.i,i.timing.2,i.timing.labels=c("inspection",i.param.deteccion.label),
                                                 i.graph.title="Comparing",i.graph.file=F)$indicadores
         resultados.i[i,,j]<-as.numeric(resultado.j)
@@ -236,7 +236,7 @@ optimum.by.inspection<-function(i.data,
       curva.map<-calcular.map(as.vector(as.matrix(cur)))
       i.param.deteccion<-optimum$matthews
       i.param.deteccion.label<-format(round(i.param.deteccion,1),digits=3,nsmall=1)
-      i.timing.2<-calcular.optimo(curva.map,2,i.param.deteccion)[4:5]
+      i.timing.2<-calcular.optimo(curva.map,2,i.param.deteccion)$resultados[4:5]
       dummmmyyyy<-calcular.indicadores.2.timings(cur, i.timing.1.i, i.timing.2,
                                                  i.timing.labels=c("inspection",i.param.deteccion.label),
                                                  i.graph.title=graph.title,

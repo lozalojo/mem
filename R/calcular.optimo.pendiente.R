@@ -9,7 +9,10 @@ calcular.optimo.pendiente<-function(i.curva.map){
   y.range<-(max(y,na.rm=T)-min(y,na.rm=T))
   pendiente<-y.range/x.range
   y.d<-diff(y.s)
-  optimo<-1+which.min(abs(y.d-pendiente))
+  x.d<-x[2:length(x)]
+  # optimo<-1+which.min(abs(y.d-pendiente))
+  optimo<-which.min(abs(y.d-pendiente))
   resultados<-i.curva.map[x==optimo,]
-  return(resultados)
+  datos <- data.frame(weeks=x.d, slope=y.d)
+  return(list(resultados=resultados, datos=datos, umbral=pendiente))
 }

@@ -48,7 +48,7 @@ calcular.indicadores<-function(i.current,
   n.parametros<-length(i.valores.parametro.deteccion)
   optimos<-numeric()
   for (i in 1:n.parametros){
-    optimo.map<-calcular.optimo(curva.map,2,i.valores.parametro.deteccion[i])
+    optimo.map<-calcular.optimo(curva.map,2,i.valores.parametro.deteccion[i])$resultados
     semana.i.optimo<-optimo.map[4]
     if (optimo.map[5]<semanas) semana.f.optimo<-optimo.map[5]+1 else semana.f.optimo<-NA
     resultado.1.1<-rep(NA,semanas)

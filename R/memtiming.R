@@ -22,6 +22,7 @@
 #'   \item{i.data }{input data}
 #'   \item{data }{data with missing rates filled with data from smothing regression}
 #'   \item{map.curve }{MAP curve}
+#'   \item{slope.curve }{slope of the MAP curve}
 #'   \item{optimum.map }{optimum}
 #'   \item{pre.epi }{pre-epidemic highest rates}
 #'   \item{epi }{epidemic highest rates}
@@ -111,7 +112,11 @@ memtiming<-function(i.data,
   datos<-fill.missing(as.vector(as.matrix(i.data)))
 
   curva.map<-calcular.map(datos)
-  optimo.map<-calcular.optimo(curva.map,i.method,i.param)
+  # optimo.map<-calcular.optimo(curva.map,i.method,i.param)
+  temp1 <- calcular.optimo(curva.map,i.method,i.param)
+  optimo.map <- temp1$resultados
+  curva.slope <- temp1$datos
+  umbral.slope <- temp1$umbral
   epi.ini<-optimo.map[4]
   epi.fin<-optimo.map[5]
   n.datos<-length(datos)
@@ -140,6 +145,8 @@ memtiming<-function(i.data,
   #   post.epi<-max.n.valores(datos,i.n.values)
   # }
   memtiming.output<-list(map.curve=curva.map,
+                         slope.curve=curva.slope,
+                         slope.threshold=umbral.slope,
                          optimum.map=optimo.map,
                          pre.epi=pre.epi,
                          post.epi=post.epi,
