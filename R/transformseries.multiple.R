@@ -8,7 +8,7 @@
 #' @importFrom tidyr spread
 #' @importFrom utils tail
 #' @importFrom ggthemes solarized_pal
-transformseries.multiple <- function(i.data, i.max.duration=30, i.max.waves=NA, i.param.1=0.028, i.param.2=0.015, i.output=NA){
+transformseries.multiple <- function(i.data, i.max.duration=30, i.max.waves=NA, i.param.1=0.028, i.param.2=0.015, i.separation=3, i.output=NA){
   yrweek <- season <- year <- week <- NULL
   data <- transformdata.back(i.data)$data %>%
     dplyr::arrange(yrweek) %>%
@@ -88,7 +88,7 @@ transformseries.multiple <- function(i.data, i.max.duration=30, i.max.waves=NA, 
   temp1 <- results %>%
     dplyr::select(iteration, start, end, n, sum) %>%
     dplyr::arrange(start) %>%
-    dplyr::mutate(lend=lag(end), dif=(start-lend), unite=(is.na(dif) | dif>1), sunite=cumsum(unite))
+    dplyr::mutate(lend=lag(end), dif=(start-lend-1), unite=(is.na(dif) | dif>=i.separation), sunite=cumsum(unite))
   data.plot.united <- data.plot %>%
     dplyr::left_join(dplyr::select(temp1, iteration, sunite), by="iteration") %>%
     dplyr::mutate(iteration=sunite) %>%
@@ -99,7 +99,7 @@ transformseries.multiple <- function(i.data, i.max.duration=30, i.max.waves=NA, 
     dplyr::summarise(start=min(start), end=max(end)) %>%
     dplyr::select(iteration=sunite, start, end) %>%
     dplyr::arrange(start) %>%
-    dplyr::group_by() %>%
+    dplyr::ungroup() %>%
     dplyr::mutate(from=1+lag(end), to=start-1) %>%
     dplyr::slice(-1) %>%
     dplyr::select(from, to)
@@ -153,4 +153,4 @@ transformseries.multiple <- function(i.data, i.max.duration=30, i.max.waves=NA, 
   data.final <- data.final %>%
     dplyr::select(-week)
   list(data.final=data.final, data.united=data.united, data.plot.united=data.plot.united, cut.united=cut.united, season.desc=season.desc)
-} 
+}

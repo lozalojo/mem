@@ -5,7 +5,7 @@
 \title{divide a series in parts}
 \usage{
 transformseries.multiple(i.data, i.max.duration = 30, i.max.waves = NA,
-  i.param.1 = 0.028, i.param.2 = 0.015, i.output = NA)
+  i.param.1 = 0.028, i.param.2 = 0.015, i.separation = 3, i.output = NA)
 }
 \description{
 divide a series in parts
