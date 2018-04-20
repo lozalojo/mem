@@ -25,6 +25,7 @@
 #' @param i.level.other Level of confidence interval to calculate length, start and percentages.
 #' @param i.method Method to calculate the optimal timing of the epidemic.
 #' @param i.param Parameter to calculate the optimal timing of the epidemic.
+#' @param i.centering Number of weeks to center the moving seasons.
 #' @param i.n.max Number of pre-epidemic values used to calculate the threshold.
 #' @param i.type.boot Type of bootstrap technique.
 #' @param i.iter.boot Number of bootstrap iterations.
@@ -176,6 +177,7 @@ memmodel<-function(i.data,
                    i.level.other=0.95,
                    i.method=2,
                    i.param=2.8,
+                   i.centering=-1,
                    i.n.max=-1,
                    i.type.boot="norm",
                    i.iter.boot=10000){
@@ -222,7 +224,7 @@ memmodel<-function(i.data,
     ic.duracion<-rbind(ic.duracion,c(floor(ic.duracion[1]),round(ic.duracion[2]),ceiling(ic.duracion[3])))
     ic.porcentaje<-iconfianza(as.numeric(datos.duracion.real[2,]),i.level.other,i.type.other,T,i.type.boot,i.iter.boot,2)
 
-    duracion.media<-ic.duracion[2,2]
+    if (is.na(i.centering) | i.centering==-1) duracion.media <- ic.duracion[2,2] else duracion.media <- i.centering
 
     ########################################################################################
     # Calcula todos los parametros asociados a la temporada gripal en base a la estimacion #
@@ -442,6 +444,7 @@ memmodel<-function(i.data,
                           param.level.other=i.level.other,
                           param.method=i.method,
                           param.param=i.param,
+                          param.centering=i.centering,
                           param.n.max=i.n.max,
                           param.type.boot=i.type.boot,
                           param.iter.boot=i.iter.boot)
