@@ -1,8 +1,8 @@
 Package: mem
 Type: Package
 Title: The Moving Epidemic Method
-Version: 2.13.20180420
-Date: 2018-04-20
+Version: 2.13.20180425
+Date: 2018-04-25
 Authors@R: person(given = "Jose E.", family = "Lozano", email = "lozalojo@gmail.com", role = c("aut", "cre"))
 Depends:
     R (>= 3.4.0)
