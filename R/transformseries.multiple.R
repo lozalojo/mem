@@ -25,14 +25,14 @@ transformseries.multiple <- function(i.data, i.max.duration=30, i.max.waves=NA, 
   if (!is.na(i.output)){
     outputdir<-file.path(getwd(), i.output)
     if (!dir.exists(outputdir)) dir.create(outputdir)
-    axis.x.range.original <- range(data.plus$n)
+    axis.x.range.original <- range(data.plus$n, na.rm=T)
     axis.x.otick <- optimal.tickmarks(axis.x.range.original[1], axis.x.range.original[2], 10, i.include.min = T, i.include.max = T)
     axis.x.range <- axis.x.otick$range
     axis.x.ticks <- axis.x.otick$tickmarks
     axis.x.labels <- data.plus$yrweek[axis.x.otick$tickmarks]
-    axis.y.range.original <- range(c(data.plus$rates.orig, data.plus$rates.loess))
+    axis.y.range.original <- range(c(data.plus$rates.orig, data.plus$rates.loess), na.rm=T)
     axis.y.otick <- optimal.tickmarks(axis.y.range.original[1], axis.y.range.original[2], 10)
-    axis.y.range <- axis.y.otick$range+diff(range(axis.y.otick$range))*0.025*c(-1, 1)
+    axis.y.range <- axis.y.otick$range+diff(range(axis.y.otick$range, na.rm=T))*0.025*c(-1, 1)
     axis.y.ticks <- axis.y.otick$tickmarks
     axis.y.labels <- axis.y.otick$tickmarks
     n <- rates.orig <- rates.loess <- NULL

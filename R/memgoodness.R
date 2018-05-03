@@ -136,21 +136,28 @@ memgoodness<-function(i.data,
                       i.graph=F,
                       i.prefix="",
                       i.min.seasons=6){
-
+  
+  if (is.null(dim(i.data))) stop('Incorrect number of dimensions, input must be a data.frame.') else if (!(ncol(i.data)>1)) stop('Incorrect number of dimensions, at least two seasons of data required.')
+  
   anios<-dim(i.data)[2]
   semanas<-dim(i.data)[1]
-  validacion<-array(NA,dim=c(15,anios))
-  colnames(validacion)<-names(i.data)
-
-  maximos<-numeric()
-  maximos.seasons<-character()
-
-  if (is.na(i.seasons)) i.seasons<-anios
-  if (is.null(i.seasons)) i.seasons<-anios
-
-  if (!(i.goodness.method=="sequential")){
-    # Metodo 2: cruzada
-    if (anios>=i.min.seasons){
+  
+  if (anios<i.min.seasons){
+    memgoodness.output <- NULL
+  }else{
+    
+    validacion<-array(NA,dim=c(15,anios))
+    colnames(validacion)<-names(i.data)
+    
+    maximos<-numeric()
+    maximos.seasons<-character()
+    
+    if (is.na(i.seasons)) i.seasons<-anios
+    if (is.null(i.seasons)) i.seasons<-anios
+    
+    if (!(i.goodness.method=="sequential")){
+      # Metodo 2: cruzada
+      #if (anios>=i.min.seasons){
       for (i in 1:anios){
         indices.2<-(1:anios)-i
         indices.1<-abs(indices.2)
@@ -199,10 +206,10 @@ memgoodness<-function(i.data,
         maximos<-cbind(maximos,c(peak.i,peak.week.i,umbrales.i,level.i))
         maximos.seasons<-c(maximos.seasons,names(i.data)[indices.actual])
       }
-    }
-  }else{
-    # Metodo 1: secuencial
-    if (anios>=i.min.seasons){
+      #}
+    }else{
+      # Metodo 1: secuencial
+      #if (anios>=i.min.seasons){
       for (i in i.min.seasons:anios){
         indices.modelo<-max(1,i-i.seasons):(i-1)
         indices.actual<-i
@@ -247,79 +254,80 @@ memgoodness<-function(i.data,
         maximos<-cbind(maximos,c(peak.i,peak.week.i,umbrales.i,level.i))
         maximos.seasons<-c(maximos.seasons,names(i.data)[indices.actual])
       }
+      #}
     }
+    
+    resultado<-apply(validacion,1,sum,na.rm=T)
+    # sensibilidad
+    resultado[7]<-resultado[3]/(resultado[3]+resultado[6])
+    # especificidad
+    resultado[8]<-resultado[5]/(resultado[5]+resultado[4])
+    # vpp
+    resultado[9]<-resultado[3]/(resultado[3]+resultado[4])
+    # vpn
+    resultado[10]<-resultado[5]/(resultado[5]+resultado[6])
+    # positive likehood ratio
+    resultado[11]<-resultado[7]/(1-resultado[8])
+    # negative likehood ratio
+    resultado[12]<-(1-resultado[7])/resultado[8]
+    # percentage agreement/accuracy
+    resultado[13]<-(resultado[3]+resultado[5])/(resultado[3]+resultado[4]+resultado[5]+resultado[6])
+    # Matthews correlation coefficient
+    resultado[14]<-(resultado[3]*resultado[5]-resultado[4]*resultado[6])/sqrt((resultado[3]+resultado[4])*(resultado[3]+resultado[6])*(resultado[5]+resultado[4])*(resultado[5]+resultado[6]))
+    # Youden's index
+    resultado[15]<-resultado[7]+resultado[8]-1
+    
+    resultado[is.nan(resultado)]<-NA
+    
+    temp1<-data.frame(Description=c("Baseline","Low","Medium","High","Very high"),Level=1:5,stringsAsFactors = F)
+    maximos<-data.frame(t(maximos),stringsAsFactors = F)
+    names(maximos)<-c("Peak","Peak week","Epidemic threshold","Medium threshold","High threshold","Very high threshold","Level")
+    maximos$id  <- 1:NROW(maximos)
+    maximos<-merge(maximos,temp1,by="Level",all.x=T)
+    maximos<-maximos[order(maximos$id), ]
+    rownames(maximos)<-maximos.seasons
+    maximos$id<-NULL
+    maximos<-maximos[c(2:7,1,8)]
+    
+    temp2<-data.frame(table(as.numeric(maximos[,7]), exclude=c(NA, NaN)),stringsAsFactors = F)
+    names(temp2)<-c("Level","Count")
+    temp3<-merge(temp1,temp2,all.x=T)
+    temp3$Count[is.na(temp3$Count)]<-0
+    temp3$Percentage<-temp3$Count/sum(temp3$Count)
+    temp4<-data.frame(Level=c(0,-1),Description=c("No data seasons","Total seasons"),Count=c(NROW(maximos)-sum(temp3$Count),NROW(maximos)), Percentage=c((NROW(maximos)-sum(temp3$Count))/NROW(maximos),1),stringsAsFactors = F)
+    maximos.resultados<-rbind(temp3,temp4)
+    
+    memgoodness.output<-list(validity.data=validacion,
+                             results=resultado,
+                             peaks=maximos.resultados,
+                             peaks.data=maximos,
+                             param.data=i.data,
+                             param.seasons=i.seasons,
+                             param.type.threshold=i.type.threshold,
+                             param.level.threshold=i.level.threshold,
+                             param.tails.threshold=i.tails.threshold,
+                             param.type.intensity=i.type.intensity,
+                             param.level.intensity=i.level.intensity,
+                             param.tails.intensity=i.tails.intensity,
+                             param.type.curve=i.type.curve,
+                             param.level.curve=i.level.curve,
+                             param.type.other=i.type.other,
+                             param.level.other=i.level.other,
+                             param.method=i.method,
+                             param.param=i.param,
+                             param.n.max=i.n.max,
+                             param.type.boot=i.type.boot,
+                             param.iter.boot=i.iter.boot,
+                             param.calculation.method=i.calculation.method,
+                             param.goodness.method=i.goodness.method,
+                             param.detection.values=i.detection.values,
+                             param.weeks.above=i.weeks.above,
+                             param.output=i.output,
+                             param.graph=i.graph,
+                             param.prefix=i.prefix,
+                             param.min.seasons=i.min.seasons)
+    memgoodness.output$call<-match.call()
   }
-
-  resultado<-apply(validacion,1,sum,na.rm=T)
-  # sensibilidad
-  resultado[7]<-resultado[3]/(resultado[3]+resultado[6])
-  # especificidad
-  resultado[8]<-resultado[5]/(resultado[5]+resultado[4])
-  # vpp
-  resultado[9]<-resultado[3]/(resultado[3]+resultado[4])
-  # vpn
-  resultado[10]<-resultado[5]/(resultado[5]+resultado[6])
-  # positive likehood ratio
-  resultado[11]<-resultado[7]/(1-resultado[8])
-  # negative likehood ratio
-  resultado[12]<-(1-resultado[7])/resultado[8]
-  # percentage agreement/accuracy
-  resultado[13]<-(resultado[3]+resultado[5])/(resultado[3]+resultado[4]+resultado[5]+resultado[6])
-  # Matthews correlation coefficient
-  resultado[14]<-(resultado[3]*resultado[5]-resultado[4]*resultado[6])/sqrt((resultado[3]+resultado[4])*(resultado[3]+resultado[6])*(resultado[5]+resultado[4])*(resultado[5]+resultado[6]))
-  # Youden's index
-  resultado[15]<-resultado[7]+resultado[8]-1
-
-  resultado[is.nan(resultado)]<-NA
-
-  temp1<-data.frame(Description=c("Baseline","Low","Medium","High","Very high"),Level=1:5,stringsAsFactors = F)
-  maximos<-data.frame(t(maximos),stringsAsFactors = F)
-  names(maximos)<-c("Peak","Peak week","Epidemic threshold","Medium threshold","High threshold","Very high threshold","Level")
-  maximos$id  <- 1:NROW(maximos)
-  maximos<-merge(maximos,temp1,by="Level",all.x=T)
-  maximos<-maximos[order(maximos$id), ]
-  rownames(maximos)<-maximos.seasons
-  maximos$id<-NULL
-  maximos<-maximos[c(2:7,1,8)]
-
-  temp2<-data.frame(table(as.numeric(maximos[,7]), exclude=c(NA, NaN)),stringsAsFactors = F)
-  names(temp2)<-c("Level","Count")
-  temp3<-merge(temp1,temp2,all.x=T)
-  temp3$Count[is.na(temp3$Count)]<-0
-  temp3$Percentage<-temp3$Count/sum(temp3$Count)
-  temp4<-data.frame(Level=c(0,-1),Description=c("No data seasons","Total seasons"),Count=c(NROW(maximos)-sum(temp3$Count),NROW(maximos)), Percentage=c((NROW(maximos)-sum(temp3$Count))/NROW(maximos),1),stringsAsFactors = F)
-  maximos.resultados<-rbind(temp3,temp4)
-
-  memgoodness.output<-list(validity.data=validacion,
-                          results=resultado,
-                          peaks=maximos.resultados,
-                          peaks.data=maximos,
-                          param.data=i.data,
-                          param.seasons=i.seasons,
-                          param.type.threshold=i.type.threshold,
-                          param.level.threshold=i.level.threshold,
-                          param.tails.threshold=i.tails.threshold,
-                          param.type.intensity=i.type.intensity,
-                          param.level.intensity=i.level.intensity,
-                          param.tails.intensity=i.tails.intensity,
-                          param.type.curve=i.type.curve,
-                          param.level.curve=i.level.curve,
-                          param.type.other=i.type.other,
-                          param.level.other=i.level.other,
-                          param.method=i.method,
-                          param.param=i.param,
-                          param.n.max=i.n.max,
-                          param.type.boot=i.type.boot,
-                          param.iter.boot=i.iter.boot,
-                          param.calculation.method=i.calculation.method,
-                          param.goodness.method=i.goodness.method,
-                          param.detection.values=i.detection.values,
-                          param.weeks.above=i.weeks.above,
-                          param.output=i.output,
-                          param.graph=i.graph,
-                          param.prefix=i.prefix,
-                          param.min.seasons=i.min.seasons)
-  memgoodness.output$call<-match.call()
   return(memgoodness.output)
 }
 
