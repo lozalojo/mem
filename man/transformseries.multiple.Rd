@@ -4,8 +4,9 @@
 \alias{transformseries.multiple}
 \title{divide a series in parts}
 \usage{
-transformseries.multiple(i.data, i.max.duration = 30, i.max.waves = NA,
-  i.param.1 = 0.028, i.param.2 = 0.015, i.separation = 3, i.output = NA)
+transformseries.multiple(i.data, i.max.duration = NA, i.waves = NA,
+  i.param.1 = 0.028, i.param.2 = 0.028, i.min.separation = 2,
+  i.output = NA, i.force.loess = F)
 }
 \description{
 divide a series in parts
