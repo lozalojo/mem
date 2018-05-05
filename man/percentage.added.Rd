@@ -4,7 +4,7 @@
 \alias{percentage.added}
 \title{For use with transformseries.multiple}
 \usage{
-percentage.added(i.data, n)
+percentage.added(i.data, i.n)
 }
 \description{
 For use with transformseries.multiple

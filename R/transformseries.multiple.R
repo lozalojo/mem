@@ -8,9 +8,10 @@
 #' @importFrom tidyr spread
 #' @importFrom utils tail
 #' @importFrom ggthemes solarized_pal
-transformseries.multiple <- function(i.data, i.max.duration=NA, i.waves=NA, i.param.1=0.028, i.param.2=0.028, i.min.separation=2, i.output=NA, i.force.loess=F){
+transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.season.duration=NA, i.waves=NA, i.param.1=0.028, i.param.2=0.028, i.min.separation=2, i.output=NA, i.force.loess=F){
   
-  if (is.na(i.max.duration)) max.duration<-NROW(i.data) else max.duration<-i.max.duration
+  if (is.na(i.max.epidemic.duration)) max.epidemic.duration<-NROW(i.data) else max.epidemic.duration<-i.max.epidemic.duration
+  if (is.na(i.max.season.duration)) max.season.duration<-NROW(i.data) else max.season.duration<-i.max.season.duration
   
   if (length(i.waves)==1){
     if (!is.na(i.waves)){
@@ -73,9 +74,10 @@ transformseries.multiple <- function(i.data, i.max.duration=NA, i.waves=NA, i.pa
   data.temp <- data.plus
   plots <- list()
   for(j in 1:max.waves){
-    peradd<-as.data.frame(matrix(unlist(sapply(1:max.duration, percentage.added, i.data=data.temp$rates.filled)), ncol=6, byrow = T), stringsAsFactors = F)
+  # for(j in 1:20){
+    peradd<-as.data.frame(matrix(unlist(sapply(1:max.epidemic.duration, percentage.added, i.data=data.temp$rates.filled)), ncol=6, byrow = T), stringsAsFactors = F)
     names(peradd)<-c("percentage","start","end","duration", "sum", "max")
-    n.chosen=tail((1:max.duration)[peradd$percentage>i.param.1], 1)
+    n.chosen=head((1:max.epidemic.duration)[peradd$percentage<i.param.1], 1)-1
     peradd.chosen<-data.frame(iteration=j, percentage.added(data.temp$rates.filled, n.chosen))
     results<-bind_rows(results, peradd.chosen)
     data.plot<-rbind(data.plot,
@@ -100,7 +102,7 @@ transformseries.multiple <- function(i.data, i.max.duration=NA, i.waves=NA, i.pa
       dplyr::mutate(difcumsumper= cumsumper - lag(cumsumper))
     results$difcumsumper[1]<-1
     cat("iteration ", j,"-",results$difcumsumper[NROW(results)], "\n")
-    j<-j+1
+    # j<-j+1
   }
   
   max.waves.dif <- max(min.waves, min(results$iteration[results$difcumsumper<i.param.2][1]-1, max.waves, na.rm=T), ra.rm=T)
@@ -116,7 +118,7 @@ transformseries.multiple <- function(i.data, i.max.duration=NA, i.waves=NA, i.pa
     dplyr::arrange(start) %>%
     dplyr::mutate(lend=lag(end), dif=(start-lend-1), unite=(is.na(dif) | dif>=i.min.separation), sunite=cumsum(unite))
   data.plot.united <- data.plot %>%
-    dplyr::left_join(dplyr::select(temp1, iteration, sunite), by="iteration") %>%
+    dplyr::inner_join(dplyr::select(temp1, iteration, sunite), by="iteration") %>%
     dplyr::mutate(iteration=sunite) %>%
     dplyr::select(-sunite) %>%
     dplyr::arrange(x)
@@ -140,6 +142,7 @@ transformseries.multiple <- function(i.data, i.max.duration=NA, i.waves=NA, i.pa
                           pull(n)
                       ))
   }
+  
   n <- dummy <- part <- NULL
   data.united <- data.plus %>% 
     dplyr::left_join(cut.united %>%
@@ -147,6 +150,29 @@ transformseries.multiple <- function(i.data, i.max.duration=NA, i.waves=NA, i.pa
                        dplyr::mutate(dummy=1), by="n") %>%
     dplyr::mutate(dummy=if_else(is.na(dummy),0,1), part=1+cumsum(dummy), season=1000 + part) %>%
     dplyr::select(-dummy)
+  n.parts <- max(data.united$part)
+  
+  temp4 <-numeric()
+  
+  for (k in 1:n.parts) {
+    temp1 <- data.united %>%
+      filter(part==k) %>%
+      pull(rates.filled)
+    temp2 <- percentage.added(temp1, max.season.duration)
+    
+    temp3 <- c(rep(NA, temp2$start-1),
+               rep(k,temp2$end-temp2$start+1),
+               rep(NA,length(temp1)-temp2$end))
+    
+    temp4 <- c(temp4, temp3)
+  }
+  
+  season.original <- part<- season <- NULL
+  
+  data.united <- data.united %>%
+    mutate(part.original=part, season.original = season) %>%
+    mutate(part=temp4, season = ifelse(is.na(part), NA, season.original))
+
   if (!is.na(i.output)){
     n <- rates.filled <- x <- y <- NULL
     p3 <- ggplot() +
@@ -161,13 +187,15 @@ transformseries.multiple <- function(i.data, i.max.duration=NA, i.waves=NA, i.pa
       theme(plot.title = element_text(hjust = 0.5))
     ggsave(paste0("Final.png"), p3,  width = 16, height = 9, dpi=150, path=outputdir)
   }
-  season <- yrweek <- week <- rates.orig <- NULL
+  season <- yrweek <- week <- rates.orig <- part <- NULL
   season.desc <- data.united %>%
+    dplyr::filter(!is.na(part)) %>% 
     dplyr::group_by(season) %>%
     dplyr::summarise(from=min(yrweek), to=max(yrweek)) %>%
     as.data.frame()
   names(season.desc) <- c("Season", "From", "To")
   data.final <- data.united %>%
+    dplyr::filter(!is.na(part)) %>% 
     dplyr::arrange(yrweek) %>%
     dplyr::group_by(season) %>%
     dplyr::mutate(week=1:n()) %>%
