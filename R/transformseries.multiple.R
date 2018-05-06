@@ -10,8 +10,8 @@
 #' @importFrom ggthemes solarized_pal
 transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.season.duration=NA, i.waves=NA, i.param.1=0.028, i.param.2=0.028, i.min.separation=2, i.output=NA, i.force.loess=F){
   
-  if (is.na(i.max.epidemic.duration)) max.epidemic.duration<-NROW(i.data) else max.epidemic.duration<-i.max.epidemic.duration
-  if (is.na(i.max.season.duration)) max.season.duration<-NROW(i.data) else max.season.duration<-i.max.season.duration
+  if (is.na(i.max.epidemic.duration) | i.max.epidemic.duration==0) max.epidemic.duration<-NROW(i.data) else max.epidemic.duration<-i.max.epidemic.duration
+  if (is.na(i.max.season.duration) | i.max.season.duration==0) max.season.duration<-NROW(i.data) else max.season.duration<-i.max.season.duration
   
   if (length(i.waves)==1){
     if (!is.na(i.waves)){
