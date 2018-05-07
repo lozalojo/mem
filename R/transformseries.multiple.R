@@ -101,7 +101,7 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
       dplyr::mutate(sumcum=cumsum(sum), cumsumper=cumsum(sum)/sum(data.plus$rates.filled, na.rm=T)) %>%
       dplyr::mutate(difcumsumper= cumsumper - lag(cumsumper))
     results$difcumsumper[1]<-1
-    cat("iteration ", j,"-",results$difcumsumper[NROW(results)], "\n")
+    # cat("iteration ", j,"-",results$difcumsumper[NROW(results)], "\n")
     # j<-j+1
   }
   
