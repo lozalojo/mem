@@ -24,7 +24,8 @@ calcular.optimo.criterio<-function(i.curva.map, i.criterio=2.8){
   d.y<-diff(y.s)
   d.x<-x[2:length(x)]
   if (any(d.y<i.criterio)){
-    optimo<-min(d.x[d.y<i.criterio], na.rm=T)-1
+    optimo <- min(d.x[d.y<i.criterio], na.rm=T)-1
+    optimo <- max(optimo, 1)
   }else{
     optimo<-max(d.x, na.rm=T)
   }
