@@ -65,11 +65,16 @@
 #' \itemize{
 #' \item{1} {Arithmetic mean and mean confidence interval.}
 #' \item{2} {Geometric mean and mean confidence interval.}
-#' \item{3} {Median and the KC Method to calculate its confidence interval.}
+#' \item{3} {Median and the Nyblom/normal aproximation confidence interval.}
 #' \item{4} {Median and bootstrap confidence interval.}
 #' \item{5} {Arithmetic mean and point confidence interval (standard deviations).}
 #' \item{6} {Geometric mean and point confidence interval (standard deviations).}
 #' }
+#'
+#' Option \code{3} uses the Hettmansperger and Sheather (1986) and Nyblom (1992) method, 
+#' when there is enough sample size. If sample size is small, then the normal aproximation
+#' will be used as described in Conover, 1980, p. 112. Refer to EnvStats package for
+#' more information.
 #'
 #' Option \code{4} uses two more parameters: \code{i.type.boot} indicates which bootstrap
 #' method to use. The values are the same of those of the \code{\link{boot.ci}} function.
@@ -155,6 +160,14 @@
 #'
 #' Lozano JE. lozalojo/mem: Second release of the MEM R library. Zenodo [Internet]. [cited 2017 Feb 1];
 #' Available from: \url{https://zenodo.org/record/165983}. DOI:10.5281/zenodo.165983
+#'
+#' Hettmansperger, T. P., and S. J Sheather. 1986. Confidence Intervals Based on Interpolated Order
+#' Statistics. Statistics and Probability Letters 4: 75-79. doi:10.1016/0167-7152(86)90021-0.
+#'
+#' Nyblom, J. 1992. Note on Interpolated Order Statistics. Statistics and Probability Letters 14:
+#' 129-31. doi:10.1016/0167-7152(92)90076-H.
+#'
+#' Conover, W.J. (1980). Practical Nonparametric Statistics. Second Edition. John Wiley and Sons, New York.
 #'
 #' @keywords influenza
 #'
