@@ -2,17 +2,16 @@
 #'
 #' @keywords internal
 #'
-#' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline aes labs %+% element_text geom_point guide_legend scale_colour_manual scale_x_continuous scale_y_continuous theme
+#' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline aes labs %+% element_text geom_point guide_legend scale_colour_manual scale_x_continuous scale_y_continuous theme geom_segment geom_text unit arrow
 #' @importFrom stats loess predict
 #' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join pull slice summarise ungroup
 #' @importFrom tidyr spread
 #' @importFrom utils tail
 #' @importFrom ggthemes solarized_pal
 transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.season.duration=NA, i.waves=NA, i.param.1=0.028, i.param.2=0.028, i.min.separation=2, i.output=NA, i.force.loess=F){
-  
+  # Prepare the parameters
   if (is.na(i.max.epidemic.duration) | i.max.epidemic.duration==0) max.epidemic.duration<-NROW(i.data) else max.epidemic.duration<-i.max.epidemic.duration
   if (is.na(i.max.season.duration) | i.max.season.duration==0) max.season.duration<-NROW(i.data) else max.season.duration<-i.max.season.duration
-  
   if (length(i.waves)==1){
     if (!is.na(i.waves)){
       min.waves<-i.waves
@@ -28,7 +27,7 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
     min.waves<-1
     max.waves<-2*NCOL(i.data)  
   }
-
+  # Prepare the data
   yrweek <- season <- year <- week <- NULL
   data <- transformdata.back(i.data)$data %>%
     dplyr::arrange(yrweek) %>%
@@ -41,9 +40,9 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
                   rates.loess=predict(model.loess, newdata=data$n),
                   rates.filled=if_else(is.na(rates), rates.loess, rates)) %>%
     dplyr::select(-rates) %>%
-    #dplyr::filter(!is.na(rates.loess)) %>%
     dplyr::arrange(n)
   if (i.force.loess) data.plus$rates.filled<-data.plus$rates.loess
+  # Plot the original series, the loess and the data that will be used
   if (!is.na(i.output)){
     outputdir<-file.path(getwd(), i.output)
     if (!dir.exists(outputdir)) dir.create(outputdir)
@@ -58,23 +57,33 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
     axis.y.ticks <- axis.y.otick$tickmarks
     axis.y.labels <- axis.y.otick$tickmarks
     n <- rates.orig <- rates.loess <- NULL
-    p1 <- ggplot(data.plus) +
-      geom_line(aes(x=n, y=rates.orig), color="#0066CC", linetype=1, size=1) +
-      geom_line(aes(x=n, y=rates.loess), color="#CC0066", linetype=1, size=1) +
+    p11 <- ggplot(data.plus) +
+      geom_line(aes(x=n, y=rates.orig), color="#0066CC", linetype=1, size=0.75) +
+      geom_point(aes(x=n, y=rates.orig), color="#0066CC", size=1.5) +
+      geom_line(aes(x=n, y=rates.loess), color="#CC0066", linetype=1, size=0.75) +
+      geom_point(aes(x=n, y=rates.loess), color="#CC0066", size=1.5) +
       scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
       labs(title = "Series and loess", x = "Week", y = "Data") +
       ggthemes::theme_few() +
       theme(plot.title = element_text(hjust = 0.5))
-    ggsave("Loess.png", p1,  width = 16, height = 9, dpi=150, path=outputdir)
+    p12 <- ggplot(data.plus) +
+      geom_line(aes(x=n, y=rates.filled), color="#004000", linetype=1, size=0.75) +
+      geom_point(aes(x=n, y=rates.filled), color="#004000", size=1.5) +
+      scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
+      scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
+      labs(title = "Series to be used", x = "Week", y = "Data") +
+      ggthemes::theme_few() +
+      theme(plot.title = element_text(hjust = 0.5))
+    ggsave("1.1. Original Vs Loess.png", p11,  width = 16, height = 9, dpi=150, path=outputdir)
+    ggsave("1.2. Data to be used.png", p12,  width = 16, height = 9, dpi=150, path=outputdir)
   }
-  # if (is.na(i.max.waves)) i.max.waves<-2*NCOL(i.data)
+  # Iterative process to know the increment from one epidemic to the next one
   results <- data.frame()
   data.plot <- data.frame()
   data.temp <- data.plus
-  plots <- list()
+  p2 <- list()
   for(j in 1:max.waves){
-  # for(j in 1:20){
     peradd<-as.data.frame(matrix(unlist(sapply(1:max.epidemic.duration, percentage.added, i.data=data.temp$rates.filled)), ncol=6, byrow = T), stringsAsFactors = F)
     names(peradd)<-c("percentage","start","end","duration", "sum", "max")
     n.chosen=head((1:max.epidemic.duration)[peradd$percentage<i.param.1], 1)-1
@@ -85,13 +94,14 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
     )
     if (!is.na(i.output)){
       n <- rates.filled <- x <- y <- NULL
-      plots[[j]] <- ggplot() +
-        geom_line(data=data.plus, aes(x=n, y=rates.filled), color="#A0A0A0") +
+      p2[[j]] <- ggplot() +
+        geom_line(data=data.plus, aes(x=n, y=rates.filled), color="#A0A0A0", size=1) +
+        geom_point(data=data.plus, aes(x=n, y=rates.filled), color="#A0A0A0", size=1.5) +
         geom_point(data=data.plot, aes(x=x, y=y, color=factor(iteration)), size=4) +
-        scale_colour_manual(values = colorRampPalette(solarized_pal()(8))(j), guide = guide_legend(nrow=2)) +
+        scale_colour_manual(values = colorRampPalette(solarized_pal()(8))(j), guide = guide_legend(nrow=3)) +
         scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
         scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
-        labs(title = "Series and epidemics", x = "Week", y = "Data") +
+        labs(title = paste0("Iteration #", j), x = "Week", y = "Data") +
         ggthemes::theme_few() +
         theme(plot.title = element_text(hjust = 0.5))
     }
@@ -101,17 +111,14 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
       dplyr::mutate(sumcum=cumsum(sum), cumsumper=cumsum(sum)/sum(data.plus$rates.filled, na.rm=T)) %>%
       dplyr::mutate(difcumsumper= cumsumper - lag(cumsumper))
     results$difcumsumper[1]<-1
-    # cat("iteration ", j,"-",results$difcumsumper[NROW(results)], "\n")
-    # j<-j+1
   }
-  
+  # The stopping point is determined by i.param.2
   max.waves.dif <- max(min.waves, min(results$iteration[results$difcumsumper<i.param.2][1]-1, max.waves, na.rm=T), ra.rm=T)
-
-  if (!is.na(i.output)) for(j in 1:max.waves.dif) ggsave(paste0("Iteration ",j,".png"), plots[[j]],  width = 16, height = 9, dpi=150, path=outputdir)
-
+  # We plot each iteration to the stopping point and filter the results
+  if (!is.na(i.output)) for(j in 1:max.waves.dif) ggsave(paste0("2.",j,". Iteration ",j,".png"), p2[[j]],  width = 16, height = 9, dpi=150, path=outputdir)
   results <- results %>%
     filter(iteration<=max.waves.dif)
-  
+  # I join epidemics with a separation lower than i.min.separation
   iteration <- start <- end <- n <- sum <- lend <- dif <- unite <- sunite <- x <- from <- to <- NULL
   temp1 <- results %>%
     dplyr::select(iteration, start, end, n, sum) %>%
@@ -122,6 +129,22 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
     dplyr::mutate(iteration=sunite) %>%
     dplyr::select(-sunite) %>%
     dplyr::arrange(x)
+  if (!is.na(i.output)){
+    n <- rates.filled <- x <- y <- NULL
+    p31 <- ggplot() +
+      geom_line(data=data.plus, aes(x=n, y=rates.filled), color="#A0A0A0", size=1) +
+      geom_point(data=data.plus, aes(x=n, y=rates.filled), color="#A0A0A0", size=1.5) +
+      geom_point(data=data.plot.united, aes(x=x, y=y, color=factor(iteration)), size=4) +
+      scale_colour_manual(values = colorRampPalette(solarized_pal()(8))(j), guide = guide_legend(nrow=3)) +
+      scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
+      scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
+      labs(title = paste0("Merged epidemics (separation: ", i.min.separation, ")"), x = "Week", y = "Data") +
+      ggthemes::theme_few() +
+      theme(plot.title = element_text(hjust = 0.5))
+    ggsave("3.1. Merged epidemics.png", p31,  width = 16, height = 9, dpi=150, path=outputdir)
+  }
+  # Now I separate each part for the lowest vale between epidemics, but using the loess data to avoid irregular
+  # low values between epidemics
   temp2 <- temp1 %>%
     dplyr::group_by(sunite) %>%
     dplyr::summarise(start=min(start), end=max(end)) %>%
@@ -142,7 +165,6 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
                           pull(n)
                       ))
   }
-  
   n <- dummy <- part <- NULL
   data.united <- data.plus %>% 
     dplyr::left_join(cut.united %>%
@@ -151,9 +173,23 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
     dplyr::mutate(dummy=if_else(is.na(dummy),0,1), part=1+cumsum(dummy), season=1000 + part) %>%
     dplyr::select(-dummy)
   n.parts <- max(data.united$part)
-  
+  if (!is.na(i.output)){
+    n <- rates.filled <- x <- y <- NULL
+    p32 <- ggplot() +
+      geom_line(data=data.plus, aes(x=n, y=rates.filled), color="#A0A0A0", size=1) +
+      geom_point(data=data.plus, aes(x=n, y=rates.filled), color="#A0A0A0", size=1.5) +
+      geom_point(data=data.plot.united, aes(x=x, y=y, color=factor(iteration)), size=4) +
+      geom_vline(data=cut.united, aes(xintercept=n), color="#000000", alpha=0.5) +
+      scale_colour_manual(values = colorRampPalette(solarized_pal()(8))(j), guide = guide_legend(nrow=3)) +
+      scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
+      scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
+      labs(title = paste0("Merged epidemics (separation: ", i.min.separation, ")"), x = "Week", y = "Data") +
+      ggthemes::theme_few() +
+      theme(plot.title = element_text(hjust = 0.5))
+    ggsave("3.2. Merged epidemics separated.png", p32,  width = 16, height = 9, dpi=150, path=outputdir)
+  }
+  # Now limit the length of each season to i.max.season.duration
   temp4 <-numeric()
-  
   for (k in 1:n.parts) {
     temp1 <- data.united %>%
       filter(part==k) %>%
@@ -166,34 +202,69 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
     
     temp4 <- c(temp4, temp3)
   }
-  
   season.original <- part<- season <- NULL
-  
   data.united <- data.united %>%
-    mutate(part.original=part, season.original = season) %>%
-    mutate(part=temp4, season = ifelse(is.na(part), NA, season.original))
-
-  if (!is.na(i.output)){
-    n <- rates.filled <- x <- y <- NULL
-    p3 <- ggplot() +
-      geom_line(data=data.plus, aes(x=n, y=rates.filled), color="#A0A0A0") +
-      geom_point(data=data.plot.united, aes(x=x, y=y, color=factor(iteration)), size=4) +
-      scale_colour_manual(values = colorRampPalette(solarized_pal()(8))(j), guide = guide_legend(nrow=2)) +
-      scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
-      scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
-      labs(title = "Series and epidemics", x = "Week", y = "Data") +
-      geom_vline(data=cut.united, aes(xintercept=n), color="#A0A0A0", alpha=0.5) +
-      ggthemes::theme_few() +
-      theme(plot.title = element_text(hjust = 0.5))
-    ggsave(paste0("Final.png"), p3,  width = 16, height = 9, dpi=150, path=outputdir)
-  }
+    mutate(rates.filled.original=rates.filled, part.original=part, season.original = season) %>%
+    mutate(rates.filled=ifelse(is.na(temp4), NA, rates.filled), part=temp4, season = ifelse(is.na(temp4), NA, season.original))
   season <- yrweek <- week <- rates.orig <- part <- NULL
   season.desc <- data.united %>%
     dplyr::filter(!is.na(part)) %>% 
     dplyr::group_by(season) %>%
-    dplyr::summarise(from=min(yrweek), to=max(yrweek)) %>%
+    dplyr::summarise(from=min(yrweek), to=max(yrweek), duration=n()) %>%
     as.data.frame()
-  names(season.desc) <- c("Season", "From", "To")
+  names(season.desc) <- c("Season", "From", "To", "Duration")
+  # See epidemic detected my mem algorithm
+  data.united$epidemic<-NA
+  for (i in 1:n.parts){
+    temp1 <- data.united %>%
+      filter(part==i) %>%
+      pull(rates.filled) %>%
+      memtiming()
+    temp2 <- data.united %>%
+      filter(part==i) %>%
+      summarise(minn=min(n), maxn=max(n))
+    y=rep(1,temp2$maxn-temp2$minn+1)
+    y[temp1$optimum.map[5]:(temp2$maxn-temp2$minn+1)]<-3
+    y[temp1$optimum.map[4]:temp1$optimum.map[5]]<-2
+    data.united$epidemic[temp2$minn:temp2$maxn]<-y
+  }
+  if (!is.na(i.output)){
+    temp1 <- data.united %>%
+      filter(!is.na(part)) %>%
+      group_by(season) %>%
+      summarise(cut1=min(n), cut2=max(n), cut3=mean(n))
+    n <- rates.filled <- rates.filled.original <- x <- y <- cut1 <- cut2 <- cut3 <- epidemic <- NULL
+    p41 <- ggplot() +
+      geom_line(data=data.united, aes(x=n, y=rates.filled.original), color="#A0A0A0", size=1) +
+      geom_point(data=data.united, aes(x=n, y=rates.filled.original), color="#A0A0A0", size=1.5, alpha=0.75) +
+      geom_point(data=data.united, aes(x=n, y=rates.filled), color="#FFB401", size=4, alpha=0.75) +
+      geom_point(data=data.plot.united, aes(x=x, y=y), color="#800080", size=4, alpha=0.75) +
+      scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
+      scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
+      labs(title = "Series separated in artificial seasons", x = "Week", y = "Data") +
+      geom_vline(data=temp1, aes(xintercept=cut1), color="#FF0000", alpha=0.5) +
+      geom_vline(data=temp1, aes(xintercept=cut2), color="#40FF40", alpha=0.5) +
+      ggthemes::theme_few() +
+      theme(plot.title = element_text(hjust = 0.5))
+    temp2 <- axis.y.ticks[1]+diff(range(axis.y.ticks))/20
+    temp3 <- axis.y.ticks[1]+diff(range(axis.y.ticks))/15
+    p42 <- ggplot() +
+      geom_line(data=data.united, aes(x=n, y=rates.filled.original), color="#A0A0A0", size=1) +
+      geom_point(data=data.united, aes(x=n, y=rates.filled.original), color="#A0A0A0", size=1.5, alpha=0.75) +
+      geom_point(data=data.united, aes(x=n, y=rates.filled.original, color=factor(epidemic)), size=4, alpha=0.75) +
+      scale_colour_manual(values = c("#00C000","#800080","#FFB401"), guide = guide_legend(nrow=3)) +
+      scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
+      scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
+      labs(title = "Series separated and MEM epidemics", x = "Week", y = "Data") +
+      geom_segment(data=temp1, aes(x=cut1, xend=cut2, y=temp3, yend=temp3), color="#0000FF", alpha=0.75, size=1, arrow=arrow(ends="both", type="closed", angle="90", length=unit(5, "points"))) +
+      geom_text(data=temp1, aes(x=cut3, y=temp2, label=season), color="#0000FF", alpha=0.75, vjust =1) +
+      #geom_vline(data=temp1, aes(xintercept=cut1), color="#FF0000", alpha=0.5) +
+      #geom_vline(data=temp1, aes(xintercept=cut2), color="#40FF40", alpha=0.5) +
+      ggthemes::theme_few() +
+      theme(plot.title = element_text(hjust = 0.5))
+    ggsave(paste0("4.1. Seasons separated.png"), p41,  width = 16, height = 9, dpi=150, path=outputdir)
+    ggsave(paste0("4.2. Seasons separated and MEM epidemics.png"), p42,  width = 16, height = 9, dpi=150, path=outputdir)
+  }
   data.final <- data.united %>%
     dplyr::filter(!is.na(part)) %>% 
     dplyr::arrange(yrweek) %>%
