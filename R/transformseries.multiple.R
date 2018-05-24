@@ -8,7 +8,7 @@
 #' @importFrom tidyr spread
 #' @importFrom utils tail
 #' @importFrom ggthemes solarized_pal
-transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.season.duration=NA, i.waves=NA, i.param.1=0.028, i.param.2=0.028, i.min.separation=2, i.output=NA, i.force.loess=F){
+transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.season.duration=NA, i.waves=NA, i.param.1=2.8, i.param.2=2.8, i.min.separation=2, i.output=NA, i.force.loess=F){
   p1 <- list()
   p2 <- list()
   p3 <- list()
@@ -84,7 +84,7 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
   for(j in 1:max.waves){
     peradd<-as.data.frame(matrix(unlist(sapply(1:max.epidemic.duration, percentage.added, i.data=data.temp$rates.filled)), ncol=6, byrow = T), stringsAsFactors = F)
     names(peradd)<-c("percentage","start","end","duration", "sum", "max")
-    n.chosen=head((1:max.epidemic.duration)[peradd$percentage<i.param.1], 1)-1
+    n.chosen=head((1:max.epidemic.duration)[peradd$percentage<(i.param.1/100)], 1)-1
     peradd.chosen<-data.frame(iteration=j, percentage.added(data.temp$rates.filled, n.chosen))
     results<-bind_rows(results, peradd.chosen)
     data.plot<-rbind(data.plot,
@@ -109,7 +109,7 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
     results$difcumsumper[1]<-1
   }
   # The stopping point is determined by i.param.2
-  max.waves.dif <- max(min.waves, min(results$iteration[results$difcumsumper<i.param.2][1]-1, max.waves, na.rm=T), ra.rm=T)
+  max.waves.dif <- max(min.waves, min(results$iteration[results$difcumsumper<(i.param.2/100)][1]-1, max.waves, na.rm=T), ra.rm=T)
   results <- results %>%
     filter(iteration<=max.waves.dif)
   # I join epidemics with a separation lower than i.min.separation
