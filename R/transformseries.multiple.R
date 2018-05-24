@@ -17,7 +17,7 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
   if (is.na(i.max.epidemic.duration) | i.max.epidemic.duration==0) max.epidemic.duration<-NROW(i.data) else max.epidemic.duration<-i.max.epidemic.duration
   if (is.na(i.max.season.duration) | i.max.season.duration==0) max.season.duration<-NROW(i.data) else max.season.duration<-i.max.season.duration
   if (length(i.waves)==1){
-    if (!is.na(i.waves)){
+    if (!is.na(i.waves) & i.waves>0){
       min.waves<-i.waves
       max.waves<-i.waves
     }else{
@@ -264,15 +264,14 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
   if (!is.na(i.output)){
     outputdir<-file.path(getwd(), i.output)
     if (!dir.exists(outputdir)) dir.create(outputdir)
-    
     ggsave("1.1. Original Vs Loess.png", p1[[1]],  width = 16, height = 9, dpi=150, path=outputdir)
     ggsave("1.2. Data to be used.png", p1[[2]],  width = 16, height = 9, dpi=150, path=outputdir)
     # We plot each iteration to the stopping point and filter the results
-    if (!is.na(i.output)) for(j in 1:max.waves.dif) ggsave(paste0("2.",j,". Iteration ",j,".png"), p2[[j]],  width = 16, height = 9, dpi=150, path=outputdir)
+    for(j in 1:max.waves.dif) ggsave(paste0("2.",j,". Iteration ",j,".png"), p2[[j]],  width = 16, height = 9, dpi=150, path=outputdir)
     ggsave("3.1. Merged epidemics.png", p3[[1]],  width = 16, height = 9, dpi=150, path=outputdir)
     ggsave("3.2. Merged epidemics separated.png", p3[[2]],  width = 16, height = 9, dpi=150, path=outputdir)
-    ggsave(paste0("4.1. Seasons separated.png"), p4[[1]],  width = 16, height = 9, dpi=150, path=outputdir)
-    ggsave(paste0("4.2. Seasons separated and MEM epidemics.png"), p4[[2]],  width = 16, height = 9, dpi=150, path=outputdir)
+    ggsave("4.1. Seasons separated.png", p4[[1]],  width = 16, height = 9, dpi=150, path=outputdir)
+    ggsave("4.2. Seasons separated and MEM epidemics.png", p4[[2]],  width = 16, height = 9, dpi=150, path=outputdir)
   }
   plots <- list(p1=p1, p2=p2, p3=p3, p4=p4)
   list(data.final=data.final, data.united=data.united, data.plot.united=data.plot.united, cut.united=cut.united, season.desc=season.desc, plots=plots)
