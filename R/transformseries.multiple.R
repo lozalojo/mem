@@ -2,7 +2,7 @@
 #'
 #' @keywords internal
 #'
-#' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline aes labs %+% element_text geom_point guide_legend scale_colour_manual scale_x_continuous scale_y_continuous theme geom_segment geom_text unit arrow
+#' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline aes labs %+% element_text geom_point guide_legend scale_colour_manual scale_x_continuous scale_y_continuous theme geom_segment geom_text unit arrow guides
 #' @importFrom stats loess predict
 #' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join pull slice summarise ungroup
 #' @importFrom tidyr spread
@@ -74,7 +74,7 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
       geom_point(aes(x=n, y=rates.filled), color="#004000", size=1.5) +
       scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
-      labs(title = "Series to be used", x = "Week", y = "Data") +
+      labs(title = "Data to be used", x = "Week", y = "Data") +
       ggthemes::theme_few() +
       theme(plot.title = element_text(hjust = 0.5))
   # Iterative process to know the increment from one epidemic to the next one
@@ -99,6 +99,7 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
         scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
         scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
         labs(title = paste0("Iteration #", j), x = "Week", y = "Data") +
+        guides(color=guide_legend(title="Iteration")) +
         ggthemes::theme_few() +
         theme(plot.title = element_text(hjust = 0.5))
     sum <- cumsumper <- NULL
@@ -132,6 +133,7 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
       scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
       labs(title = paste0("Merged epidemics (separation: ", i.min.separation, ")"), x = "Week", y = "Data") +
+      guides(color=guide_legend(title="Iteration")) +
       ggthemes::theme_few() +
       theme(plot.title = element_text(hjust = 0.5))
   # Now I separate each part for the lowest vale between epidemics, but using the loess data to avoid irregular
@@ -174,6 +176,7 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
       scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
       labs(title = paste0("Merged epidemics (separation: ", i.min.separation, ")"), x = "Week", y = "Data") +
+      guides(color=guide_legend(title="Parts")) +
       ggthemes::theme_few() +
       theme(plot.title = element_text(hjust = 0.5))
   # Now limit the length of each season to i.max.season.duration
@@ -238,7 +241,7 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
     p4[[2]] <- ggplot() +
       geom_line(data=data.united, aes(x=n, y=rates.filled.original), color="#A0A0A0", size=1) +
       geom_point(data=data.united, aes(x=n, y=rates.filled.original), color="#A0A0A0", size=1.5, alpha=0.75) +
-      geom_point(data=data.united, aes(x=n, y=rates.filled.original, color=factor(epidemic)), size=4, alpha=0.75) +
+      geom_point(data=subset(data.united, !is.na(epidemic)), aes(x=n, y=rates.filled.original, color=factor(epidemic, levels=1:3, labels=c("Pre","Epidemic","Post"))), size=4, alpha=0.75) +
       scale_colour_manual(values = c("#00C000","#800080","#FFB401"), guide = guide_legend(nrow=3)) +
       scale_x_continuous(breaks=axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks=axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
@@ -247,6 +250,7 @@ transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.s
       geom_text(data=temp1, aes(x=cut3, y=temp2, label=season), color="#0000FF", alpha=0.75, vjust =1) +
       #geom_vline(data=temp1, aes(xintercept=cut1), color="#FF0000", alpha=0.5) +
       #geom_vline(data=temp1, aes(xintercept=cut2), color="#40FF40", alpha=0.5) +
+      guides(color=guide_legend(title="Epidemic")) +
       ggthemes::theme_few() +
       theme(plot.title = element_text(hjust = 0.5))
   data.final <- data.united %>%
