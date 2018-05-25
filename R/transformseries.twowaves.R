@@ -83,10 +83,10 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
     y2 <- y1[!is.na(y1)]
     data.rep <- rep(x2, times = y2)
     if (i.model!="V"){
-      mixmdl.normal <- densityMclust(data.rep, G=2, modelNames="E")
+      mixmdl.normal <- densityMclust(data.rep, G=2, modelNames="E", verbose=F)
       temp1<-as.data.frame(cdensE(x1,  parameters = mixmdl.normal$parameters))
     }else{
-      mixmdl.normal <- densityMclust(data.rep, G=2, modelNames="V")
+      mixmdl.normal <- densityMclust(data.rep, G=2, modelNames="V", verbose=F)
       temp1<-as.data.frame(cdensV(x1,  parameters = mixmdl.normal$parameters))
     }
 
@@ -138,7 +138,7 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
       #                     stringsAsFactors = F)
       # }
       # Option 2: fit new model with one normal
-      mixmdl.normal <- densityMclust(data.rep, G=1, modelNames="V")
+      mixmdl.normal <- densityMclust(data.rep, G=1, modelNames="V", verbose=F)
       temp1<-as.data.frame(cdensV(x1,  parameters = mixmdl.normal$parameters))
       inicio.normal <- NA
       temp3<-data.frame(normal1 = temp1[,1]*mixmdl.normal$parameters$pro[1]*total.rates,
