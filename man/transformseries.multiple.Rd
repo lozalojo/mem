@@ -7,7 +7,7 @@
 transformseries.multiple(i.data, i.max.epidemic.duration = NA,
   i.max.season.duration = NA, i.waves = NA, i.param.1 = 2.8,
   i.param.2 = 2.8, i.min.separation = 2, i.output = NA,
-  i.force.loess = F)
+  i.force.loess = F, ...)
 }
 \description{
 divide a series in parts

@@ -3,11 +3,11 @@
 #' @keywords internal
 #'
 #' @importFrom mclust densityMclust cdensE cdensV
-#' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline theme_bw aes labs %+%
+#' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline theme_light aes labs %+%
 #' @importFrom dplyr %>% mutate lag
 #' @importFrom utils head
 #' @importFrom stats dnorm
-transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.output = "") {
+transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.output = "", i.proportion=0.25) {
   # seasons <- names(i.data)
   # n.seasons <- dim(i.data)[2]
   # weeks <- rownames(i.data)
@@ -89,13 +89,14 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
       mixmdl.normal <- densityMclust(data.rep, G=2, modelNames="V", verbose=F)
       temp1<-as.data.frame(cdensV(x1,  parameters = mixmdl.normal$parameters))
     }
-
     temp2 <- merge(data.frame(week=1:n.weeks, stringsAsFactors = F),
                    unique(data.frame(week=data.rep, classification=mixmdl.normal$classification, stringsAsFactors = F)), by="week", all.x=T)
-
     for (j in 2:NROW(temp2)) if (is.na(temp2$classification[j])) temp2$classification[j]<-temp2$classification[j-1]
     for (j in (NROW(temp2)-1):1) if (is.na(temp2$classification[j])) temp2$classification[j]<-temp2$classification[j+1]
-
+    # If the proportion of one of the normals is less than the param i.proportion then there is only one normal
+    print(mixmdl.normal$parameters$pro)
+    if (mixmdl.normal$parameters$pro[1] < i.proportion) temp2$classification <- 2
+    if (mixmdl.normal$parameters$pro[2] < i.proportion) temp2$classification <- 1
     # number of changes from 1 to 2 (2 to 1 doesnt count since normal means are order from lowest to highest, in
     # case 22221111 and mean1<mean2, means second normal is way higher than first one, and we treat it as if it were
     # only one normal)
@@ -191,7 +192,7 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
       p1 <- ggplot(resultados.i) +
         geom_line(aes(x=week, y=rates.no.miss), color="#FF0000", size=1, alpha=0.7)+
         labs(x="Week", y="Rates") +
-        theme_bw()
+        theme_light()
       if (any(!is.na(resultados.i$part1))) p1 <- p1 +
         geom_area(aes(x=week, y=part1), fill = "#B8E2EF") +
         geom_line(aes(x=week, y=normal1), color="#0066CC", size=1, linetype=4)+
