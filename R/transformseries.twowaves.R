@@ -72,7 +72,7 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
   inicios <- data.frame(dummy = NA)
   detalles <- list()
   for (i in 1:n.seasons) {
-    cat(names(i.data)[i],"\n")
+    # cat(names(i.data)[i],"\n")
     resultados.i <- data.frame(rates = i.data[, i])
     rownames(resultados.i) <- weeks
     resultados.i$rates.no.miss <- fill.missing(resultados.i$rates)
@@ -94,7 +94,7 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
     for (j in 2:NROW(temp2)) if (is.na(temp2$classification[j])) temp2$classification[j]<-temp2$classification[j-1]
     for (j in (NROW(temp2)-1):1) if (is.na(temp2$classification[j])) temp2$classification[j]<-temp2$classification[j+1]
     # If the proportion of one of the normals is less than the param i.proportion then there is only one normal
-    print(mixmdl.normal$parameters$pro)
+    # print(mixmdl.normal$parameters$pro)
     if (mixmdl.normal$parameters$pro[1] < i.proportion) temp2$classification <- 2
     if (mixmdl.normal$parameters$pro[2] < i.proportion) temp2$classification <- 1
     # number of changes from 1 to 2 (2 to 1 doesnt count since normal means are order from lowest to highest, in
