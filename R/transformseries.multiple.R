@@ -7,7 +7,7 @@
 #' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join pull slice summarise ungroup
 #' @importFrom tidyr spread
 #' @importFrom utils tail
-transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.season.duration=NA, i.waves=NA, i.param.1=2.8, i.param.2=2.8, i.min.separation=2, i.output=NA, i.force.loess=F, ...){
+transformseries.multiple <- function(i.data, i.max.epidemic.duration=NA, i.max.season.duration=NA, i.waves=NA, i.param.1=3, i.param.2=2, i.min.separation=1, i.output=NA, i.force.loess=F, ...){
   p1 <- list()
   p2 <- list()
   p3 <- list()

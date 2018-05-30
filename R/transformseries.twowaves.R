@@ -7,7 +7,7 @@
 #' @importFrom dplyr %>% mutate lag
 #' @importFrom utils head
 #' @importFrom stats dnorm
-transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.output = "", i.proportion=0.25) {
+transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.output = "", i.proportion = 0.25) {
   # seasons <- names(i.data)
   # n.seasons <- dim(i.data)[2]
   # weeks <- rownames(i.data)
@@ -63,6 +63,11 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
   # resultados.2 <- resultados.2[!(names(resultados.2) %in% seasons)]
   # inicios <- inicios[!(names(inicios) %in% "dummy")]
   # return(list(data.observed = resultados.1, data.expected = resultados.2, breaks = inicios, details = detalles))
+  
+  if (is.na(i.proportion) | is.null(i.proportion)) i.proportion <- 0.25
+  if (is.na(i.scale) | is.null(i.scale)) i.scale <- 1000
+  if (is.na(i.model) | is.null(i.model)) i.model <- "V"
+  
   seasons <- names(i.data)
   n.seasons <- dim(i.data)[2]
   weeks <- rownames(i.data)
