@@ -22,9 +22,10 @@
 #' \item{1} {No transformation}
 #' \item{2} {Odd}
 #' \item{3} {Fill missing data}
-#' \item{4} {Loess}
+#' \item{4} {Smoothing regression}
 #' \item{5} {Two waves (observed)}
 #' \item{6} {Two waves (expected)}
+#' \item{7} {Loess}
 #' }
 #'
 #' Fill missings sustitute missing values with predicted values from a loess regression fit.
@@ -75,15 +76,15 @@ transformseries<-function(i.data, i.transformation=1, ...){
     if (i.transformation==1){
       i.data.transf<-i.data
     }else if (i.transformation==2){
-      i.data.transf<-data.frame(apply(i.data, 2, transformseries.odd),stringsAsFactors = F)
+      i.data.transf<-data.frame(apply(i.data, 2, transformseries.odd), stringsAsFactors = F)
       names(i.data.transf)<-names(i.data)
       rownames(i.data.transf)<-rownames(i.data)
     }else if (i.transformation==3){
-      i.data.transf<-data.frame(apply(i.data, 2, fill.missing),stringsAsFactors = F)
+      i.data.transf<-data.frame(apply(i.data, 2, fill.missing), stringsAsFactors = F)
       names(i.data.transf)<-names(i.data)
       rownames(i.data.transf)<-rownames(i.data)
     }else if (i.transformation==4){
-      i.data.transf<-data.frame(apply(i.data, 2, suavizado, hsuav=-1),stringsAsFactors = F)
+      i.data.transf<-data.frame(apply(i.data, 2, suavizado, ...), stringsAsFactors = F)
       names(i.data.transf)<-names(i.data)
       rownames(i.data.transf)<-rownames(i.data)
     }else if (i.transformation==5){
@@ -91,6 +92,10 @@ transformseries<-function(i.data, i.transformation=1, ...){
       rownames(i.data.transf)<-rownames(i.data)
     }else if (i.transformation==6){
       i.data.transf<-transformseries.twowaves(i.data, ...)$data.expected
+      rownames(i.data.transf)<-rownames(i.data)
+    }else if (i.transformation==7){
+      i.data.transf<-data.frame(apply(i.data, 2, transformseries.loess, ...), stringsAsFactors = F)
+      names(i.data.transf)<-names(i.data)
       rownames(i.data.transf)<-rownames(i.data)
     }else{
       i.data.transf<-i.data

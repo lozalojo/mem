@@ -7,7 +7,7 @@
 #' @importFrom dplyr %>% mutate lag
 #' @importFrom utils head
 #' @importFrom stats dnorm
-transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.output = "", i.proportion = 0.25) {
+transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.output = "", i.proportion = 0) {
   # seasons <- names(i.data)
   # n.seasons <- dim(i.data)[2]
   # weeks <- rownames(i.data)
@@ -64,7 +64,7 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
   # inicios <- inicios[!(names(inicios) %in% "dummy")]
   # return(list(data.observed = resultados.1, data.expected = resultados.2, breaks = inicios, details = detalles))
   
-  if (is.na(i.proportion) | is.null(i.proportion)) i.proportion <- 0.25
+  if (is.na(i.proportion) | is.null(i.proportion)) i.proportion <- 0
   if (is.na(i.scale) | is.null(i.scale)) i.scale <- 1000
   if (is.na(i.model) | is.null(i.model)) i.model <- "V"
   
@@ -100,8 +100,11 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
     for (j in (NROW(temp2)-1):1) if (is.na(temp2$classification[j])) temp2$classification[j]<-temp2$classification[j+1]
     # If the proportion of one of the normals is less than the param i.proportion then there is only one normal
     # print(mixmdl.normal$parameters$pro)
-    if (mixmdl.normal$parameters$pro[1] < i.proportion) temp2$classification <- 2
-    if (mixmdl.normal$parameters$pro[2] < i.proportion) temp2$classification <- 1
+    if (mixmdl.normal$parameters$pro[1] < i.proportion){
+      temp2$classification <- 2
+    }else if (mixmdl.normal$parameters$pro[2] < i.proportion){
+      temp2$classification <- 1
+    }
     # number of changes from 1 to 2 (2 to 1 doesnt count since normal means are order from lowest to highest, in
     # case 22221111 and mean1<mean2, means second normal is way higher than first one, and we treat it as if it were
     # only one normal)
