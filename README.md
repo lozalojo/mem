@@ -34,11 +34,10 @@ To install the lastest development version of *mem*.
 
 
 ```
-# in case you dont have devtools installed, install it
-install.packages(devtools)
-
-# install the new package from github
-devtools::install_github("lozalojo/mem")
+if(!require("devtools")) install.packages("devtools")
+library("devtools")
+# install the memapp development version from GitHub
+install_github("lozalojo/mem")
 ```
 
 ## Usage
