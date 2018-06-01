@@ -18,11 +18,11 @@ iconfianza.percentil.eqnpar <- function(datos, q=0.50, nivel=0.95, ic=T, colas=2
     if (colas!=2){
       temp1 <- try(EnvStats::eqnpar(x=x, p=q, ci=TRUE, ci.method="interpolate", approx.conf.level=nivel, ci.type="lower"), silent = T)
       temp2 <- try(EnvStats::eqnpar(x=x, p=q, ci=TRUE, ci.method="interpolate", approx.conf.level=nivel, ci.type="upper"), silent = T)
-      if (class(temp1) == "try-error" | class(temp2) == "try-error") {
+      if ("try-error" %in% class(temp1) | "try-error" %in% class(temp2)) {
         temp1 <- try(EnvStats::eqnpar(x=x, p=q, ci=TRUE, ci.method="normal.approx", approx.conf.level=nivel, ci.type="lower"), silent = T)
         temp2 <- try(EnvStats::eqnpar(x=x, p=q, ci=TRUE, ci.method="normal.approx", approx.conf.level=nivel, ci.type="upper"), silent = T)
       }
-      if (class(temp1) == "try-error" | class(temp2) == "try-error"){
+      if ("try-error" %in% class(temp1) | "try-error" %in% class(temp2)){
         med<-NA
         l.i<-NA
         l.s<-NA
@@ -34,8 +34,8 @@ iconfianza.percentil.eqnpar <- function(datos, q=0.50, nivel=0.95, ic=T, colas=2
       
     }else{
       temp1 <- try(EnvStats::eqnpar(x=x, p=q, ci=TRUE, ci.method="interpolate", approx.conf.level=nivel, ci.type="two-sided"), silent = T)
-      if (class(temp1) == "try-error") temp1 <- try(EnvStats::eqnpar(x=x, p=q, ci=TRUE, ci.method="normal.approx",approx.conf.level=nivel, ci.type="two-sided"), silent = T)
-      if (class(temp1) == "try-error"){
+      if ("try-error" %in% class(temp1)) temp1 <- try(EnvStats::eqnpar(x=x, p=q, ci=TRUE, ci.method="normal.approx",approx.conf.level=nivel, ci.type="two-sided"), silent = T)
+      if ("try-error" %in% class(temp1)){
         med<-NA
         l.i<-NA
         l.s<-NA      

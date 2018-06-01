@@ -7,67 +7,10 @@
 #' @importFrom dplyr %>% mutate lag
 #' @importFrom utils head
 #' @importFrom stats dnorm
-transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.output = "", i.proportion = 0) {
-  # seasons <- names(i.data)
-  # n.seasons <- dim(i.data)[2]
-  # weeks <- rownames(i.data)
-  # n.weeks <- dim(i.data)[1]
-  # resultados.1 <- i.data
-  # resultados.2 <- i.data
-  # inicios <- data.frame(dummy = NA)
-  # detalles <- list()
-  # for (i in 1:n.seasons) {
-  #   cat(names(i.data)[i],"\n")
-  #   resultados.i <- data.frame(rates = i.data[, i])
-  #   rownames(resultados.i) <- weeks
-  #   resultados.i$rates.no.miss <- fill.missing(resultados.i$rates)
-  #   total.rates <- sum(resultados.i$rates.no.miss, na.rm = T)
-  #   x1 <- 1:n.weeks
-  #   y1 <- round(resultados.i$rates.no.miss * i.scale/total.rates, 0)
-  #   x2 <- x1[!is.na(y1)]
-  #   y2 <- y1[!is.na(y1)]
-  #   data.rep <- rep(x2, times = y2)
-  #   if (i.model!="V"){
-  #     mixmdl.normal <- densityMclust(data.rep, G=2, modelNames="E")
-  #     temp1<-as.data.frame(cdensE(x1,  parameters = mixmdl.normal$parameters))
-  #   }else{
-  #     mixmdl.normal <- densityMclust(data.rep, G=2, modelNames="V")
-  #     temp1<-as.data.frame(cdensV(x1,  parameters = mixmdl.normal$parameters))
-  #   }
-  #   names(temp1)<-c("normal1","normal2")
-  #   temp1$normal1 <- temp1$normal1*mixmdl.normal$parameters$pro[1]*total.rates
-  #   temp1$normal2 <- temp1$normal2*mixmdl.normal$parameters$pro[2]*total.rates
-  #   resultados.i<-cbind(resultados.i, temp1)
-  #   rm("temp1")
-  #   resultados.i$normal<-resultados.i$normal1+resultados.i$normal2
-  #   resultados.i$coeficiente<-resultados.i$rates.no.miss/resultados.i$normal
-  #   if (any(diff(resultados.i$normal1 < resultados.i$normal2) == 1)) inicio.normal <- min(x1[c(0, diff(resultados.i$normal1 < resultados.i$normal2)) == 1], na.rm = T) else inicio.normal <- 1
-  #   resultados.i$season.sub.normal <- "1"
-  #   resultados.i$season.sub.normal[inicio.normal:n.weeks] <- "2"
-  #   resultados.i$part1 <- ifelse(resultados.i$season.sub.normal == "1", resultados.i$rates.no.miss, NA)
-  #   resultados.i$part2 <- ifelse(resultados.i$season.sub.normal == "2", resultados.i$rates.no.miss, NA)
-  #   detalles$nombre <- mixmdl.normal
-  #   names(detalles)[names(detalles) == "nombre"] <- seasons[i]
-  #   inicios.i <- data.frame(inicio = as.numeric(inicio.normal))
-  #   names(inicios.i)[names(inicios.i) == "inicio"] <- seasons[i]
-  #   resultados.i.1 <- resultados.i[names(resultados.i) %in% c("part1", "part2")]
-  #   resultados.i.2 <- resultados.i[names(resultados.i) %in% c("normal1", "normal2")]
-  #   names(resultados.i.1) <- c(paste(seasons[i], "(1)", sep = ""), paste(seasons[i], "(2)", sep = ""))
-  #   names(resultados.i.2) <- c(paste(seasons[i], "(1)", sep = ""), paste(seasons[i], "(2)", sep = ""))
-  #   resultados.1 <- cbind(resultados.1, resultados.i.1)
-  #   resultados.2 <- cbind(resultados.2, resultados.i.2)
-  #   inicios <- cbind(inicios, inicios.i)
-  #   rm("resultados.i.1","resultados.i.2","inicios.i")
-  # }
-  # resultados.1 <- resultados.1[!(names(resultados.1) %in% seasons)]
-  # resultados.2 <- resultados.2[!(names(resultados.2) %in% seasons)]
-  # inicios <- inicios[!(names(inicios) %in% "dummy")]
-  # return(list(data.observed = resultados.1, data.expected = resultados.2, breaks = inicios, details = detalles))
-  
+transformseries.twowaves <- function(i.data, i.scale = 10000, i.model = "V", i.output = "", i.proportion = 0) {
   if (is.na(i.proportion) | is.null(i.proportion)) i.proportion <- 0
-  if (is.na(i.scale) | is.null(i.scale)) i.scale <- 1000
+  if (is.na(i.scale) | is.null(i.scale)) i.scale <- 10000
   if (is.na(i.model) | is.null(i.model)) i.model <- "V"
-  
   seasons <- names(i.data)
   n.seasons <- dim(i.data)[2]
   weeks <- rownames(i.data)
@@ -77,7 +20,6 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
   inicios <- data.frame(dummy = NA)
   detalles <- list()
   for (i in 1:n.seasons) {
-    # cat(names(i.data)[i],"\n")
     resultados.i <- data.frame(rates = i.data[, i])
     rownames(resultados.i) <- weeks
     resultados.i$rates.no.miss <- fill.missing(resultados.i$rates)
@@ -87,12 +29,39 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
     x2 <- x1[!is.na(y1)]
     y2 <- y1[!is.na(y1)]
     data.rep <- rep(x2, times = y2)
+    # Sometimes densityMClust return errors, I have to check it
+    mixmdl.normal.v <- try(densityMclust(data.rep, G=2, modelNames="V", verbose=F), silent = T)
+    mixmdl.normal.e <- try(densityMclust(data.rep, G=2, modelNames="E", verbose=F), silent = T)
     if (i.model!="V"){
-      mixmdl.normal <- densityMclust(data.rep, G=2, modelNames="E", verbose=F)
-      temp1<-as.data.frame(cdensE(x1,  parameters = mixmdl.normal$parameters))
+      if (!("try-error" %in% class(mixmdl.normal.e))){
+        mixmdl.normal <- mixmdl.normal.e
+        temp1 <- as.data.frame(cdensE(x1,  parameters = mixmdl.normal$parameters))
+      }else if (!("try-error" %in% class(mixmdl.normal.v))){
+        mixmdl.normal <- mixmdl.normal.v
+        temp1 <- as.data.frame(cdensV(x1,  parameters = mixmdl.normal$parameters))
+      }else{
+        # these parameters forces later to fit 1 normal only
+        mixmdl.normal <- list()
+        mixmdl.normal$classification <- rep(1, length(data.rep)) 
+        mixmdl.normal$parameters$pro <- rep(0.5, 2)
+        mixmdl.normal$parameters$mean <- rep(1, 2)
+        temp1 <- NULL
+      }
     }else{
-      mixmdl.normal <- densityMclust(data.rep, G=2, modelNames="V", verbose=F)
-      temp1<-as.data.frame(cdensV(x1,  parameters = mixmdl.normal$parameters))
+      if (!("try-error" %in% class(mixmdl.normal.v))){
+        mixmdl.normal <- mixmdl.normal.v
+        temp1 <- as.data.frame(cdensV(x1,  parameters = mixmdl.normal$parameters))
+      }else if (!("try-error" %in% class(mixmdl.normal.e))){
+        mixmdl.normal <- mixmdl.normal.e
+        temp1 <- as.data.frame(cdensE(x1,  parameters = mixmdl.normal$parameters))
+      }else{
+        # these parameters forces later to fit 1 normal only
+        mixmdl.normal <- list()
+        mixmdl.normal$classification <- rep(1, length(data.rep)) 
+        mixmdl.normal$parameters$pro <- rep(0.5, 2)
+        mixmdl.normal$parameters$mean <- rep(1, 2)
+        temp1 <- NULL
+      }
     }
     temp2 <- merge(data.frame(week=1:n.weeks, stringsAsFactors = F),
                    unique(data.frame(week=data.rep, classification=mixmdl.normal$classification, stringsAsFactors = F)), by="week", all.x=T)
@@ -111,10 +80,6 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
     temp2$clasequ <- temp2$classification  > dplyr::lag(temp2$classification)
     temp2$clasequ[1] <- FALSE
     inicio.normal <- head((1:n.weeks)[temp2$clasequ])
-    # print(mixmdl.normal$parameters$mean)
-    # print(temp2$classification)
-    # print(temp2$clasequ)
-    # print(inicio.normal)
     if (length(inicio.normal)>0){
       if (mixmdl.normal$parameters$mean[1]>inicio.normal){
         temp2$classification<-2
@@ -128,25 +93,7 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
     n.changes <- sum(temp2$clasequ, na.rm=T)
     if (n.changes == 0){
       # One single wave or transitions from 2 to 1, counting as only one wave
-      # Option 1: keep current fit for two normals and sum
-      # if (temp2$classification[1]==1){
-      #   inicio.normal <- NA
-      #   temp3<-data.frame(normal1 = temp1[,1]*mixmdl.normal$parameters$pro[1]*total.rates + temp1[,2]*mixmdl.normal$parameters$pro[2]*total.rates,
-      #                     normal2 = NA,
-      #                     season.sub.normal = 1,
-      #                     part1 = resultados.i$rates,
-      #                     part2 = NA,
-      #                     stringsAsFactors = F)
-      # }else{
-      #   inicio.normal <- 1
-      #   temp3<-data.frame(normal1 = NA,
-      #                     normal2 = temp1[,1]*mixmdl.normal$parameters$pro[1]*total.rates + temp1[,2]*mixmdl.normal$parameters$pro[2]*total.rates,
-      #                     season.sub.normal = 2,
-      #                     part1 = NA,
-      #                     part2 = resultados.i$rates,
-      #                     stringsAsFactors = F)
-      # }
-      # Option 2: fit new model with one normal
+      # Option: fit new model with one normal
       mixmdl.normal <- densityMclust(data.rep, G=1, modelNames="V", verbose=F)
       temp1<-as.data.frame(cdensV(x1,  parameters = mixmdl.normal$parameters))
       inicio.normal <- NA
@@ -171,25 +118,6 @@ transformseries.twowaves <- function(i.data, i.scale = 1000, i.model = "V", i.ou
     resultados.i$normal<-resultados.i$normal1+resultados.i$normal2
     resultados.i$coeficiente <- resultados.i$rates.no.miss/resultados.i$normal
     resultados.i$week <- 1:n.weeks
-    # resultados.i %>%
-    #   mutate(x=1:n.weeks) %>%
-    #   select(x, rates.no.miss, normal1, normal2, normal) %>%
-    #   gather(type, value, -x) %>%
-    #   ggplot() +
-    #   geom_line(aes(x, value)) +
-    #   facet_wrap(~type, ncol=2)
-    # resultados.i %>%
-    #   mutate(x=1:n.weeks) %>%
-    #   select(x, rates.no.miss, normal1, normal2, normal) %>%
-    #   gather(type, value, -x) %>%
-    #   ggplot() +
-    #   geom_line(aes(x, value, color=type)) +
-    #   scale_color_brewer(palette= "Spectral")
-    # sum(resultados.i$rates.no.miss, na.rm=T)
-    # sum(resultados.i$normal)
-    # data.frame(week=data.rep, classification=mixmdl.normal$classification) %>%
-    #   distinct() %>%
-    #   mutate(different=classification==lag(classification))
     if (i.output!=""){
       normal1 <- NULL
       normal2 <- NULL

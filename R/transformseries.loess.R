@@ -11,10 +11,10 @@ transformseries.loess<-function(i.x, i.span=NA){
   }else{
     loessMod <- try(loess(dy ~ dx, data=xy.data, span=i.span), silent=T)
     res <- try(predict(loessMod, newdata=xy.data$dx), silent=T)
-    if(class(res)!="try-error"){
-      xt<-res
-    }else{
+    if("try-error" %in% class(res)){
       xt<-xy.data$dy
+    }else{
+      xt<-res
     }
   }
   return(xt)
