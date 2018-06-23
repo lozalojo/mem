@@ -13,7 +13,7 @@ calcular.indicadores.2.timings<-function(i.current,
                                i.graph.file.name=""){
 
   if (!is.numeric(i.timing.1) | length(i.timing.1)!=2) stop('Incorrect use of this function. Timing 1 not of length 2.')
-  if (!is.numeric(i.timing.2) | length(i.timing.2)!=2) stop('Incorrect use of this function. Timing 1 not of length 2.')
+  if (!is.numeric(i.timing.2) | length(i.timing.2)!=2) stop('Incorrect use of this function. Timing 2 not of length 2.')
 
   semanas<-dim(i.current)[1]
   nombre.semana<-rownames(i.current)
