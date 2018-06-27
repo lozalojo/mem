@@ -58,11 +58,11 @@ transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per
   if (is.null(i.range.x)) i.range.x<-NA
   if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-c(min(as.numeric(i.data$week)),max(as.numeric(i.data$week)))
   if (i.range.x[1] < 1) i.range.x[1] <- 1
-  if (i.range.x[1] > 53) i.range.x[1] <- 53
+  if (i.range.x[1] >= 52) i.range.x[1] <- 52
   if (i.range.x[2] < 1) i.range.x[2] <- 1
-  if (i.range.x[2] > 53) i.range.x[2] <- 53
+  if (i.range.x[2] >= 52) i.range.x[2] <- 52
   if (i.range.x[1] == i.range.x[2]) i.range.x[2] <- i.range.x[2] - 1
-  if (i.range.x[2]==0) i.range.x[2]<-53
+  if (i.range.x[2]==0) i.range.x[2]<-52
   # Input scheme numbering
   week.f<-i.range.x[1]
   week.l<-i.range.x[2]
