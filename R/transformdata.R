@@ -10,6 +10,7 @@
 #' @param i.range.x First and last surveillance week.
 #' @param i.name Name of the column to transform.
 #' @param i.max.na.per maximum percentage of na's in a season allowable, otherwise, the season is removed
+#' @param i.function function used to aggregate data when duplicate values are found for the same season and week, defaults to NULL (no aggregate function)
 #'
 #' @return
 #' \code{transformdata} returns a data.frame where each column has a different season and
@@ -53,7 +54,7 @@
 #' @export
 #' @importFrom reshape2 dcast
 #' @importFrom stringr str_match
-transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per = 100) {
+transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per = 100, i.function = NULL) {
   if (is.null(i.range.x)) i.range.x<-NA
   if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-c(min(as.numeric(i.data$week)),max(as.numeric(i.data$week)))
   if (i.range.x[1] < 1) i.range.x[1] <- 1
@@ -105,7 +106,7 @@ transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per
   data.out$yrweek<-data.out$year*100+data.out$week
   data.out<-subset(data.out,!is.na(data.out$week.no))
   data.out$week<-NULL
-  data.out <- dcast(data.out, formula = week.no ~ season, fun.aggregate = NULL,
+  data.out <- dcast(data.out, formula = week.no ~ season, fun.aggregate = i.function,
                     value.var = "rates")
   data.out<-merge(i.range.x.values.52,data.out,by="week.no",all.x=T)
   data.out <- data.out[apply(data.out, 2, function(x) sum(is.na(x))/length(x) < i.max.na.per/100)]

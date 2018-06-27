@@ -5,7 +5,7 @@
 \title{Data transformation}
 \usage{
 transformdata(i.data, i.range.x = NA, i.name = "rates",
-  i.max.na.per = 100)
+  i.max.na.per = 100, i.function = NULL)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
@@ -15,6 +15,8 @@ transformdata(i.data, i.range.x = NA, i.name = "rates",
 \item{i.name}{Name of the column to transform.}
 
 \item{i.max.na.per}{maximum percentage of na's in a season allowable, otherwise, the season is removed}
+
+\item{i.function}{function used to aggregate data when duplicate values are found for the same season and week, defaults to NULL (no aggregate function)}
 }
 \value{
 \code{transformdata} returns a data.frame where each column has a different season and
