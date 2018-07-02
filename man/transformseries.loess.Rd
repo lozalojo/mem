@@ -4,7 +4,7 @@
 \alias{transformseries.loess}
 \title{loess transformation}
 \usage{
-transformseries.loess(i.x, i.span = NA)
+transformseries.loess(i.x, ...)
 }
 \description{
 loess transformation
