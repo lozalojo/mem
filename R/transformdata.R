@@ -52,8 +52,9 @@
 #' @keywords influenza
 #'
 #' @export
-#' @importFrom reshape2 dcast
-#' @importFrom stringr str_match
+#' @importFrom stats aggregate
+#' @importFrom tidyr spread
+#' @importFrom dplyr select %>%
 transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per = 100, i.function = NULL) {
   if (is.null(i.range.x)) i.range.x<-NA
   if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x)!=2) i.range.x<-c(min(as.numeric(i.data$week)),max(as.numeric(i.data$week)))
@@ -106,9 +107,15 @@ transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per
   data.out$yrweek<-data.out$year*100+data.out$week
   data.out<-subset(data.out,!is.na(data.out$week.no))
   data.out$week<-NULL
-  data.out <- dcast(data.out, formula = week.no ~ season, fun.aggregate = i.function,
-                    value.var = "rates")
-  data.out<-merge(i.range.x.values.52,data.out,by="week.no",all.x=T)
+  # data.out <- dcast(data.out, formula = week.no ~ season, fun.aggregate = i.function,
+  #                   value.var = "rates")
+  # replace dcast for spread
+  week.no <- season <- rates <- NULL
+  if (!is.null(i.function)) data.out<-aggregate(rates ~ season + week.no, data=data.out, FUN=i.function)
+  data.out <- data.out %>%
+    select(week.no, season, rates) %>%
+    spread(season, rates)
+  data.out <- merge(i.range.x.values.52,data.out,by="week.no",all.x=T)
   data.out <- data.out[apply(data.out, 2, function(x) sum(is.na(x))/length(x) < i.max.na.per/100)]
   data.out <- data.out[order(data.out$week.no), ]
   rownames(data.out) <- data.out$week

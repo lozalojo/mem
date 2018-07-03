@@ -49,8 +49,8 @@
 #'
 #' @export
 #' @importFrom stats aggregate
-#' @importFrom reshape2 melt
-#' @importFrom stringr str_match
+#' @importFrom tidyr extract gather
+#' @importFrom dplyr %>%
 transformdata.back<-function(i.data, i.name="rates", i.cutoff.original=NA, i.range.x.final=NA, i.fun=sum){
   if (is.na(i.cutoff.original)) i.cutoff.original<-min(as.numeric(rownames(i.data)[1:(min(3,NROW(i.data)))]))
   if (i.cutoff.original < 1) i.cutoff.original <- 1
@@ -64,12 +64,16 @@ transformdata.back<-function(i.data, i.name="rates", i.cutoff.original=NA, i.ran
   if (i.range.x.final[2]==0) i.range.x.final[2]<-53
   n.seasons<-NCOL(i.data)
   # First: analize names of seasons and seasons with week 53
-  if (n.seasons>1){
-    seasons<-data.frame(names(i.data),matrix(stringr:: str_match(names(i.data),"(\\d{4})(?:.*(\\d{4}))?(?:.*\\(.*(\\d{1,}).*\\))?"),nrow=n.seasons,byrow=F)[,-1],stringsAsFactors = F)
-  }else{
-    seasons<-data.frame(t(c(names(i.data),stringr:: str_match(names(i.data),"(\\d{4})(?:.*(\\d{4}))?(?:.*\\(.*(\\d{1,}).*\\))?")[-1])),stringsAsFactors = F)
-  }
-  names(seasons)<-c("column","anioi","aniof","aniow")
+  # if (n.seasons>1){
+  #   seasons<-data.frame(names(i.data),matrix(stringr:: str_match(names(i.data),"(\\d{4})(?:.*(\\d{4}))?(?:.*\\(.*(\\d{1,}).*\\))?"),nrow=n.seasons,byrow=F)[,-1],stringsAsFactors = F)
+  # }else{
+  #   seasons<-data.frame(t(c(names(i.data),stringr:: str_match(names(i.data),"(\\d{4})(?:.*(\\d{4}))?(?:.*\\(.*(\\d{1,}).*\\))?")[-1])),stringsAsFactors = F)
+  # }
+  # names(seasons)<-c("column","anioi","aniof","aniow")
+  # Changed dependency of stringr for tydir builtin function extract
+  column <- NULL
+  seasons <- data.frame(column=names(i.data), stringsAsFactors = F) %>%
+    extract(column, into=c("anioi","aniof","aniow"), regex="(\\d{4})(?:.*(\\d{4}))?(?:.*\\(.*(\\d{1,}).*\\))?", remove=F)
   seasons[is.na(seasons)]<-""
   seasons$aniof[seasons$aniof==""]<-seasons$anioi[seasons$aniof==""]
   seasonsname<-seasons$anioi
@@ -80,7 +84,11 @@ transformdata.back<-function(i.data, i.name="rates", i.cutoff.original=NA, i.ran
   names(i.data)<-seasons$season
   i.data$week<-as.numeric(row.names(i.data))
   # Second: Transform the data, summarize (to avoid duplicates) and remove na's
-  data.out<-reshape2::melt(i.data, "week", variable="season", value.name = "data", na.rm = T)
+  # data.out.2<-reshape2::melt(i.data, "week", variable="season", value.name = "data", na.rm = T)
+  # replace melt with gather
+  season <- data <- week <- NULL
+  data.out <- i.data %>%
+    gather(season, data, -week, na.rm=T)
   # adds year, based in the i.cutoff.original value
   data.out$year<-NA
   data.out$year[data.out$week<i.cutoff.original]<-as.numeric(substr(data.out$season,6,9))[data.out$week<i.cutoff.original]
