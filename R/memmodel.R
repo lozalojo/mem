@@ -230,7 +230,10 @@ memmodel<-function(i.data,
             n.max=i.n.max
           }
         }
-        
+        if (is.null(i.method)) i.method <- 2
+        if (is.na(i.method)) i.method <- 2
+        if (is.null(i.param)) i.param <- 2.8
+        if (is.na(i.param)) i.param <- 2.8
         optimo<-apply(datos,2,memtiming,i.n.values=n.max,i.method=i.method,i.param=i.param)
         
         datos.duracion.real<-extraer.datos.optimo.map(optimo)

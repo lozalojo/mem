@@ -4,7 +4,7 @@
 \alias{calcular.optimo}
 \title{calculates optimum generic function}
 \usage{
-calcular.optimo(i.curva.map, i.metodo, i.parametro)
+calcular.optimo(i.curva.map, i.metodo = 2, i.parametro = 2.8)
 }
 \description{
 calculates optimum generic function

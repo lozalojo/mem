@@ -1,7 +1,11 @@
 #' calculates optimum generic function
 #'
 #' @keywords internal
-calcular.optimo<-function(i.curva.map, i.metodo, i.parametro){
+calcular.optimo<-function(i.curva.map, i.metodo=2, i.parametro=2.8){
+  if (is.null(i.metodo)) i.metodo <- 2
+  if (is.na(i.metodo)) i.metodo <- 2
+  if (is.null(i.parametro)) i.parametro <- 2.8
+  if (is.na(i.parametro)) i.parametro <- 2.8
   # Metodo 1: Original, segunda derivada
   if (i.metodo==1) temp1<-calcular.optimo.original(i.curva.map)
   # Metodo 3: Usando la pendiente de la derivada.
