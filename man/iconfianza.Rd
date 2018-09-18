@@ -5,7 +5,7 @@
 \title{generic confidence interval calculation function}
 \usage{
 iconfianza(datos, nivel = 0.95, tipo = 1, ic = T, tipo.boot = "normal",
-  iteraciones.boot = 10000, colas = 2)
+  iteraciones.boot = 10000, colas = 2, use.t = F)
 }
 \description{
 generic confidence interval calculation function

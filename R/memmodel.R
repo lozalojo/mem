@@ -172,7 +172,7 @@
 #' @keywords influenza
 #'
 #' @export
-#' @importFrom stats loess qnorm quantile runif var
+#' @importFrom stats loess qt qnorm quantile runif var
 #' @importFrom grDevices colorRampPalette colorRamp dev.off rgb tiff
 #' @importFrom RColorBrewer brewer.pal
 #' @importFrom graphics abline axis legend matplot mtext par points text lines
