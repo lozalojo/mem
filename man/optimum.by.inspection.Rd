@@ -4,9 +4,9 @@
 \alias{optimum.by.inspection}
 \title{Inspection calcultation of the optimum}
 \usage{
-optimum.by.inspection(i.data, i.param.values = seq(2, 4, 0.1), i.graph = T,
-  i.graph.file = F, i.graph.file.name = "", i.graph.title = "",
-  i.graph.subtitle = "", i.output = ".")
+optimum.by.inspection(i.data, i.param.values = seq(2, 4, 0.1),
+  i.graph = T, i.graph.file = F, i.graph.file.name = "",
+  i.graph.title = "", i.graph.subtitle = "", i.output = ".")
 }
 \arguments{
 \item{i.data}{Data frame of input data.}

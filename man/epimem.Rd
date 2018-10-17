@@ -4,8 +4,8 @@
 \alias{epimem}
 \title{Deprecated function(s) in the mem package}
 \usage{
-epimem(i.data, i.tails = 1, i.levels = c(0.4, 0.9, 0.975), i.type = 2,
-  i.level = 0.95, ...)
+epimem(i.data, i.tails = 1, i.levels = c(0.4, 0.9, 0.975),
+  i.type = 2, i.level = 0.95, ...)
 }
 \arguments{
 \item{i.data}{Original parameter deprecated in the new version}

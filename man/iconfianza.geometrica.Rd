@@ -4,7 +4,8 @@
 \alias{iconfianza.geometrica}
 \title{confidence interval for the geometric mean using the log-normal approximation}
 \usage{
-iconfianza.geometrica(datos, nivel = 0.95, ic = T, colas = 2, use.t = F)
+iconfianza.geometrica(datos, nivel = 0.95, ic = T, colas = 2,
+  use.t = F)
 }
 \description{
 confidence interval for the geometric mean using the log-normal approximation

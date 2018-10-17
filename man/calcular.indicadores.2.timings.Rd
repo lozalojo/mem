@@ -5,8 +5,8 @@
 \title{Calculates specificity and sensitivity}
 \usage{
 calcular.indicadores.2.timings(i.current, i.timing.1, i.timing.2,
-  i.timing.labels, i.output = ".", i.graph.title = "", i.graph.file = F,
-  i.graph.file.name = "")
+  i.timing.labels, i.output = ".", i.graph.title = "",
+  i.graph.file = F, i.graph.file.name = "")
 }
 \description{
 Calculates specificity and sensitivity

@@ -6,8 +6,8 @@
 \usage{
 transformseries.multiple(i.data, i.max.epidemic.duration = NA,
   i.max.season.duration = NA, i.waves = NA, i.param.1 = 3,
-  i.param.2 = 2, i.min.separation = 1, i.output = NA, i.force.loess = F,
-  ...)
+  i.param.2 = 2, i.min.separation = 1, i.output = NA,
+  i.force.loess = F, ...)
 }
 \description{
 divide a series in parts
