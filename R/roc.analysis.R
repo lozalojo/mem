@@ -7,6 +7,7 @@
 #'
 #' @param i.data Data frame of input data.
 #' @param i.param.values range of i.param values to test.
+#' @param i.min.seasons minimum number of seasons to perform the analysis, default=6.
 #' @param i.graph create a graph with the outputs (T/F).
 #' @param i.graph.file write the graph to a file.
 #' @param i.graph.file.name name of the output file.
@@ -60,208 +61,232 @@
 #' @export
 roc.analysis <- function(i.data,
                          i.param.values = seq(2.0, 4.0, 0.1),
-                         i.graph=F,
-                         i.graph.file=F,
-                         i.graph.file.name="",
-                         i.graph.title="",
-                         i.graph.subtitle="",
-                         i.output=".", ...) {
-    n.values <- length(i.param.values)
-    resultados <- data.frame()
+                         i.min.seasons = 6,
+                         i.graph = F,
+                         i.graph.file = F,
+                         i.graph.file.name = "",
+                         i.graph.title = "",
+                         i.graph.subtitle = "",
+                         i.output = ".",
+                         ...) {
+  if (is.null(dim(i.data))) {
+    roc.analysis.output <- NULL
+    cat("Incorrect number of dimensions, input must be a data.frame.\n")
+  } else {
+    if (is.matrix(i.data)) i.data <- as.data.frame(i.data)
+    datos <- i.data[apply(i.data, 2, function(x) sum(x, na.rm = T) > 0)]
+    anios <- NCOL(datos)
+    semanas <- dim(datos)[1]
+    if (!(anios > 2)) {
+      roc.analysis.output <- NULL
+      cat("Incorrect number of dimensions, at least thress seasons of data required.\n")
+    } else if (anios < i.min.seasons) {
+      roc.analysis.output <- NULL
+      cat("Not enough valid columns, minimum: ", i.min.seasons, "; valid: ", anios, ".\n", sep = "")
+    } else {
+      n.values <- length(i.param.values)
+      resultados <- data.frame()
 
-    for (i in 1:n.values) {
-        cat("[", format(round(100 * (i - 1)/n.values, 1), digits = 3, nsmall = 1), "%][Parameter: ", format(round(i.param.values[i],
-            1), digits = 3, nsmall = 1), "] Analysis started (", i, " out of ", n.values, ")\n", sep = "")
-        good.i<-memgoodness(i.data = i.data, i.method = 2, i.param = i.param.values[i], i.graph=F, ...)
+      for (i in 1:n.values) {
+        cat("[", format(round(100 * (i - 1) / n.values, 1), digits = 3, nsmall = 1), "%][Parameter: ", format(round(
+          i.param.values[i],
+          1
+        ), digits = 3, nsmall = 1), "] Analysis started (", i, " out of ", n.values, ")\n", sep = "")
+        good.i <- memgoodness(i.data = datos, i.method = 2, i.param = i.param.values[i], i.min.seasons = i.min.seasons, i.graph = F, ...)
 
         resultados.i <- data.frame(value = i.param.values[i], t(good.i$results))
         resultados <- rbind(resultados, resultados.i)
-    }
+      }
 
-    names(resultados) <- tolower(names(resultados))
+      names(resultados) <- tolower(names(resultados))
 
-    # Ranking 1: Rank(sensitivity) + Rank(specificity)
-    if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
-      rankings.1<-NA
-      optimo.1 <- NA
-    } else {
-      rankings.1 <- rank(-resultados$sensitivity, na.last = T) + rank(-resultados$specificity, na.last = T)
-      optimo.1 <- i.param.values[which.min(rankings.1)]
-    }
-    # Ranking 2: Rank(sensitivity x Rank specificity)
-    if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
-      rankings.2<-NA
-      optimo.2 <- NA
-    } else {
-      rankings.2 <- rank(-resultados$sensitivity * resultados$specificity, na.last = T)
-      optimo.2 <- i.param.values[which.min(rankings.2)]
-    }
-    # Ranking 3: Rank(positive.likehood.ratio)
-    if (!any(!is.na(resultados$positive.likehood.ratio))) {
-      rankings.3<-NA
+      # Ranking 1: Rank(sensitivity) + Rank(specificity)
+      if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
+        rankings.1 <- NA
+        optimo.1 <- NA
+      } else {
+        rankings.1 <- rank(-resultados$sensitivity, na.last = T) + rank(-resultados$specificity, na.last = T)
+        optimo.1 <- i.param.values[which.min(rankings.1)]
+      }
+      # Ranking 2: Rank(sensitivity x Rank specificity)
+      if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
+        rankings.2 <- NA
+        optimo.2 <- NA
+      } else {
+        rankings.2 <- rank(-resultados$sensitivity * resultados$specificity, na.last = T)
+        optimo.2 <- i.param.values[which.min(rankings.2)]
+      }
+      # Ranking 3: Rank(positive.likehood.ratio)
+      if (!any(!is.na(resultados$positive.likehood.ratio))) {
+        rankings.3 <- NA
         optimo.3 <- NA
-    } else {
+      } else {
         rankings.3 <- rank(-resultados$positive.likehood.ratio, na.last = T)
         optimo.3 <- i.param.values[which.min(rankings.3)]
-    }
-    # Ranking 4: Rank(negative.likehood.ratio)
-    if (!any(!is.na(resultados$negative.likehood.ratio))) {
-      rankings.4<-NA
+      }
+      # Ranking 4: Rank(negative.likehood.ratio)
+      if (!any(!is.na(resultados$negative.likehood.ratio))) {
+        rankings.4 <- NA
         optimo.4 <- NA
-    } else {
+      } else {
         rankings.4 <- rank(-resultados$negative.likehood.ratio, na.last = T)
         optimo.4 <- i.param.values[which.min(rankings.4)]
-    }
-    # Ranking 5: Rank(sensitivity-specificity) + Rank(sensitivity+specificity) + Rank(sensitivity^2+specificity^2)
-    if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
-      rankings.5<-NA
-      optimo.5 <- NA
-    } else {
-      qf <- abs(resultados$sensitivity - resultados$specificity)
-      qe <- 2 - resultados$sensitivity - resultados$specificity
-      qs <- (1 - resultados$sensitivity)^2 + (1 - resultados$specificity)^2
-      rankings.5 <- rank(qf) + rank(qe) + rank(qs)
-      optimo.5 <- i.param.values[which.min(rankings.5)]
-    }
-    # Ranking 6: Rank(percent.agreement)
-    if (!any(!is.na(resultados$percent.agreement))) {
-      rankings.6 <- NA
+      }
+      # Ranking 5: Rank(sensitivity-specificity) + Rank(sensitivity+specificity) + Rank(sensitivity^2+specificity^2)
+      if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
+        rankings.5 <- NA
+        optimo.5 <- NA
+      } else {
+        qf <- abs(resultados$sensitivity - resultados$specificity)
+        qe <- 2 - resultados$sensitivity - resultados$specificity
+        qs <- (1 - resultados$sensitivity)^2 + (1 - resultados$specificity)^2
+        rankings.5 <- rank(qf) + rank(qe) + rank(qs)
+        optimo.5 <- i.param.values[which.min(rankings.5)]
+      }
+      # Ranking 6: Rank(percent.agreement)
+      if (!any(!is.na(resultados$percent.agreement))) {
+        rankings.6 <- NA
         optimo.6 <- NA
-    } else {
+      } else {
         rankings.6 <- rank(-resultados$percent.agreement, na.last = T)
         optimo.6 <- i.param.values[which.min(rankings.6)]
-    }
-    # Ranking 7: Rank(matthews.correlation.coefficient)
-    if (!any(!is.na(resultados$matthews.correlation.coefficient))) {
-      rankings.7 <- NA
-      optimo.7 <- NA
-    } else {
-      rankings.7 <- rank(-resultados$matthews.correlation.coefficient, na.last = T)
-      optimo.7 <- i.param.values[which.min(rankings.7)]
-    }
-    # Ranking 8: Rank(Youden's J statistic=Youden's index)
-    if (!any(!is.na(resultados$youdens.index))) {
-      rankings.8<-NA
-      optimo.8 <- NA
-    } else {
-      rankings.8 <- rank(-resultados$youdens.index, na.last = T)
-      optimo.8 <- i.param.values[which.min(rankings.8)]
-    }
-
-    optimum <- data.frame(pos.likehood = optimo.3, neg.likehood = optimo.4, aditive = optimo.1, multiplicative = optimo.2,
-        mixed = optimo.5, percent = optimo.6, matthews=optimo.7, youden=optimo.8)
-
-    rankings <- data.frame(pos.likehood = rankings.3, neg.likehood = rankings.4, aditive = rankings.1, multiplicative = rankings.2,
-                           mixed = rankings.5, percent = rankings.6, matthews=rankings.7, youden=rankings.8)
-
-
-    roc.analysis.output <- list(optimum = optimum, rankings = rankings, roc.data = resultados, param.data = i.data, param.param.values = i.param.values
-                                #,param.prefix = i.prefix.roc
-                                )
-    roc.analysis.output$call <- match.call()
-
-
-    if (i.graph){
-
-      colores<-c("#EBEAEA","#5B9BD5","#ED7D31")
-
-      if (i.graph.file.name=="") graph.name="roc analysis" else graph.name<-i.graph.file.name
-      if (i.graph.file) tiff(filename=paste(i.output,"/",graph.name,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
-                             compression="lzw",bg="white",res=300,antialias="none")
-
-      opar<-par(mar=c(5,3,3,3)+0.1,mgp=c(3,0.5,0),xpd=T,mfrow=c(2,2))
-
-      if (any(!is.na(resultados$sensitivity)) & any(!is.na(resultados$specificity))){
-        d.x<-resultados$value
-        d.y<-cbind(resultados$sensitivity,resultados$specificity)
-        etiquetas<-c("Sensitivity","Specificity")
-        otick<-optimal.tickmarks(0,1,10)
-        range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
-        matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
-        points(d.x,d.y[,1],pch=19,type="p",col=colores[2],cex=0.5)
-        points(d.x,d.y[,2],pch=19,type="p",col=colores[3],cex=0.5)
-        axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-        axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-        mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
-        mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-        mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-        mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
-        legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
-
+      }
+      # Ranking 7: Rank(matthews.correlation.coefficient)
+      if (!any(!is.na(resultados$matthews.correlation.coefficient))) {
+        rankings.7 <- NA
+        optimo.7 <- NA
+      } else {
+        rankings.7 <- rank(-resultados$matthews.correlation.coefficient, na.last = T)
+        optimo.7 <- i.param.values[which.min(rankings.7)]
+      }
+      # Ranking 8: Rank(Youden's J statistic=Youden's index)
+      if (!any(!is.na(resultados$youdens.index))) {
+        rankings.8 <- NA
+        optimo.8 <- NA
+      } else {
+        rankings.8 <- rank(-resultados$youdens.index, na.last = T)
+        optimo.8 <- i.param.values[which.min(rankings.8)]
       }
 
-      if (any(!is.na(resultados$positive.predictive.value)) & any(!is.na(resultados$negative.predictive.value))){
+      optimum <- data.frame(
+        pos.likehood = optimo.3, neg.likehood = optimo.4, aditive = optimo.1, multiplicative = optimo.2,
+        mixed = optimo.5, percent = optimo.6, matthews = optimo.7, youden = optimo.8
+      )
 
-        d.x<-resultados$value
-        d.y<-cbind(resultados$positive.predictive.value,resultados$negative.predictive.value)
-        etiquetas<-c("Positive predictive value","Negative predictive value")
-        otick<-optimal.tickmarks(0,1,10)
-        range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
-        matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
-        points(d.x,d.y[,1],pch=19,type="p",col=colores[2],cex=0.5)
-        points(d.x,d.y[,2],pch=19,type="p",col=colores[3],cex=0.5)
-        axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-        axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-        mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
-        mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-        mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-        mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
-        legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
+      rankings <- data.frame(
+        pos.likehood = rankings.3, neg.likehood = rankings.4, aditive = rankings.1, multiplicative = rankings.2,
+        mixed = rankings.5, percent = rankings.6, matthews = rankings.7, youden = rankings.8
+      )
+
+
+      roc.analysis.output <- list(
+        optimum = optimum, rankings = rankings, roc.data = resultados, data = datos, param.data = i.data, param.param.values = i.param.values
+        # ,param.prefix = i.prefix.roc
+      )
+      roc.analysis.output$call <- match.call()
+
+
+      if (i.graph) {
+        colores <- c("#EBEAEA", "#5B9BD5", "#ED7D31")
+
+        if (i.graph.file.name == "") graph.name <- "roc analysis" else graph.name <- i.graph.file.name
+        if (i.graph.file) {
+          tiff(
+            filename = paste(i.output, "/", graph.name, ".tiff", sep = ""), width = 8, height = 6, units = "in", pointsize = "12",
+            compression = "lzw", bg = "white", res = 300, antialias = "none"
+          )
+        }
+
+        opar <- par(mar = c(5, 3, 3, 3) + 0.1, mgp = c(3, 0.5, 0), xpd = T, mfrow = c(2, 2))
+
+        if (any(!is.na(resultados$sensitivity)) & any(!is.na(resultados$specificity))) {
+          d.x <- resultados$value
+          d.y <- cbind(resultados$sensitivity, resultados$specificity)
+          etiquetas <- c("Sensitivity", "Specificity")
+          otick <- optimal.tickmarks(0, 1, 10)
+          range.y <- c(otick$range[1], otick$range[2] + otick$by / 2)
+          matplot(d.x, d.y, type = "l", lty = rep(1, 2), lwd = rep(1, 2), col = colores[c(1, 1)], xlab = "", ylab = "", axes = F, ylim = range.y, main = i.graph.title)
+          points(d.x, d.y[, 1], pch = 19, type = "p", col = colores[2], cex = 0.5)
+          points(d.x, d.y[, 2], pch = 19, type = "p", col = colores[3], cex = 0.5)
+          axis(1, at = d.x, labels = d.x, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
+          axis(2, at = otick$tickmarks, lwd = 1, cex.axis = 0.6, col.axis = "#404040", col = "#C0C0C0")
+          mtext(1, text = "Parameter", line = 1.3, cex = 0.8, col = "#000040")
+          mtext(2, text = "Value", line = 1.3, cex = 0.8, col = "#000040")
+          mtext(3, text = i.graph.subtitle, cex = 0.8, col = "#000040")
+          mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
+          legend(x = "topright", y = NULL, inset = c(0, -0.05), xjust = 0, legend = etiquetas, bty = "n", lty = c(1, 1), lwd = c(1, 1), col = colores[c(1, 1)], pch = c(21, 21), pt.bg = colores[c(2, 3)], cex = 1, x.intersp = 0.5, y.intersp = 0.7, text.col = "#000000", ncol = 1)
+        }
+
+        if (any(!is.na(resultados$positive.predictive.value)) & any(!is.na(resultados$negative.predictive.value))) {
+          d.x <- resultados$value
+          d.y <- cbind(resultados$positive.predictive.value, resultados$negative.predictive.value)
+          etiquetas <- c("Positive predictive value", "Negative predictive value")
+          otick <- optimal.tickmarks(0, 1, 10)
+          range.y <- c(otick$range[1], otick$range[2] + otick$by / 2)
+          matplot(d.x, d.y, type = "l", lty = rep(1, 2), lwd = rep(1, 2), col = colores[c(1, 1)], xlab = "", ylab = "", axes = F, ylim = range.y, main = i.graph.title)
+          points(d.x, d.y[, 1], pch = 19, type = "p", col = colores[2], cex = 0.5)
+          points(d.x, d.y[, 2], pch = 19, type = "p", col = colores[3], cex = 0.5)
+          axis(1, at = d.x, labels = d.x, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
+          axis(2, at = otick$tickmarks, lwd = 1, cex.axis = 0.6, col.axis = "#404040", col = "#C0C0C0")
+          mtext(1, text = "Parameter", line = 1.3, cex = 0.8, col = "#000040")
+          mtext(2, text = "Value", line = 1.3, cex = 0.8, col = "#000040")
+          mtext(3, text = i.graph.subtitle, cex = 0.8, col = "#000040")
+          mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
+          legend(x = "topright", y = NULL, inset = c(0, -0.05), xjust = 0, legend = etiquetas, bty = "n", lty = c(1, 1), lwd = c(1, 1), col = colores[c(1, 1)], pch = c(21, 21), pt.bg = colores[c(2, 3)], cex = 1, x.intersp = 0.5, y.intersp = 0.7, text.col = "#000000", ncol = 1)
+        }
+        # d.x<-resultados$value
+        # d.y<-resultados$percent.agreement
+        # etiquetas<-c("Percent agreement")
+        # otick<-optimal.tickmarks(0,1,10)
+        # range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
+        # matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
+        # points(d.x,d.y,pch=19,type="p",col=colores[2],cex=0.5)
+        # axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
+        # axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
+        # mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
+        # mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
+        # mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
+        # mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
+        # legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
+
+        if (any(!is.na(resultados$percent.agreement)) & any(!is.na(resultados$matthews.correlation.coefficient))) {
+          d.x <- resultados$value
+          d.y <- cbind(resultados$percent.agreement, resultados$matthews.correlation.coefficient)
+          etiquetas <- c("Percent agreement", "Matthews correlation coefficient")
+          otick <- optimal.tickmarks(0, 1, 10)
+          range.y <- c(otick$range[1], otick$range[2] + otick$by / 2)
+          matplot(d.x, d.y, type = "l", lty = rep(1, 2), lwd = rep(1, 2), col = colores[c(1, 1)], xlab = "", ylab = "", axes = F, ylim = range.y, main = i.graph.title)
+          points(d.x, d.y[, 1], pch = 19, type = "p", col = colores[2], cex = 0.5)
+          points(d.x, d.y[, 2], pch = 19, type = "p", col = colores[3], cex = 0.5)
+          axis(1, at = d.x, labels = d.x, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
+          axis(2, at = otick$tickmarks, lwd = 1, cex.axis = 0.6, col.axis = "#404040", col = "#C0C0C0")
+          mtext(1, text = "Parameter", line = 1.3, cex = 0.8, col = "#000040")
+          mtext(2, text = "Value", line = 1.3, cex = 0.8, col = "#000040")
+          mtext(3, text = i.graph.subtitle, cex = 0.8, col = "#000040")
+          mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
+          legend(x = "topright", y = NULL, inset = c(0, -0.05), xjust = 0, legend = etiquetas, bty = "n", lty = c(1, 1), lwd = c(1, 1), col = colores[c(1, 1)], pch = c(21, 21), pt.bg = colores[c(2, 3)], cex = 1, x.intersp = 0.5, y.intersp = 0.7, text.col = "#000000", ncol = 1)
+        }
+
+        if (any(!is.na(resultados$specificity)) & any(!is.na(resultados$sensitivity))) {
+          d.x <- 1 - resultados$specificity
+          d.y <- resultados$sensitivity[order(d.x)]
+          d.x <- d.x[order(d.x)]
+          otick <- optimal.tickmarks(0, 1, 10)
+          range.x <- c(otick$range[1], otick$range[2] + otick$by / 2)
+          range.y <- c(otick$range[1], otick$range[2] + otick$by / 2)
+          matplot(d.x, d.y, type = "l", lty = rep(1, 2), lwd = rep(1, 2), col = colores[c(1, 1)], xlab = "", ylab = "", axes = F, xlim = range.x, ylim = range.y, main = i.graph.title)
+          points(d.x, d.y, pch = 19, type = "p", col = colores[2], cex = 0.5)
+          axis(1, at = otick$tickmarks, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
+          axis(2, at = otick$tickmarks, lwd = 1, cex.axis = 0.6, col.axis = "#404040", col = "#C0C0C0")
+          mtext(1, text = "1 - specificity", line = 1.3, cex = 0.8, col = "#000040")
+          mtext(2, text = "Sensitivity", line = 1.3, cex = 0.8, col = "#000040")
+          mtext(3, text = i.graph.subtitle, cex = 0.8, col = "#000040")
+          mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
+        }
+        par(opar)
+        if (i.graph.file) dev.off()
       }
-      # d.x<-resultados$value
-      # d.y<-resultados$percent.agreement
-      # etiquetas<-c("Percent agreement")
-      # otick<-optimal.tickmarks(0,1,10)
-      # range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
-      # matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
-      # points(d.x,d.y,pch=19,type="p",col=colores[2],cex=0.5)
-      # axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-      # axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-      # mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
-      # mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-      # mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-      # mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
-      # legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
-
-      if (any(!is.na(resultados$percent.agreement)) & any(!is.na(resultados$matthews.correlation.coefficient))){
-
-        d.x<-resultados$value
-        d.y<-cbind(resultados$percent.agreement,resultados$matthews.correlation.coefficient)
-        etiquetas<-c("Percent agreement","Matthews correlation coefficient")
-        otick<-optimal.tickmarks(0,1,10)
-        range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
-        matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
-        points(d.x,d.y[,1],pch=19,type="p",col=colores[2],cex=0.5)
-        points(d.x,d.y[,2],pch=19,type="p",col=colores[3],cex=0.5)
-        axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-        axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-        mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
-        mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-        mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-        mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
-        legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
-      }
-
-      if (any(!is.na(resultados$specificity)) & any(!is.na(resultados$sensitivity))){
-
-        d.x<-1-resultados$specificity
-        d.y<-resultados$sensitivity[order(d.x)]
-        d.x<-d.x[order(d.x)]
-        otick<-optimal.tickmarks(0,1,10)
-        range.x<-c(otick$range[1],otick$range[2]+otick$by/2)
-        range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
-        matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,xlim=range.x,ylim=range.y,main=i.graph.title)
-        points(d.x,d.y,pch=19,type="p",col=colores[2],cex=0.5)
-        axis(1,at=otick$tickmarks,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-        axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-        mtext(1,text="1 - specificity",line=1.3,cex=0.8,col="#000040")
-        mtext(2,text="Sensitivity",line=1.3,cex=0.8,col="#000040")
-        mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-        mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
-      }
-      par(opar)
-      if (i.graph.file) dev.off()
     }
-
-    return(roc.analysis.output)
+  }
+  return(roc.analysis.output)
 }
