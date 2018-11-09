@@ -139,8 +139,9 @@ transformseries.twowaves <- function(i.data,
       week <- NULL
       p1 <- ggplot(resultados.i) +
         geom_line(aes(x = week, y = rates.no.miss), color = "#FF0000", size = 1, alpha = 0.7) +
-        labs(x = "Week", y = "Rates") +
-        theme_light()
+        labs(title = seasons[i], x = "Week", y = "Rates") +
+        theme_light() +
+        theme(plot.title = element_text(hjust = 0.5))
       if (any(!is.na(resultados.i$part1))) {
         p1 <- p1 +
           geom_area(aes(x = week, y = part1), fill = "#B8E2EF") +
