@@ -25,6 +25,8 @@
 #' @param i.iter.boot Number of bootstrap iterations.
 #' @param i.calculation.method method of determining true/false positives and true/false negatives.
 #' @param i.goodness.method method to calculate goodness.
+#' @param i.goodness.threshold pre/post epidemic thresholds for threshold goodness method.
+#' @param i.goodness.intensity intensitie thresholds (medium, high, very high) for threshold goodness method.
 #' @param i.detection.values values to use in the i.param value of \code{memtiming}.
 #' @param i.weeks.above number of weeks over the threshold to give the alert.
 #' @param i.output output directory for graphs.
@@ -76,11 +78,13 @@
 #' iteration and it is determined by the \code{i.goodness.method}.
 #'
 #' \itemize{
-#' \item Cross: For each value, the surrounding seasons (after or before the current value) are selected up
+#' \item cross: For each value, the surrounding seasons (after or before the current value) are selected up
 #' to the number of Max. seasons (parameter of the Model box). To calculate the thresholds for season 2010/2011,
 #' data from 2005/2006 to 2009/2010 and from 2011/20012 to 2015/2016 will be taken.
-#' \item Sequential: Only preceding seasons are used (before the current value) up to the number of Max. seasons.
+#' \item sequential: Only preceding seasons are used (before the current value) up to the number of Max. seasons.
 #' To calculate the thresholds for season 2010/2011, data from 2000/2001 to 2009/2010 are taken.
+#' \item threshold: The pre/post epidemic and intensity thresholds are fixed values for all the seasons and
+#' are compared with the epidemic as determined by MEM algorithm.
 #' }
 #'
 #' @examples
@@ -130,6 +134,8 @@ memgoodness <- function(i.data,
                         i.iter.boot = 10000,
                         i.calculation.method = "default",
                         i.goodness.method = "cross",
+                        i.goodness.threshold = NA,
+                        i.goodness.intensity = NA,
                         i.detection.values = seq(2.0, 4.0, 0.1),
                         i.weeks.above = 1,
                         i.output = ".",
@@ -158,9 +164,106 @@ memgoodness <- function(i.data,
       maximos.seasons <- character()
       if (is.na(i.seasons)) i.seasons <- anios
       if (is.null(i.seasons)) i.seasons <- anios
-      if (!(i.goodness.method == "sequential")) {
+      i.goodness.threshold <- i.goodness.threshold[!is.na(i.goodness.threshold)]
+      i.goodness.intensity <- i.goodness.intensity[!is.na(i.goodness.intensity)]
+      if (length(i.goodness.threshold) == 2) {
+        i.goodness.threshold.pre <- i.goodness.threshold[1]
+        i.goodness.threshold.pos <- i.goodness.threshold[2]
+      } else if (length(i.goodness.threshold) == 1) {
+        i.goodness.threshold.pre <- i.goodness.threshold
+        i.goodness.threshold.pos <- i.goodness.threshold
+      } else {
+        i.goodness.threshold.pre <- NA
+        i.goodness.threshold.pos <- NA
+        if (i.goodness.method == "threshold") i.goodness.method <- "cross"
+      }
+      if (length(i.goodness.intensity) != 3) i.goodness.intensity <- i.goodness.threshold * c(3, 6, 10)
+      if (i.goodness.method == "sequential") {
+        # Metodo 1: secuencial
+        for (i in i.min.seasons:anios) {
+          indices.modelo <- max(1, i - i.seasons):(i - 1)
+          indices.actual <- i
+          datos.actual <- datos[indices.actual]
+          datos.modelo <- memmodel(datos[indices.modelo],
+            i.seasons = i.seasons,
+            i.type.threshold = i.type.threshold,
+            i.level.threshold = i.level.threshold,
+            i.tails.threshold = i.tails.threshold,
+            i.type.intensity = i.type.intensity,
+            i.level.intensity = i.level.intensity,
+            i.tails.intensity = i.tails.intensity,
+            i.type.curve = i.type.curve,
+            i.level.curve = i.level.curve,
+            i.type.other = i.type.other,
+            i.level.other = i.level.other,
+            i.method = i.method,
+            i.param = i.param,
+            i.n.max = i.n.max,
+            i.type.boot = i.type.boot,
+            i.iter.boot = i.iter.boot
+          )
+          validacion.i <- calcular.indicadores(
+            i.current = datos.actual,
+            i.umbral.pre = datos.modelo$pre.post.intervals[1, 3],
+            i.umbral.pos = datos.modelo$pre.post.intervals[2, 3],
+            i.intensidades = datos.modelo$epi.intervals[, 4],
+            i.duracion.intensidad = datos.modelo$mean.length,
+            i.metodo.calculo = i.calculation.method,
+            i.semanas.por.encima = i.weeks.above,
+            i.valores.parametro.deteccion = i.detection.values,
+            i.output = i.output,
+            i.graph = i.graph,
+            i.graph.name = paste(i.prefix, " Goodness ", i, sep = "")
+          )
+          validacion[, i] <- validacion.i$indicadores.t
+          rownames(validacion) <- rownames(validacion.i$indicadores.t)
+          peak.i <- max.fix.na(datos.actual)
+          peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual])])
+          umbrales.i <- memintensity(datos.modelo)$intensity.thresholds
+          if (is.na(umbrales.i[1])) umbrales.i[1] <- 0
+          if (umbrales.i[1] > umbrales.i[2]) umbrales.i[2] <- umbrales.i[1] * 1.0000001
+          level.i <- as.numeric(cut(peak.i, c(-Inf, umbrales.i, Inf)))
+          maximos <- cbind(maximos, c(peak.i, peak.week.i, umbrales.i, level.i))
+          maximos.seasons <- c(maximos.seasons, names(datos)[indices.actual])
+          rm("indices.modelo", "indices.actual", "datos.actual", "datos.modelo", "validacion.i", "peak.i", "peak.week.i", "umbrales.i", "level.i")
+        }
+      } else if (i.goodness.method == "threshold") {
+        # Metodo 2: fixed threshold and intensities
+        for (i in 1:anios) {
+          indices.2 <- (1:anios) - i
+          indices.1 <- abs(indices.2)
+          indices.modelo <- order(indices.1, indices.2)[2:(i.seasons + 1)]
+          indices.modelo <- sort(indices.modelo[!is.na(indices.modelo)])
+          indices.actual <- i
+          # cat(indices.actual,"\n")
+          datos.actual <- datos[indices.actual]
+          validacion.i <- calcular.indicadores(
+            i.current = datos.actual,
+            i.umbral.pre = i.goodness.threshold.pre,
+            i.umbral.pos = i.goodness.threshold.pos,
+            i.intensidades = i.goodness.intensity,
+            i.duracion.intensidad = 10,
+            i.metodo.calculo = i.calculation.method,
+            i.semanas.por.encima = i.weeks.above,
+            i.valores.parametro.deteccion = i.detection.values,
+            i.output = i.output,
+            i.graph = i.graph,
+            i.graph.name = paste(i.prefix, " Goodness ", i, sep = "")
+          )
+          validacion[, i] <- validacion.i$indicadores.t
+          rownames(validacion) <- rownames(validacion.i$indicadores.t)
+          peak.i <- max.fix.na(datos.actual)
+          peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual], na.rm = T)])
+          umbrales.i <- c(i.goodness.threshold.pre, i.goodness.intensity)
+          if (is.na(umbrales.i[1])) umbrales.i[1] <- 0
+          if (umbrales.i[1] > umbrales.i[2]) umbrales.i[2] <- umbrales.i[1] * 1.0000001
+          level.i <- as.numeric(cut(peak.i, c(-Inf, umbrales.i, Inf)))
+          maximos <- cbind(maximos, c(peak.i, peak.week.i, umbrales.i, level.i))
+          maximos.seasons <- c(maximos.seasons, names(datos)[indices.actual])
+          rm("indices.modelo", "indices.actual", "datos.actual", "validacion.i", "peak.i", "peak.week.i", "umbrales.i", "level.i")
+        }
+      } else {
         # Metodo 2: cruzada
-        # if (anios>=i.min.seasons){
         for (i in 1:anios) {
           indices.2 <- (1:anios) - i
           indices.1 <- abs(indices.2)
@@ -202,7 +305,6 @@ memgoodness <- function(i.data,
           )
           validacion[, i] <- validacion.i$indicadores.t
           rownames(validacion) <- rownames(validacion.i$indicadores.t)
-          # peak
           peak.i <- max.fix.na(datos.actual)
           peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual], na.rm = T)])
           umbrales.i <- memintensity(datos.modelo)$intensity.thresholds
@@ -211,61 +313,9 @@ memgoodness <- function(i.data,
           level.i <- as.numeric(cut(peak.i, c(-Inf, umbrales.i, Inf)))
           maximos <- cbind(maximos, c(peak.i, peak.week.i, umbrales.i, level.i))
           maximos.seasons <- c(maximos.seasons, names(datos)[indices.actual])
+          rm("indices.modelo", "indices.actual", "datos.actual", "datos.modelo", "validacion.i", "peak.i", "peak.week.i", "umbrales.i", "level.i")
         }
-        # }
-      } else {
-        # Metodo 1: secuencial
-        # if (anios>=i.min.seasons){
-        for (i in i.min.seasons:anios) {
-          indices.modelo <- max(1, i - i.seasons):(i - 1)
-          indices.actual <- i
-          datos.actual <- datos[indices.actual]
-          datos.modelo <- memmodel(datos[indices.modelo],
-            i.seasons = i.seasons,
-            i.type.threshold = i.type.threshold,
-            i.level.threshold = i.level.threshold,
-            i.tails.threshold = i.tails.threshold,
-            i.type.intensity = i.type.intensity,
-            i.level.intensity = i.level.intensity,
-            i.tails.intensity = i.tails.intensity,
-            i.type.curve = i.type.curve,
-            i.level.curve = i.level.curve,
-            i.type.other = i.type.other,
-            i.level.other = i.level.other,
-            i.method = i.method,
-            i.param = i.param,
-            i.n.max = i.n.max,
-            i.type.boot = i.type.boot,
-            i.iter.boot = i.iter.boot
-          )
-          validacion.i <- calcular.indicadores(
-            i.current = datos.actual,
-            i.umbral.pre = datos.modelo$pre.post.intervals[1, 3],
-            i.umbral.pos = datos.modelo$pre.post.intervals[2, 3],
-            i.intensidades = datos.modelo$epi.intervals[, 4],
-            i.duracion.intensidad = datos.modelo$mean.length,
-            i.metodo.calculo = i.calculation.method,
-            i.semanas.por.encima = i.weeks.above,
-            i.valores.parametro.deteccion = i.detection.values,
-            i.output = i.output,
-            i.graph = i.graph,
-            i.graph.name = paste(i.prefix, " Goodness ", i, sep = "")
-          )
-          validacion[, i] <- validacion.i$indicadores.t
-          rownames(validacion) <- rownames(validacion.i$indicadores.t)
-          # peak
-          peak.i <- max.fix.na(datos.actual)
-          peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual])])
-          umbrales.i <- memintensity(datos.modelo)$intensity.thresholds
-          if (is.na(umbrales.i[1])) umbrales.i[1] <- 0
-          if (umbrales.i[1] > umbrales.i[2]) umbrales.i[2] <- umbrales.i[1] * 1.0000001
-          level.i <- as.numeric(cut(peak.i, c(-Inf, umbrales.i, Inf)))
-          maximos <- cbind(maximos, c(peak.i, peak.week.i, umbrales.i, level.i))
-          maximos.seasons <- c(maximos.seasons, names(datos)[indices.actual])
-        }
-        # }
       }
-
       resultado <- apply(validacion, 1, sum, na.rm = T)
       # sensibilidad
       resultado[7] <- resultado[3] / (resultado[3] + resultado[6])
@@ -331,6 +381,8 @@ memgoodness <- function(i.data,
         param.iter.boot = i.iter.boot,
         param.calculation.method = i.calculation.method,
         param.goodness.method = i.goodness.method,
+        param.goodness.threshold = i.goodness.threshold,
+        param.goodness.intensity = i.goodness.intensity,
         param.detection.values = i.detection.values,
         param.weeks.above = i.weeks.above,
         param.output = i.output,

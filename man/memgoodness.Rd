@@ -11,7 +11,8 @@ memgoodness(i.data, i.seasons = 10, i.type.threshold = 5,
   i.type.other = 2, i.level.other = 0.95, i.method = 2,
   i.param = 2.8, i.n.max = -1, i.type.boot = "norm",
   i.iter.boot = 10000, i.calculation.method = "default",
-  i.goodness.method = "cross", i.detection.values = seq(2, 4, 0.1),
+  i.goodness.method = "cross", i.goodness.threshold = NA,
+  i.goodness.intensity = NA, i.detection.values = seq(2, 4, 0.1),
   i.weeks.above = 1, i.output = ".", i.graph = F, i.prefix = "",
   i.min.seasons = 6)
 }
@@ -53,6 +54,10 @@ memgoodness(i.data, i.seasons = 10, i.type.threshold = 5,
 \item{i.calculation.method}{method of determining true/false positives and true/false negatives.}
 
 \item{i.goodness.method}{method to calculate goodness.}
+
+\item{i.goodness.threshold}{pre/post epidemic thresholds for threshold goodness method.}
+
+\item{i.goodness.intensity}{intensitie thresholds (medium, high, very high) for threshold goodness method.}
 
 \item{i.detection.values}{values to use in the i.param value of \code{memtiming}.}
 
@@ -114,11 +119,13 @@ There are two ways of deciding the set of seasons used to calculate the pre-epid
 iteration and it is determined by the \code{i.goodness.method}.
 
 \itemize{
-\item Cross: For each value, the surrounding seasons (after or before the current value) are selected up
+\item cross: For each value, the surrounding seasons (after or before the current value) are selected up
 to the number of Max. seasons (parameter of the Model box). To calculate the thresholds for season 2010/2011,
 data from 2005/2006 to 2009/2010 and from 2011/20012 to 2015/2016 will be taken.
-\item Sequential: Only preceding seasons are used (before the current value) up to the number of Max. seasons.
+\item sequential: Only preceding seasons are used (before the current value) up to the number of Max. seasons.
 To calculate the thresholds for season 2010/2011, data from 2000/2001 to 2009/2010 are taken.
+\item threshold: The pre/post epidemic and intensity thresholds are fixed values for all the seasons and
+are compared with the epidemic as determined by MEM algorithm.
 }
 }
 \examples{
