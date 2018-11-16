@@ -60,7 +60,7 @@
 #'
 #' @export
 roc.analysis <- function(i.data,
-                         i.param.values = seq(2.0, 4.0, 0.1),
+                         i.param.values = seq(1.0, 5.0, 0.1),
                          i.min.seasons = 6,
                          i.graph = F,
                          i.graph.file = F,

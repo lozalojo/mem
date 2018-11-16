@@ -55,86 +55,91 @@
 #'
 #' @export
 #' @importFrom graphics identify
-optimum.by.inspection<-function(i.data,
-                                i.param.values=seq(2.0,4.0,0.1),
-                                i.graph=T,
-                                i.graph.file=F,
-                                i.graph.file.name="",
-                                i.graph.title="",
-                                i.graph.subtitle="",
-                                i.output="."){
+optimum.by.inspection <- function(i.data,
+                                  i.param.values = seq(1.0, 5.0, 0.1),
+                                  i.graph = T,
+                                  i.graph.file = F,
+                                  i.graph.file.name = "",
+                                  i.graph.title = "",
+                                  i.graph.subtitle = "",
+                                  i.output = ".") {
+  semanas <- dim(i.data)[1]
+  anios <- dim(i.data)[2]
+  nombre.semana <- rownames(i.data)
+  nombre.anios <- colnames(i.data)
+  numero.semana <- 1:semanas
+  n.values <- length(i.param.values)
 
-  semanas<-dim(i.data)[1]
-  anios<-dim(i.data)[2]
-  nombre.semana<-rownames(i.data)
-  nombre.anios<-colnames(i.data)
-  numero.semana<-1:semanas
-  n.values<-length(i.param.values)
+  i.timing.1 <- array(dim = c(anios, 2))
+  resultados.i <- array(
+    dim = c(anios, 15, n.values),
+    dimnames = list(year = nombre.anios, indicator = LETTERS[1:15], parameter = i.param.values)
+  )
 
-  i.timing.1<-array(dim=c(anios,2))
-  resultados.i<-array(dim=c(anios,15,n.values),
-                      dimnames=list(year=nombre.anios,indicator=LETTERS[1:15],parameter=i.param.values))
+  col.points <- c("#FF0000", "#40FF40")
+  col.points.alpha <- add.alpha(col.points, alpha = 0.4)
 
-  col.points<-c("#FF0000","#40FF40")
-  col.points.alpha<-add.alpha(col.points,alpha=0.4)
-
-  for (i in 1:anios){
-    cur<-i.data[i]
-    itsnotok<-T
-    while(itsnotok){
-      memsur<-memsurveillance(cur,NA,NA,i.graph.file=F,i.graph.title=nombre.anios[i],
-                      i.range.x=as.numeric(rownames(cur))[c(1,semanas)])
+  for (i in 1:anios) {
+    cur <- i.data[i]
+    itsnotok <- T
+    while (itsnotok) {
+      memsur <- memsurveillance(cur, NA, NA,
+        i.graph.file = F, i.graph.title = nombre.anios[i],
+        i.range.x = as.numeric(rownames(cur))[c(1, semanas)]
+      )
       cat("Click on the FIRST epidemic week of this season\nDepending on the device used to plot the graph, you might need to click on FINISH (top-right corner)\n")
-      i.timing.1.1<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana,n=1,plot=F)
-      if (is.numeric(i.timing.1.1)) points(x=i.timing.1.1,y=cur[i.timing.1.1,],pch=1,col=col.points.alpha[1],lwd=7)
+      i.timing.1.1 <- identify(x = 1:semanas, y = as.numeric(as.matrix(cur)), labels = nombre.semana, n = 1, plot = F)
+      if (is.numeric(i.timing.1.1)) points(x = i.timing.1.1, y = cur[i.timing.1.1, ], pch = 1, col = col.points.alpha[1], lwd = 7)
       cat("Click on the LAST epidemic week of this season\nDepending on the device used to plot the graph, you might need to click on FINISH (top-right corner)\n\n")
-      i.timing.1.2<-identify(x=1:semanas,y=as.numeric(as.matrix(cur)),labels=nombre.semana,n=1,plot=F)
-      if (is.numeric(i.timing.1.2)) points(x=i.timing.1.2,y=cur[i.timing.1.2,],pch=1,col=col.points.alpha[2],lwd=7)
-      cat("Epidemic week range selected is: [",nombre.semana[i.timing.1.1],",",nombre.semana[i.timing.1.2],"]\n\n")
-      i.timing.1.3<-readline("Is that correct? (type Y or N)\t")
-      if (tolower(i.timing.1.3) %in% c("y","ye","yes")) itsnotok<-F
+      i.timing.1.2 <- identify(x = 1:semanas, y = as.numeric(as.matrix(cur)), labels = nombre.semana, n = 1, plot = F)
+      if (is.numeric(i.timing.1.2)) points(x = i.timing.1.2, y = cur[i.timing.1.2, ], pch = 1, col = col.points.alpha[2], lwd = 7)
+      cat("Epidemic week range selected is: [", nombre.semana[i.timing.1.1], ",", nombre.semana[i.timing.1.2], "]\n\n")
+      i.timing.1.3 <- readline("Is that correct? (type Y or N)\t")
+      if (tolower(i.timing.1.3) %in% c("y", "ye", "yes")) itsnotok <- F
     }
-    i.timing.1.i<-c(i.timing.1.1,i.timing.1.2)
-    i.timing.1[i,]<-i.timing.1.i
-    curva.map<-calcular.map(as.vector(as.matrix(cur)))
-    for (j in 1:n.values){
-        i.param.deteccion<-i.param.values[j]
-        i.param.deteccion.label<-format(round(i.param.deteccion,1),digits=3,nsmall=1)
-        i.timing.2<-calcular.optimo(curva.map,2,i.param.deteccion)$resultados[4:5]
-        resultado.j<-calcular.indicadores.2.timings(cur,i.timing.1.i,i.timing.2,i.timing.labels=c("inspection",i.param.deteccion.label),
-                                                i.graph.title="Comparing",i.graph.file=F)$indicadores
-        resultados.i[i,,j]<-as.numeric(resultado.j)
+    i.timing.1.i <- c(i.timing.1.1, i.timing.1.2)
+    i.timing.1[i, ] <- i.timing.1.i
+    curva.map <- calcular.map(as.vector(as.matrix(cur)))
+    for (j in 1:n.values) {
+      i.param.deteccion <- i.param.values[j]
+      i.param.deteccion.label <- format(round(i.param.deteccion, 1), digits = 3, nsmall = 1)
+      i.timing.2 <- calcular.optimo(curva.map, 2, i.param.deteccion)$resultados[4:5]
+      resultado.j <- calcular.indicadores.2.timings(cur, i.timing.1.i, i.timing.2,
+        i.timing.labels = c("inspection", i.param.deteccion.label),
+        i.graph.title = "Comparing", i.graph.file = F
+      )$indicadores
+      resultados.i[i, , j] <- as.numeric(resultado.j)
     }
   }
 
-  resultado<-data.frame(apply(resultados.i,c(3,2),sum,na.rm=T))
+  resultado <- data.frame(apply(resultados.i, c(3, 2), sum, na.rm = T))
   # sensibilidad
-  resultado[7]<-resultado[3]/(resultado[3]+resultado[6])
+  resultado[7] <- resultado[3] / (resultado[3] + resultado[6])
   # especificidad
-  resultado[8]<-resultado[5]/(resultado[5]+resultado[4])
+  resultado[8] <- resultado[5] / (resultado[5] + resultado[4])
   # vpp
-  resultado[9]<-resultado[3]/(resultado[3]+resultado[4])
+  resultado[9] <- resultado[3] / (resultado[3] + resultado[4])
   # vpn
-  resultado[10]<-resultado[5]/(resultado[5]+resultado[6])
+  resultado[10] <- resultado[5] / (resultado[5] + resultado[6])
   # positive likehood ratio
-  resultado[11]<-resultado[7]/(1-resultado[8])
+  resultado[11] <- resultado[7] / (1 - resultado[8])
   # negative likehood ratio
-  resultado[12]<-(1-resultado[7])/resultado[8]
+  resultado[12] <- (1 - resultado[7]) / resultado[8]
   # percentage agreement/accuracy
-  resultado[13]<-(resultado[3]+resultado[5])/(resultado[3]+resultado[4]+resultado[5]+resultado[6])
+  resultado[13] <- (resultado[3] + resultado[5]) / (resultado[3] + resultado[4] + resultado[5] + resultado[6])
   # Matthews correlation coefficient
-  resultado[14]<-(resultado[3]*resultado[5]-resultado[4]*resultado[6])/sqrt((resultado[3]+resultado[4])*(resultado[3]+resultado[6])*(resultado[5]+resultado[4])*(resultado[5]+resultado[6]))
+  resultado[14] <- (resultado[3] * resultado[5] - resultado[4] * resultado[6]) / sqrt((resultado[3] + resultado[4]) * (resultado[3] + resultado[6]) * (resultado[5] + resultado[4]) * (resultado[5] + resultado[6]))
   # Youden's index
-  resultado[15]<-resultado[7]+resultado[8]-1
+  resultado[15] <- resultado[7] + resultado[8] - 1
 
-  resultado[resultado=="NaN"]<-NA
+  resultado[resultado == "NaN"] <- NA
 
-  resultados<-data.frame(value=i.param.values,resultado)
-  names(resultados)<-c("value",tolower(colnames(resultado.j)))
+  resultados <- data.frame(value = i.param.values, resultado)
+  names(resultados) <- c("value", tolower(colnames(resultado.j)))
 
   # Ranking 1: Rank(sensitivity) + Rank(specificity)
   if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
-    rankings.1<-NA
+    rankings.1 <- NA
     optimo.1 <- NA
   } else {
     rankings.1 <- rank(-resultados$sensitivity, na.last = T) + rank(-resultados$specificity, na.last = T)
@@ -142,7 +147,7 @@ optimum.by.inspection<-function(i.data,
   }
   # Ranking 2: Rank(sensitivity x Rank specificity)
   if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
-    rankings.2<-NA
+    rankings.2 <- NA
     optimo.2 <- NA
   } else {
     rankings.2 <- rank(-resultados$sensitivity * resultados$specificity, na.last = T)
@@ -150,7 +155,7 @@ optimum.by.inspection<-function(i.data,
   }
   # Ranking 3: Rank(positive.likehood.ratio)
   if (!any(!is.na(resultados$positive.likehood.ratio))) {
-    rankings.3<-NA
+    rankings.3 <- NA
     optimo.3 <- NA
   } else {
     rankings.3 <- rank(-resultados$positive.likehood.ratio, na.last = T)
@@ -158,7 +163,7 @@ optimum.by.inspection<-function(i.data,
   }
   # Ranking 4: Rank(negative.likehood.ratio)
   if (!any(!is.na(resultados$negative.likehood.ratio))) {
-    rankings.4<-NA
+    rankings.4 <- NA
     optimo.4 <- NA
   } else {
     rankings.4 <- rank(-resultados$negative.likehood.ratio, na.last = T)
@@ -166,7 +171,7 @@ optimum.by.inspection<-function(i.data,
   }
   # Ranking 5: Rank(sensitivity-specificity) + Rank(sensitivity+specificity) + Rank(sensitivity^2+specificity^2)
   if (!any(!is.na(resultados$sensitivity)) | !any(!is.na(resultados$specificity))) {
-    rankings.5<-NA
+    rankings.5 <- NA
     optimo.5 <- NA
   } else {
     qf <- abs(resultados$sensitivity - resultados$specificity)
@@ -200,50 +205,56 @@ optimum.by.inspection<-function(i.data,
     optimo.8 <- i.param.values[which.min(rankings.8)]
   }
 
-  optimum <- data.frame(pos.likehood = optimo.3, neg.likehood = optimo.4, aditive = optimo.1, multiplicative = optimo.2,
-                        mixed = optimo.5, percent = optimo.6, matthews=optimo.7, youden=optimo.8)
+  optimum <- data.frame(
+    pos.likehood = optimo.3, neg.likehood = optimo.4, aditive = optimo.1, multiplicative = optimo.2,
+    mixed = optimo.5, percent = optimo.6, matthews = optimo.7, youden = optimo.8
+  )
 
-  rankings <- data.frame(pos.likehood = rankings.3, neg.likehood = rankings.4, aditive = rankings.1, multiplicative = rankings.2,
-                         mixed = rankings.5, percent = rankings.6, matthews=rankings.7, youden=rankings.8)
+  rankings <- data.frame(
+    pos.likehood = rankings.3, neg.likehood = rankings.4, aditive = rankings.1, multiplicative = rankings.2,
+    mixed = rankings.5, percent = rankings.6, matthews = rankings.7, youden = rankings.8
+  )
 
 
-  optimum.by.inspection.output <- list(optimum = optimum,
-                                       rankings = rankings,
-                                       insp.data = resultados,
-                                       param.data = i.data,
-                                       param.param.values = i.param.values,
-                                       param.graph=i.graph,
-                                       param.graph.file=i.graph.file,
-                                       param.graph.file.name=i.graph.file.name,
-                                       param.graph.title=i.graph.title,
-                                       param.graph.subtitle=i.graph.subtitle,
-                                       param.output=i.output)
+  optimum.by.inspection.output <- list(
+    optimum = optimum,
+    rankings = rankings,
+    insp.data = resultados,
+    param.data = i.data,
+    param.param.values = i.param.values,
+    param.graph = i.graph,
+    param.graph.file = i.graph.file,
+    param.graph.file.name = i.graph.file.name,
+    param.graph.title = i.graph.title,
+    param.graph.subtitle = i.graph.subtitle,
+    param.output = i.output
+  )
   optimum.by.inspection.output$call <- match.call()
 
   # Graph all data
-  if (i.graph){
+  if (i.graph) {
+    if (i.graph.file.name == "") graph.name <- "inspection analysis" else graph.name <- i.graph.file.name
 
-    if (i.graph.file.name=="") graph.name="inspection analysis" else graph.name<-i.graph.file.name
 
+    if (i.graph.subtitle != "") graph.title <- paste(i.graph.subtitle, " - ", graph.title, sep = "")
+    if (i.graph.title != "") graph.title <- paste(i.graph.title, "\n", graph.title, sep = "")
 
-    if (i.graph.subtitle!="") graph.title<-paste(i.graph.subtitle," - ",graph.title,sep="")
-    if (i.graph.title!="") graph.title<-paste(i.graph.title,"\n",graph.title,sep="")
-
-    for (i in 1:anios){
-      graph.title<-nombre.anios[i]
-      cur<-i.data[i]
-      i.timing.1.i<-i.timing.1[i,]
-      curva.map<-calcular.map(as.vector(as.matrix(cur)))
-      i.param.deteccion<-optimum$matthews
-      i.param.deteccion.label<-format(round(i.param.deteccion,1),digits=3,nsmall=1)
-      i.timing.2<-calcular.optimo(curva.map,2,i.param.deteccion)$resultados[4:5]
-      dummmmyyyy<-calcular.indicadores.2.timings(cur, i.timing.1.i, i.timing.2,
-                                                 i.timing.labels=c("inspection",i.param.deteccion.label),
-                                                 i.graph.title=graph.title,
-                                                 i.graph.file=i.graph.file,
-                                                 i.graph.file.name=paste(graph.name," - ",i,sep=""),
-                                                 i.output=i.output)
-      if (!i.graph.file) dummmmyyyy<-readline("Press any key to continue\n")
+    for (i in 1:anios) {
+      graph.title <- nombre.anios[i]
+      cur <- i.data[i]
+      i.timing.1.i <- i.timing.1[i, ]
+      curva.map <- calcular.map(as.vector(as.matrix(cur)))
+      i.param.deteccion <- optimum$matthews
+      i.param.deteccion.label <- format(round(i.param.deteccion, 1), digits = 3, nsmall = 1)
+      i.timing.2 <- calcular.optimo(curva.map, 2, i.param.deteccion)$resultados[4:5]
+      dummmmyyyy <- calcular.indicadores.2.timings(cur, i.timing.1.i, i.timing.2,
+        i.timing.labels = c("inspection", i.param.deteccion.label),
+        i.graph.title = graph.title,
+        i.graph.file = i.graph.file,
+        i.graph.file.name = paste(graph.name, " - ", i, sep = ""),
+        i.output = i.output
+      )
+      if (!i.graph.file) dummmmyyyy <- readline("Press any key to continue\n")
     }
   }
 

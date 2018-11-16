@@ -12,7 +12,7 @@ memgoodness(i.data, i.seasons = 10, i.type.threshold = 5,
   i.param = 2.8, i.n.max = -1, i.type.boot = "norm",
   i.iter.boot = 10000, i.calculation.method = "default",
   i.goodness.method = "cross", i.goodness.threshold = NA,
-  i.goodness.intensity = NA, i.detection.values = seq(2, 4, 0.1),
+  i.goodness.intensity = NA, i.detection.values = seq(1, 5, 0.1),
   i.weeks.above = 1, i.output = ".", i.graph = F, i.prefix = "",
   i.min.seasons = 6)
 }

@@ -12,8 +12,8 @@ transformseries.twowaves <- function(i.data,
                                      i.model = "V",
                                      i.output = NA,
                                      i.prefix = "two waves",
-                                     i.proportion = 0) {
-  if (is.na(i.proportion) | is.null(i.proportion)) i.proportion <- 0
+                                     i.proportion = 0.15) {
+  if (is.na(i.proportion) | is.null(i.proportion)) i.proportion <- 0.15
   if (is.na(i.scale) | is.null(i.scale)) i.scale <- 10000
   if (is.na(i.model) | is.null(i.model)) i.model <- "V"
   seasons <- names(i.data)
@@ -137,9 +137,15 @@ transformseries.twowaves <- function(i.data,
       part2 <- NULL
       rates.no.miss <- NULL
       week <- NULL
+      axis.x.range.original <- range(resultados.i$week, na.rm = T)
+      axis.x.otick <- optimal.tickmarks(axis.x.range.original[1], axis.x.range.original[2], 10, i.include.min = T, i.include.max = T)
+      axis.x.range <- axis.x.otick$range
+      axis.x.ticks <- axis.x.otick$tickmarks
+      axis.x.labels <- rownames(resultados.i)[axis.x.otick$tickmarks]
       p1 <- ggplot(resultados.i) +
         geom_line(aes(x = week, y = rates.no.miss), color = "#FF0000", size = 1, alpha = 0.7) +
         labs(title = seasons[i], x = "Week", y = "Rates") +
+        scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
         theme_light() +
         theme(plot.title = element_text(hjust = 0.5))
       if (any(!is.na(resultados.i$part1))) {
@@ -158,7 +164,8 @@ transformseries.twowaves <- function(i.data,
         p1 <- p1 +
           geom_vline(aes(xintercept = inicio.normal - 0.5), size = 1, linetype = 2, color = "#BF00BF")
       }
-      ggsave(paste0(i.prefix, " (Season ", i, ").tif"), plot = p1, device = "tiff", scale = 1, width = 8, height = 6, units = "in", dpi = 150, path = outputdir)
+      # ggsave(paste0(i.prefix, " (Season ", i, ").tif"), plot = p1, device = "tiff", scale = 1, width = 8, height = 6, units = "in", dpi = 150, path = outputdir)
+      ggsave(paste0(i.prefix, " (Season ", i, ").png"), plot = p1, device = "png", scale = 1, width = 8, height = 6, units = "in", dpi = 150, path = outputdir)
     }
     detalles$nombre <- mixmdl.normal
     names(detalles)[names(detalles) == "nombre"] <- seasons[i]

@@ -5,7 +5,7 @@
 \title{adjust a mixed model of two normal distributions}
 \usage{
 transformseries.twowaves(i.data, i.scale = 10000, i.model = "V",
-  i.output = NA, i.prefix = "two waves", i.proportion = 0)
+  i.output = NA, i.prefix = "two waves", i.proportion = 0.15)
 }
 \description{
 adjust a mixed model of two normal distributions
