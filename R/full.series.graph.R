@@ -164,9 +164,11 @@ full.series.graph<-function(i.data,
   otick<-optimal.tickmarks(range.y.bus[1],range.y.bus[2],10)
   range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
 
-  if (i.graph.file) tiff(filename=paste(i.output,"/",graph.name,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
-                         compression="lzw",bg="white",res=300,antialias="none")
-
+  # if (i.graph.file) tiff(filename=paste(i.output,"/",graph.name,".tiff",sep=""),width=8,height=6,units="in",pointsize="12",
+  #                        compression="lzw",bg="white",res=300,antialias="none")
+  if (i.graph.file) png(filename=paste(i.output,"/",graph.name,".png",sep=""),width=8,height=6,units="in",pointsize="12",
+                         bg="white",res=300,antialias="none")
+  
   opar<-par(mar=c(5,3,3,3)+0.1,mgp=c(3,0.5,0),xpd=T)
 
   #Plot the first time series. Notice that you don't have to draw the axis nor the labels
