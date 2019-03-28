@@ -6,7 +6,7 @@ output.ci <- function(i.type, i.level, i.tails) {
     " and its ",
     switch(i.tails, "one sided", "two sided"),
     " ",
-    paste(i.level * 100, collapse = ","),
+    paste(i.level * 100, collapse = ", "),
     "% CI using ",
     switch(i.type, "the normal approximation", "the (log) normal approximation", "the KC Method", "bootstrap", "2*SD", "(log) 2*SD"),
     sep = ""
