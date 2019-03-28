@@ -549,7 +549,7 @@ summary.mem<-function(object, ...){
   cat("\t\t+ Bootstrap samples: ", if (is.na(object$param.iter.boot)) "-" else object$param.iter.boot,"\n", sep="")
   cat("\nEpidemic description:\n", sep="")
   cat("\t- Typical influenza epidemics starts at week ",round(object$ci.start[2,2],2),". ",100*object$param.level.other,"% CI: [",round(object$ci.start[2,1],2),",",round(object$ci.start[2,3],2),"]\n", sep="")
-  cat("\t- Typical influenza season lasts ",round(object$ci.length[1,2],2)," weeks. ",100*object$param.level.other,"%CI: [",round(object$ci.length[1,1],2),",",round(object$ci.length[1,3],2),"]\n", sep="")
+  cat("\t- Typical influenza season lasts ",round(object$ci.length[1,2],2)," weeks. ",100*object$param.level.other,"% CI: [",round(object$ci.length[1,1],2),",",round(object$ci.length[1,3],2),"]\n", sep="")
   cat("\t- This optimal ",object$mean.length," weeks influenza season includes the ",round(object$ci.percent[2],2),"% of the total sum of rates\n\n", sep="")
   cat("\nEpidemic threshold:\n", sep="")
   print(threshold)
