@@ -73,7 +73,7 @@ transformdata.back<-function(i.data, i.name="rates", i.cutoff.original=NA, i.ran
   # Changed dependency of stringr for tydir builtin function extract
   column <- NULL
   seasons <- data.frame(column=names(i.data), stringsAsFactors = F) %>%
-    extract(column, into=c("anioi","aniof","aniow"), regex="(\\d{4})(?:.*(\\d{4}))?(?:.*\\(.*(\\d{1,}).*\\))?", remove=F)
+    extract(column, into=c("anioi","aniof","aniow"), regex="^[^\\d]*(\\d{4})(?:[^\\d]*(\\d{4}))?(?:[^\\d]*(\\d{1,}))?[^\\d]*$", remove=F)
   seasons[is.na(seasons)]<-""
   seasons$aniof[seasons$aniof==""]<-seasons$anioi[seasons$aniof==""]
   seasonsname<-seasons$anioi
