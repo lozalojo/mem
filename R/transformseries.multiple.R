@@ -4,7 +4,7 @@
 #'
 #' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline aes labs %+% element_text geom_point guide_legend scale_colour_manual scale_x_continuous scale_y_continuous theme geom_segment geom_text unit arrow guides theme_light
 #' @importFrom stats loess predict
-#' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join pull slice summarise ungroup
+#' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join inner_join pull slice summarise ungroup
 #' @importFrom tidyr spread
 #' @importFrom utils tail
 transformseries.multiple <- function(i.data,
@@ -66,11 +66,13 @@ transformseries.multiple <- function(i.data,
     dplyr::mutate(n = 1:n()) %>%
     dplyr::select(-season, -year, -week)
   model.loess <- loess(rates ~ n, data, span = 0.05)
+  p.model.loess <- predict(model.loess, newdata = data$n)
+  p.model.loess[p.model.loess<0] <- 0
   rates <- rates.loess <- NULL
   data.plus <- data %>%
     dplyr::mutate(
       rates.orig = rates,
-      rates.loess = predict(model.loess, newdata = data$n),
+      rates.loess = p.model.loess,
       rates.filled = if_else(is.na(rates), rates.loess, rates)
     ) %>%
     dplyr::select(-rates) %>%
@@ -116,29 +118,52 @@ transformseries.multiple <- function(i.data,
     names(peradd) <- c("percentage", "start", "end", "duration", "sum", "max")
     n.chosen <- head((1:max.epidemic.duration)[peradd$percentage < (param.1 / 100)], 1) - 1
     peradd.chosen <- data.frame(iteration = j, percentage.added(data.temp$rates.filled, n.chosen))
-    results <- bind_rows(results, peradd.chosen)
-    data.plot <- rbind(
-      data.plot,
-      data.frame(iteration = j, x = peradd.chosen$start:peradd.chosen$end, y = data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end], stringsAsFactors = F)
-    )
-    n <- rates.filled <- x <- y <- NULL
+    sum <- cumsumper <- totsum <- difcumsumper <- sumcum <- NULL
+    results <- results %>%
+      bind_rows(peradd.chosen) %>%
+      dplyr::mutate(sumcum = cumsum(sum), totsum=sum(data.plus$rates.filled, na.rm = T), cumsumper = sumcum / totsum) %>%
+      dplyr::mutate(difcumsumper = cumsumper - lag(cumsumper))
+    results$difcumsumper[1] <- results$cumsumper[1]
+    data.plot <- data.plot %>%
+      bind_rows(
+        data.frame(iteration = j, x = peradd.chosen$start:peradd.chosen$end, y = data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end], stringsAsFactors = F) %>%
+          inner_join(results %>%
+                       select(iteration, difcumsumper), by="iteration") %>%
+          mutate(iteration.label=paste0("Iter: ", sprintf("%02d", iteration),", Per: ", sprintf("%3.2f", 100*difcumsumper))))
+    label <- percentage <- NULL
+    last.point <- data.plot %>%
+      group_by(iteration) %>%
+      arrange(x) %>%
+      slice(1) %>%
+      ungroup() %>%
+      bind_rows(data.plot %>%
+                  group_by(iteration) %>%
+                  arrange(-x) %>%
+                  slice(1) %>%
+                  ungroup()) %>%
+      group_by(iteration) %>%
+      arrange(y) %>%
+      slice(1) %>%
+      ungroup() %>%
+      inner_join(results %>%
+                   select(iteration, percentage), by="iteration") %>%
+      mutate(label=sprintf("%3.2f", 100*percentage))
+    
+    n <- rates.filled <- x <- y <- iteration.label <- NULL
     p2[[j]] <- ggplot() +
       geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
       geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
-      geom_point(data = data.plot, aes(x = x, y = y, color = factor(iteration)), size = 4) +
+      geom_point(data = data.plot, aes(x = x, y = y, color = factor(iteration.label)), size = 4) +
+      geom_point(data = last.point, aes(x = x, y = y), color="#FFFFFF", size = 2) + 
+      geom_text(data = last.point, aes(x = x, y = y, label=label), vjust=1) +
       scale_colour_manual(values = colorRampPalette(solpalette)(j), guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
       labs(title = paste0("Iteration #", j), x = "Week", y = "Data") +
-      guides(color = guide_legend(title = "Iteration")) +
+      guides(color = guide_legend(title = paste0("Iteration (Lim: ", sprintf("%3.2f",param.2),")"))) +
       theme_light() +
       theme(plot.title = element_text(hjust = 0.5))
-    sum <- cumsumper <- NULL
     data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end] <- NA
-    results <- results %>%
-      dplyr::mutate(sumcum = cumsum(sum), cumsumper = cumsum(sum) / sum(data.plus$rates.filled, na.rm = T)) %>%
-      dplyr::mutate(difcumsumper = cumsumper - lag(cumsumper))
-    results$difcumsumper[1] <- 1
   }
   # The stopping point is determined by param.2
   max.waves.dif <- max(min.waves, min(results$iteration[results$difcumsumper < (param.2 / 100)][1] - 1, max.waves, na.rm = T), ra.rm = T)
@@ -181,6 +206,7 @@ transformseries.multiple <- function(i.data,
       dplyr::slice(-1) %>%
       dplyr::select(from, to)
     cut.united <- data.frame()
+    mediann <- NULL
     for (i in 1:NROW(temp2)) {
       cut.united <- rbind(
         cut.united,
@@ -188,8 +214,9 @@ transformseries.multiple <- function(i.data,
           iteration = i,
           n = data.plus %>%
             filter(n >= temp2$from[i] & n <= temp2$to[i]) %>%
-            filter(rank(rates.loess) == 1) %>%
-            pull(n)
+            filter(rank(rates.loess, ties.method = "min") == 1) %>%
+            summarise(mediann=quantile(n, probs=0.50, type=3)) %>%
+            pull(mediann)
         )
       )
     }
