@@ -3,7 +3,7 @@
 #' @keywords internal
 #'
 #' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline aes labs %+% element_text geom_point guide_legend scale_colour_manual scale_x_continuous scale_y_continuous theme geom_segment geom_text unit arrow guides theme_light
-#' @importFrom stats loess predict
+#' @importFrom stats smooth.spline predict
 #' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join inner_join pull slice summarise ungroup
 #' @importFrom tidyr spread
 #' @importFrom utils tail
@@ -16,7 +16,7 @@ transformseries.multiple <- function(i.data,
                                      i.min.separation = 1,
                                      i.output = NA,
                                      i.prefix = "Multiple waves",
-                                     i.force.loess = F,
+                                     i.force.smooth = F,
                                      ...) {
   p1 <- list()
   p2 <- list()
@@ -65,40 +65,43 @@ transformseries.multiple <- function(i.data,
     dplyr::arrange(yrweek) %>%
     dplyr::mutate(n = 1:n()) %>%
     dplyr::select(-season, -year, -week)
-  model.loess <- loess(rates ~ n, data, span = 0.05)
-  p.model.loess <- predict(model.loess, newdata = data$n)
-  p.model.loess[p.model.loess<0] <- 0
-  rates <- rates.loess <- NULL
+  temp1 <- data %>%
+    filter(!is.na(rates))
+  model.smooth <- smooth.spline(temp1$n, temp1$rates)
+  p.model.smooth <- predict(model.smooth, x =  data$n)$y
+  p.model.smooth[p.model.smooth<0] <- 0
+  rm(temp1)
+  rates <- rates.smooth <- NULL
   data.plus <- data %>%
     dplyr::mutate(
       rates.orig = rates,
-      rates.loess = p.model.loess,
-      rates.filled = if_else(is.na(rates), rates.loess, rates)
+      rates.smooth = p.model.smooth,
+      rates.filled = if_else(is.na(rates), rates.smooth, rates)
     ) %>%
     dplyr::select(-rates) %>%
     dplyr::arrange(n)
-  if (i.force.loess) data.plus$rates.filled <- data.plus$rates.loess
-  # Plot the original series, the loess and the data that will be used
+  if (i.force.smooth) data.plus$rates.filled <- data.plus$rates.smooth
+  # Plot the original series, the smooth and the data that will be used
 
   axis.x.range.original <- range(data.plus$n, na.rm = T)
   axis.x.otick <- optimal.tickmarks(axis.x.range.original[1], axis.x.range.original[2], 10, i.include.min = T, i.include.max = T)
   axis.x.range <- axis.x.otick$range
   axis.x.ticks <- axis.x.otick$tickmarks
   axis.x.labels <- data.plus$yrweek[axis.x.otick$tickmarks]
-  axis.y.range.original <- range(c(data.plus$rates.orig, data.plus$rates.loess), na.rm = T)
+  axis.y.range.original <- range(c(data.plus$rates.orig, data.plus$rates.smooth), na.rm = T)
   axis.y.otick <- optimal.tickmarks(axis.y.range.original[1], axis.y.range.original[2], 10)
   axis.y.range <- axis.y.otick$range + diff(range(axis.y.otick$range, na.rm = T)) * 0.025 * c(-1, 1)
   axis.y.ticks <- axis.y.otick$tickmarks
   axis.y.labels <- axis.y.otick$tickmarks
-  n <- rates.orig <- rates.loess <- NULL
+  n <- rates.orig <- rates.smooth <- NULL
   p1[[1]] <- ggplot(data.plus) +
     geom_line(aes(x = n, y = rates.orig), color = "#0066CC", linetype = 1, size = 0.75) +
     geom_point(aes(x = n, y = rates.orig), color = "#0066CC", size = 1.5) +
-    geom_line(aes(x = n, y = rates.loess), color = "#CC0066", linetype = 1, size = 0.75) +
-    geom_point(aes(x = n, y = rates.loess), color = "#CC0066", size = 1.5) +
+    geom_line(aes(x = n, y = rates.smooth), color = "#CC0066", linetype = 1, size = 0.75) +
+    geom_point(aes(x = n, y = rates.smooth), color = "#CC0066", size = 1.5) +
     scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
     scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
-    labs(title = "Series and loess", x = "Week", y = "Data") +
+    labs(title = "Series and smooth", x = "Week", y = "Data") +
     theme_light() +
     theme(plot.title = element_text(hjust = 0.5))
   p1[[2]] <- ggplot(data.plus) +
@@ -192,7 +195,7 @@ transformseries.multiple <- function(i.data,
     guides(color = guide_legend(title = "Iteration")) +
     theme_light() +
     theme(plot.title = element_text(hjust = 0.5))
-  # Now I separate each part for the lowest vale between epidemics, but using the loess data to avoid irregular
+  # Now I separate each part for the lowest vale between epidemics, but using the smooth data to avoid irregular
   # low values between epidemics
   n.parts <- max(temp1$sunite)
   if (n.parts > 1) {
@@ -214,7 +217,7 @@ transformseries.multiple <- function(i.data,
           iteration = i,
           n = data.plus %>%
             filter(n >= temp2$from[i] & n <= temp2$to[i]) %>%
-            filter(rank(rates.loess, ties.method = "min") == 1) %>%
+            filter(rank(rates.smooth, ties.method = "min") == 1) %>%
             summarise(mediann=quantile(n, probs=0.50, type=3)) %>%
             pull(mediann)
         )
@@ -338,7 +341,7 @@ transformseries.multiple <- function(i.data,
   if (!is.na(i.output)) {
     outputdir <- file.path(getwd(), i.output)
     if (!dir.exists(outputdir)) dir.create(outputdir)
-    ggsave(paste0(i.prefix, "-1.1. Original Vs Loess.png"), p1[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(i.prefix, "-1.1. Original Vs Smooth.png"), p1[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
     ggsave(paste0(i.prefix, "-1.2. Data to be used.png"), p1[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
     # We plot each iteration to the stopping point and filter the results
     for (j in 1:max.waves.dif) ggsave(paste0(i.prefix, "-2.", j, ". Iteration ", j, ".png"), p2[[j]], width = 16, height = 9, dpi = 150, path = outputdir)

@@ -33,6 +33,7 @@ Transformation options:
 \item{5} {Two waves (observed)}
 \item{6} {Two waves (expected)}
 \item{7} {Loess}
+\item{8} {Spline}
 }
 
 Fill missings sustitute missing values with predicted values from a loess regression fit.
@@ -42,6 +43,8 @@ Odd calculates the odd: p divided by 1-p.
 
 Loess substitute the dataset with predicted values from a loess regression fit.
 
+Spline fits a cubic smoothing spline to the supplied data.
+
 Two waves (observed) is used when there are two waves per season. It divides the original
 dataset in two using a mixture of two normal distributions. The expected option uses the
 same procedure but also substitutes all data with predicted values of the mixture fit.
@@ -50,8 +53,7 @@ same procedure but also substitutes all data with predicted values of the mixtur
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Data of the last season
-transformseries(flucyl,2)
-
+transformseries(flucyl, 2)
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

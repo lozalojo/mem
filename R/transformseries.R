@@ -26,6 +26,7 @@
 #' \item{5} {Two waves (observed)}
 #' \item{6} {Two waves (expected)}
 #' \item{7} {Loess}
+#' \item{8} {Spline}
 #' }
 #'
 #' Fill missings sustitute missing values with predicted values from a loess regression fit.
@@ -35,6 +36,8 @@
 #'
 #' Loess substitute the dataset with predicted values from a loess regression fit.
 #'
+#' Spline fits a cubic smoothing spline to the supplied data.
+#'
 #' Two waves (observed) is used when there are two waves per season. It divides the original
 #' dataset in two using a mixture of two normal distributions. The expected option uses the
 #' same procedure but also substitutes all data with predicted values of the mixture fit.
@@ -43,8 +46,7 @@
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
 #' # Data of the last season
-#' transformseries(flucyl,2)
-#'
+#' transformseries(flucyl, 2)
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
@@ -65,40 +67,44 @@
 #' @keywords influenza
 #'
 #' @export
-transformseries<-function(i.data, i.transformation=1, ...){
-  if (is.null(i.data)){
-    i.data.transf<-i.data
-  }else if (is.null(i.transformation)){
-    i.data.transf<-i.data
-  }else if (is.na(i.transformation)){
-    i.data.transf<-i.data
-  }else{
-    if (i.transformation==1){
-      i.data.transf<-i.data
-    }else if (i.transformation==2){
-      i.data.transf<-data.frame(apply(i.data, 2, transformseries.odd), stringsAsFactors = F)
-      names(i.data.transf)<-names(i.data)
-      rownames(i.data.transf)<-rownames(i.data)
-    }else if (i.transformation==3){
-      i.data.transf<-data.frame(apply(i.data, 2, fill.missing), stringsAsFactors = F)
-      names(i.data.transf)<-names(i.data)
-      rownames(i.data.transf)<-rownames(i.data)
-    }else if (i.transformation==4){
-      i.data.transf<-data.frame(apply(i.data, 2, suavizado, ...), stringsAsFactors = F)
-      names(i.data.transf)<-names(i.data)
-      rownames(i.data.transf)<-rownames(i.data)
-    }else if (i.transformation==5){
-      i.data.transf<-transformseries.twowaves(i.data, ...)$data.observed
-      rownames(i.data.transf)<-rownames(i.data)
-    }else if (i.transformation==6){
-      i.data.transf<-transformseries.twowaves(i.data, ...)$data.expected
-      rownames(i.data.transf)<-rownames(i.data)
-    }else if (i.transformation==7){
-      i.data.transf<-data.frame(apply(i.data, 2, transformseries.loess, ...), stringsAsFactors = F)
-      names(i.data.transf)<-names(i.data)
-      rownames(i.data.transf)<-rownames(i.data)
-    }else{
-      i.data.transf<-i.data
+transformseries <- function(i.data, i.transformation = 1, ...) {
+  if (is.null(i.data)) {
+    i.data.transf <- i.data
+  } else if (is.null(i.transformation)) {
+    i.data.transf <- i.data
+  } else if (is.na(i.transformation)) {
+    i.data.transf <- i.data
+  } else {
+    if (i.transformation == 1) {
+      i.data.transf <- i.data
+    } else if (i.transformation == 2) {
+      i.data.transf <- data.frame(apply(i.data, 2, transformseries.odd), stringsAsFactors = F)
+      names(i.data.transf) <- names(i.data)
+      rownames(i.data.transf) <- rownames(i.data)
+    } else if (i.transformation == 3) {
+      i.data.transf <- data.frame(apply(i.data, 2, fill.missing), stringsAsFactors = F)
+      names(i.data.transf) <- names(i.data)
+      rownames(i.data.transf) <- rownames(i.data)
+    } else if (i.transformation == 4) {
+      i.data.transf <- data.frame(apply(i.data, 2, suavizado, ...), stringsAsFactors = F)
+      names(i.data.transf) <- names(i.data)
+      rownames(i.data.transf) <- rownames(i.data)
+    } else if (i.transformation == 5) {
+      i.data.transf <- transformseries.twowaves(i.data, ...)$data.observed
+      rownames(i.data.transf) <- rownames(i.data)
+    } else if (i.transformation == 6) {
+      i.data.transf <- transformseries.twowaves(i.data, ...)$data.expected
+      rownames(i.data.transf) <- rownames(i.data)
+    } else if (i.transformation == 7) {
+      i.data.transf <- data.frame(apply(i.data, 2, transformseries.loess, ...), stringsAsFactors = F)
+      names(i.data.transf) <- names(i.data)
+      rownames(i.data.transf) <- rownames(i.data)
+    } else if (i.transformation == 8) {
+      i.data.transf <- data.frame(apply(i.data, 2, transformseries.spline, ...), stringsAsFactors = F)
+      names(i.data.transf) <- names(i.data)
+      rownames(i.data.transf) <- rownames(i.data)
+    } else {
+      i.data.transf <- i.data
     }
   }
   return(i.data.transf)
