@@ -304,8 +304,10 @@ transformseries.multiple <- function(i.data,
     geom_vline(data = temp1, aes(xintercept = cut2), color = "#40FF40", alpha = 0.5) +
     theme_light() +
     theme(plot.title = element_text(hjust = 0.5))
-  temp2 <- axis.y.ticks[1] + diff(range(axis.y.ticks)) / 20
-  temp3 <- axis.y.ticks[1] + diff(range(axis.y.ticks)) / 15
+  # temp2 <- axis.y.ticks[1] + diff(range(axis.y.ticks)) / 20
+  # temp3 <- axis.y.ticks[1] + diff(range(axis.y.ticks)) / 15
+  temp2 <- axis.y.range[1]
+  temp3 <- axis.y.range[1]
   p4[[2]] <- ggplot() +
     geom_line(data = data.united, aes(x = n, y = rates.filled.original), color = "#A0A0A0", size = 1) +
     geom_point(data = data.united, aes(x = n, y = rates.filled.original), color = "#A0A0A0", size = 1.5, alpha = 0.75) +
@@ -314,8 +316,8 @@ transformseries.multiple <- function(i.data,
     scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
     scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
     labs(title = "Series separated and MEM epidemics", x = "Week", y = "Data") +
-    geom_segment(data = temp1, aes(x = cut1, xend = cut2, y = temp3, yend = temp3), color = "#0000FF", alpha = 0.75, size = 1, arrow = arrow(ends = "both", type = "closed", angle = "90", length = unit(5, "points"))) +
-    geom_text(data = temp1, aes(x = cut3, y = temp2, label = season), color = "#0000FF", alpha = 0.75, vjust = 1) +
+    geom_segment(data = temp1, aes(x = cut1, xend = cut2, y = temp3, yend = temp3), color = "#0000CC", alpha = 0.75, size = 1, arrow = arrow(ends = "both", type = "closed", angle = "90", length = unit(5, "points"))) +
+    geom_text(data = temp1, aes(x = cut3, y = temp2, label = season), color = "#0066CC", alpha = 0.75, vjust = 1) +
     # geom_vline(data=temp1, aes(xintercept=cut1), color="#FF0000", alpha=0.5) +
     # geom_vline(data=temp1, aes(xintercept=cut2), color="#40FF40", alpha=0.5) +
     guides(color = guide_legend(title = "Epidemic")) +
