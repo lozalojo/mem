@@ -3,10 +3,10 @@
 #' @keywords internal
 #'
 #' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline aes labs %+% element_text geom_point guide_legend scale_colour_manual scale_x_continuous scale_y_continuous theme geom_segment geom_text unit arrow guides theme_light
-#' @importFrom stats smooth.spline predict
+#' @importFrom stats smooth.spline predict median loess
 #' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join inner_join pull slice summarise ungroup
 #' @importFrom tidyr spread
-#' @importFrom utils tail
+#' @importFrom utils tail head
 transformseries.multiple <- function(i.data,
                                      i.max.epidemic.duration = NA,
                                      i.max.season.duration = NA,
@@ -61,14 +61,33 @@ transformseries.multiple <- function(i.data,
   }
   # Prepare the data
   yrweek <- season <- year <- week <- NULL
-  data <- transformdata.back(i.data)$data %>%
+  # data <- transformdata.back(i.data)$data %>%
+  #   dplyr::arrange(yrweek) %>%
+  #   dplyr::mutate(n = 1:n()) %>%
+  #   dplyr::select(-season, -year, -week)
+  # temp1 <- data %>%
+  #   filter(!is.na(rates))
+  # model.smooth <- smooth.spline(temp1$n, temp1$rates)
+  # p.model.smooth <- predict(model.smooth, x =  data$n)$y
+  rates <- mrate <- mratej <- NULL
+  temp1 <- i.data %>%
+    as.matrix() %>%
+    as.numeric() %>%
+    sort() %>%
+    head(NCOL(i.data)*3) %>%
+    median
+  data <- i.data %>%
+    apply(2, fill.missing) %>%
+    as.data.frame() %>%
+    transformdata.back() %>%
+    `[[`(1) %>%
     dplyr::arrange(yrweek) %>%
     dplyr::mutate(n = 1:n()) %>%
-    dplyr::select(-season, -year, -week)
-  temp1 <- data %>%
-    filter(!is.na(rates))
-  model.smooth <- smooth.spline(temp1$n, temp1$rates)
-  p.model.smooth <- predict(model.smooth, x =  data$n)$y
+    dplyr::select(-season, -year, -week) %>%
+    mutate(mrate=temp1, mratej=jitter(mrate), rates=ifelse(is.na(rates), mratej, rates)) %>%
+    select(-mrate, -mratej)
+  model.smooth <- loess(rates ~ n, data, span = 0.05)
+  p.model.smooth <- predict(model.smooth, newdata = data$n)
   p.model.smooth[p.model.smooth<0] <- 0
   rm(temp1)
   rates <- rates.smooth <- NULL
