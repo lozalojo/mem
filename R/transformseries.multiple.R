@@ -60,7 +60,6 @@ transformseries.multiple <- function(i.data,
     max.waves <- 2 * NCOL(i.data)
   }
   # Prepare the data
-  yrweek <- season <- year <- week <- NULL
   # data <- transformdata.back(i.data)$data %>%
   #   dplyr::arrange(yrweek) %>%
   #   dplyr::mutate(n = 1:n()) %>%
@@ -69,13 +68,13 @@ transformseries.multiple <- function(i.data,
   #   filter(!is.na(rates))
   # model.smooth <- smooth.spline(temp1$n, temp1$rates)
   # p.model.smooth <- predict(model.smooth, x =  data$n)$y
-  rates <- mrate <- mratej <- NULL
   temp1 <- i.data %>%
     as.matrix() %>%
     as.numeric() %>%
     sort() %>%
     head(NCOL(i.data)*3) %>%
     median
+  yrweek <- season <- year <- week <- rates <- mrate <- mratej <- NULL
   data <- i.data %>%
     apply(2, fill.missing) %>%
     as.data.frame() %>%
@@ -84,24 +83,23 @@ transformseries.multiple <- function(i.data,
     dplyr::arrange(yrweek) %>%
     dplyr::mutate(n = 1:n()) %>%
     dplyr::select(-season, -year, -week) %>%
-    mutate(mrate=temp1, mratej=jitter(mrate), rates=ifelse(is.na(rates), mratej, rates)) %>%
+    mutate(mrate=temp1, mratej=jitter(mrate), y=ifelse(is.na(rates), mratej, rates)) %>%
     select(-mrate, -mratej)
-  model.smooth <- loess(rates ~ n, data, span = 0.05)
+  model.smooth <- loess(y ~ n, data, span = 0.05)
   p.model.smooth <- predict(model.smooth, newdata = data$n)
   p.model.smooth[p.model.smooth<0] <- 0
   rm(temp1)
   rates <- rates.smooth <- NULL
   data.plus <- data %>%
-    dplyr::mutate(
-      rates.orig = rates,
-      rates.smooth = p.model.smooth,
-      rates.filled = if_else(is.na(rates), rates.smooth, rates)
-    ) %>%
+    dplyr::select(-y) %>%
+    dplyr::mutate(rates.orig = rates)
+  data.plus$rates.smooth = p.model.smooth
+  data.plus <- data.plus %>%
+    dplyr::mutate(rates.filled = if_else(is.na(rates), rates.smooth, rates)) %>%
     dplyr::select(-rates) %>%
     dplyr::arrange(n)
   if (i.force.smooth) data.plus$rates.filled <- data.plus$rates.smooth
   # Plot the original series, the smooth and the data that will be used
-
   axis.x.range.original <- range(data.plus$n, na.rm = T)
   axis.x.otick <- optimal.tickmarks(axis.x.range.original[1], axis.x.range.original[2], 10, i.include.min = T, i.include.max = T)
   axis.x.range <- axis.x.otick$range
