@@ -68,17 +68,20 @@ transformseries.multiple <- function(i.data,
   #   filter(!is.na(rates))
   # model.smooth <- smooth.spline(temp1$n, temp1$rates)
   # p.model.smooth <- predict(model.smooth, x =  data$n)$y
+  # temp1 contains the median of the values outside the epidemic, I take only the 1/3 lowest rates.
   temp1 <- i.data %>%
     as.matrix() %>%
     as.numeric() %>%
     sort() %>%
-    head(NCOL(i.data)*3) %>%
+    head(NCOL(i.data)*NROW(i.data)/3) %>%
     median
   yrweek <- season <- year <- week <- rates <- mrate <- mratej <- NULL
+  # I create the dataset for analysis, i fill missing values outside the epidemic period with the
+  # values I've just calculated before (median values outside epidemic) with a little jitter
   data <- i.data %>%
     apply(2, fill.missing) %>%
     as.data.frame() %>%
-    transformdata.back() %>%
+    transformdata.back(i.range.x.final=c(1,53)) %>%
     `[[`(1) %>%
     dplyr::arrange(yrweek) %>%
     dplyr::mutate(n = 1:n()) %>%
@@ -94,6 +97,8 @@ transformseries.multiple <- function(i.data,
     dplyr::select(-y) %>%
     dplyr::mutate(rates.orig = rates)
   data.plus$rates.smooth = p.model.smooth
+  # In data.plus I've got the original data, the smoothed data and the filled data (filling missing
+  # values with that of the prediction)
   data.plus <- data.plus %>%
     dplyr::mutate(rates.filled = if_else(is.na(rates), rates.smooth, rates)) %>%
     dplyr::select(-rates) %>%
