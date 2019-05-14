@@ -48,10 +48,10 @@
 #' @keywords influenza
 #'
 #' @export
-#' @importFrom stats aggregate
+# @importFrom stats aggregate
 #' @importFrom tidyr extract gather
-#' @importFrom dplyr %>%
-transformdata.back<-function(i.data, i.name="rates", i.cutoff.original=NA, i.range.x.final=NA, i.fun=sum){
+#' @importFrom dplyr %>% filter group_by summarise arrange
+transformdata.back<-function(i.data, i.name="rates", i.cutoff.original=NA, i.range.x.final=NA, i.fun=mean){
   if (is.na(i.cutoff.original)) i.cutoff.original<-min(as.numeric(rownames(i.data)[1:(min(3,NROW(i.data)))]))
   if (i.cutoff.original < 1) i.cutoff.original <- 1
   if (i.cutoff.original > 53) i.cutoff.original <- 53
@@ -95,7 +95,13 @@ transformdata.back<-function(i.data, i.name="rates", i.cutoff.original=NA, i.ran
   data.out$year[data.out$week>=i.cutoff.original]<-as.numeric(substr(data.out$season,1,4))[data.out$week>=i.cutoff.original]
   data.out$season<-NULL
   # we aggregate in case data comes from two sources, for example when there are two parts of the same epidemic, notated as (1) and (2)
-  data.out<-aggregate(data ~ year + week, data=data.out, FUN=i.fun, na.rm=T)
+  #data.out<-aggregate(data ~ year + week, data=data.out, FUN=i.fun, na.rm=T)
+  year <- week <- NULL
+  data.out <- data.out %>%
+    filter(!is.na(year) & !is.na(week)) %>%
+    group_by(year, week) %>%
+    summarise(data=i.fun(data, na.rm=T)) %>%
+    arrange(year, week)
   # Third: create the structure of the final dataset, considering the i.range.x.final
   week.f<-i.range.x.final[1]
   week.l<-i.range.x.final[2]
