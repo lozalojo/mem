@@ -5,7 +5,8 @@
 \alias{summary.epidemic,plot.epidemic,print.epidemic}
 \title{Influenza Epidemic Timing}
 \usage{
-memtiming(i.data, i.n.values = 5, i.method = 2, i.param = 2.8)
+memtiming(i.data, i.n.values = 5, i.method = 2, i.param = 2.8,
+  i.mem.info = T)
 }
 \arguments{
 \item{i.data}{a numeric object  (or one that can be coerced to that class).}
@@ -15,6 +16,8 @@ memtiming(i.data, i.n.values = 5, i.method = 2, i.param = 2.8)
 \item{i.method}{a number from 1 to 4, to select which optimization method to use.}
 
 \item{i.param}{an optional parameter used by the method.}
+
+\item{i.mem.info}{include information about the package in the graph.}
 }
 \value{
 \code{memtiming} returns an object of class \code{epidemic}.
@@ -85,11 +88,10 @@ information about this topic.
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Finds the timing of the first season: 2001/2002
-tim<-memtiming(flucyl[1])
+tim <- memtiming(flucyl[1])
 print(tim)
 summary(tim)
 plot(tim)
-
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

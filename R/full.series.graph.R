@@ -17,6 +17,7 @@
 #' @param i.plot.intensity Plot the intensity levels.
 #' @param i.alternative.thresholds Use alternative thresholds, instead of the ones modelled by the input data (epidemic + 3 intensity thresholds)
 #' @param i.color.pattern colors to use in the graph.
+#' @param i.mem.info include information about the package in the graph.
 #' @param ... other parameters passed to memmodel.
 #'
 #' @return
@@ -51,7 +52,6 @@
 #' data(flucyl)
 #' # Data of the last season
 #' full.series.graph(flucyl)
-#'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
@@ -90,6 +90,7 @@ full.series.graph <- function(i.data,
                                 "#00C000", "#800080", "#FFB401",
                                 "#8c6bb1", "#88419d", "#810f7c", "#4d004b"
                               ),
+                              i.mem.info = T,
                               ...) {
   i.cutoff.original <- min(as.numeric(rownames(i.data)[1:3]))
   if (i.cutoff.original < 1) i.cutoff.original <- 1
@@ -139,7 +140,15 @@ full.series.graph <- function(i.data,
 
   rownames(indices) <- rownames(i.data)
   names(indices) <- names(i.data)
-  datos.indexes <- transformdata.back(indices, i.name = "rates", i.range.x.final = i.range.x, i.cutoff.original = i.cutoff.original, i.fun = function(x, ...) if (all(is.na(x))) return(NA) else if (any(x == 2, ...)) return(2) else if (any(x == 1, ...)) return(1) else return(3))$data
+  datos.indexes <- transformdata.back(indices, i.name = "rates", i.range.x.final = i.range.x, i.cutoff.original = i.cutoff.original, i.fun = function(x, ...) if (all(is.na(x))) {
+      return(NA)
+    } else if (any(x == 2, ...)) {
+      return(2)
+    } else if (any(x == 1, ...)) {
+      return(1)
+    } else {
+      return(3)
+    })$data
   datos.y.indexes <- as.numeric(datos.indexes[, names(datos.indexes) == "rates"])
 
   if (length(i.alternative.thresholds) == 4) {
@@ -290,10 +299,7 @@ full.series.graph <- function(i.data,
   mtext(1, text = "Week", line = 2.5, cex = 0.8, col = i.color.pattern[3])
   mtext(2, text = "Weekly value", line = 1.3, cex = 0.8, col = i.color.pattern[3])
   mtext(3, text = i.graph.subtitle, cex = 0.8, col = i.color.pattern[6])
-  mtext(4,
-    text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""),
-    line = 0.75, cex = 0.6, col = "#404040"
-  )
+  if (i.mem.info) mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
 
   xa <- "topright"
   ya <- NULL

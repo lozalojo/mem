@@ -10,7 +10,7 @@ full.series.graph(i.data, i.range.x = NA, i.range.y = NA,
   i.plot.intensity = F, i.alternative.thresholds = NA,
   i.color.pattern = c("#C0C0C0", "#606060", "#000000", "#808080",
   "#000000", "#001933", "#00C000", "#800080", "#FFB401", "#8c6bb1",
-  "#88419d", "#810f7c", "#4d004b"), ...)
+  "#88419d", "#810f7c", "#4d004b"), i.mem.info = T, ...)
 }
 \arguments{
 \item{i.data}{Historical data series.}
@@ -36,6 +36,8 @@ full.series.graph(i.data, i.range.x = NA, i.range.y = NA,
 \item{i.alternative.thresholds}{Use alternative thresholds, instead of the ones modelled by the input data (epidemic + 3 intensity thresholds)}
 
 \item{i.color.pattern}{colors to use in the graph.}
+
+\item{i.mem.info}{include information about the package in the graph.}
 
 \item{...}{other parameters passed to memmodel.}
 }
@@ -74,7 +76,6 @@ Color codes:
 data(flucyl)
 # Data of the last season
 full.series.graph(flucyl)
-
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

@@ -11,7 +11,7 @@ memsurveillance(i.current, i.epidemic.thresholds = NA,
   i.week.report = NA, i.equal = F, i.pos.epidemic = F,
   i.no.epidemic = F, i.no.intensity = F, i.epidemic.start = NA,
   i.range.x = c(40, 20), i.range.x.53 = F, i.range.y = NA,
-  i.no.labels = F, i.start.end.marks = T)
+  i.no.labels = F, i.start.end.marks = T, i.mem.info = T)
 }
 \arguments{
 \item{i.current}{Current season weekly rates.}
@@ -55,6 +55,8 @@ memsurveillance(i.current, i.epidemic.thresholds = NA,
 \item{i.no.labels}{Do not use labels.}
 
 \item{i.start.end.marks}{Do not place start and end marks of the epidemic.}
+
+\item{i.mem.info}{include information about the package in the graph.}
 }
 \value{
 \code{memsurveillance} writes a tiff graph of the surveillance of this season.
@@ -87,31 +89,40 @@ at a given week instead of using the first week above the epidemic threshold.
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Data of the last season
-cur<-flucyl[8]
+cur <- flucyl[8]
 # The model
-epi<-memmodel(flucyl[1:7])
+epi <- memmodel(flucyl[1:7])
 # Epidemic thresholds
-e.thr<-epi$epidemic.thresholds
+e.thr <- epi$epidemic.thresholds
 # Intensity threhsolds
-i.thr<-epi$intensity.thresholds
+i.thr <- epi$intensity.thresholds
 # Set the working directory to whererever you want to store the graph file
 setwd(".")
 # The graph, default values
-m1<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
-     i.graph.file.name="graph 1")
+m1 <- memsurveillance(cur, e.thr, i.thr,
+  i.graph.file = TRUE,
+  i.graph.file.name = "graph 1"
+)
 # No intensity levels
-m2<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
-     i.graph.file.name="graph 2",i.no.intensity=TRUE)
+m2 <- memsurveillance(cur, e.thr, i.thr,
+  i.graph.file = TRUE,
+  i.graph.file.name = "graph 2", i.no.intensity = TRUE
+)
 # No start/end tickmarks
-m3<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
-     i.graph.file.name="graph 3",i.start.end.marks=FALSE)
+m3 <- memsurveillance(cur, e.thr, i.thr,
+  i.graph.file = TRUE,
+  i.graph.file.name = "graph 3", i.start.end.marks = FALSE
+)
 # Post-epidemic threshold
-m4<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
-     i.graph.file.name="graph 4",i.pos.epidemic=TRUE)
+m4 <- memsurveillance(cur, e.thr, i.thr,
+  i.graph.file = TRUE,
+  i.graph.file.name = "graph 4", i.pos.epidemic = TRUE
+)
 # Report for week 2, instead of all data
-m5<-memsurveillance(cur,e.thr,i.thr,i.graph.file=TRUE,
-     i.graph.file.name="graph 5",i.week.report=2)
-
+m5 <- memsurveillance(cur, e.thr, i.thr,
+  i.graph.file = TRUE,
+  i.graph.file.name = "graph 5", i.week.report = 2
+)
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

@@ -14,6 +14,7 @@
 #' @param i.graph.title title of the graph.
 #' @param i.graph.subtitle subtitle of the graph.
 #' @param i.output output directory.
+#' @param i.mem.info include information about the package in the graph.
 #' @param ... other paramaters to be used by memgoodness function.
 #'
 #' @return
@@ -36,9 +37,9 @@
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
 #' # ROC analysis
-#' epi.roc<-roc.analysis(flucyl,i.param.values=seq(2.6,2.8,0.1),i.detection.values=seq(2.6,2.8,0.1))
+#' epi.roc <- roc.analysis(flucyl, i.param.values = seq(2.6, 2.8, 0.1), 
+#' i.detection.values = seq(2.6, 2.8, 0.1))
 #' epi.roc$results
-#'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
@@ -68,6 +69,7 @@ roc.analysis <- function(i.data,
                          i.graph.title = "",
                          i.graph.subtitle = "",
                          i.output = ".",
+                         i.mem.info = T,
                          ...) {
   if (is.null(dim(i.data))) {
     roc.analysis.output <- NULL
@@ -213,7 +215,7 @@ roc.analysis <- function(i.data,
           mtext(1, text = "Parameter", line = 1.3, cex = 0.8, col = "#000040")
           mtext(2, text = "Value", line = 1.3, cex = 0.8, col = "#000040")
           mtext(3, text = i.graph.subtitle, cex = 0.8, col = "#000040")
-          mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
+          if (i.mem.info) mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
           legend(x = "topright", y = NULL, inset = c(0, -0.05), xjust = 0, legend = etiquetas, bty = "n", lty = c(1, 1), lwd = c(1, 1), col = colores[c(1, 1)], pch = c(21, 21), pt.bg = colores[c(2, 3)], cex = 1, x.intersp = 0.5, y.intersp = 0.7, text.col = "#000000", ncol = 1)
         }
 
@@ -231,24 +233,9 @@ roc.analysis <- function(i.data,
           mtext(1, text = "Parameter", line = 1.3, cex = 0.8, col = "#000040")
           mtext(2, text = "Value", line = 1.3, cex = 0.8, col = "#000040")
           mtext(3, text = i.graph.subtitle, cex = 0.8, col = "#000040")
-          mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
+          if (i.mem.info) mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
           legend(x = "topright", y = NULL, inset = c(0, -0.05), xjust = 0, legend = etiquetas, bty = "n", lty = c(1, 1), lwd = c(1, 1), col = colores[c(1, 1)], pch = c(21, 21), pt.bg = colores[c(2, 3)], cex = 1, x.intersp = 0.5, y.intersp = 0.7, text.col = "#000000", ncol = 1)
         }
-        # d.x<-resultados$value
-        # d.y<-resultados$percent.agreement
-        # etiquetas<-c("Percent agreement")
-        # otick<-optimal.tickmarks(0,1,10)
-        # range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
-        # matplot(d.x,d.y,type="l",lty=rep(1,2),lwd=rep(1,2),col=colores[c(1,1)],xlab="",ylab="",axes=F,ylim=range.y,main=i.graph.title)
-        # points(d.x,d.y,pch=19,type="p",col=colores[2],cex=0.5)
-        # axis(1,at=d.x,labels=d.x,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-        # axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-        # mtext(1,text="Parameter",line=1.3,cex=0.8,col="#000040")
-        # mtext(2,text="Value",line=1.3,cex=0.8,col="#000040")
-        # mtext(3,text=i.graph.subtitle,cex=0.8,col="#000040")
-        # mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),line=0.75,cex=0.6,col="#404040")
-        # legend(x="topright",y=NULL,inset=c(0,-0.05),xjust=0,legend=etiquetas,bty="n",lty=c(1,1),lwd=c(1,1),col=colores[c(1,1)],pch=c(21,21),pt.bg=colores[c(2,3)],cex=1,x.intersp=0.5,y.intersp=0.7,text.col="#000000",ncol=1)
-
         if (any(!is.na(resultados$percent.agreement)) & any(!is.na(resultados$matthews.correlation.coefficient))) {
           d.x <- resultados$value
           d.y <- cbind(resultados$percent.agreement, resultados$matthews.correlation.coefficient)
@@ -263,7 +250,7 @@ roc.analysis <- function(i.data,
           mtext(1, text = "Parameter", line = 1.3, cex = 0.8, col = "#000040")
           mtext(2, text = "Value", line = 1.3, cex = 0.8, col = "#000040")
           mtext(3, text = i.graph.subtitle, cex = 0.8, col = "#000040")
-          mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
+          if (i.mem.info) mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
           legend(x = "topright", y = NULL, inset = c(0, -0.05), xjust = 0, legend = etiquetas, bty = "n", lty = c(1, 1), lwd = c(1, 1), col = colores[c(1, 1)], pch = c(21, 21), pt.bg = colores[c(2, 3)], cex = 1, x.intersp = 0.5, y.intersp = 0.7, text.col = "#000000", ncol = 1)
         }
 
@@ -281,7 +268,7 @@ roc.analysis <- function(i.data,
           mtext(1, text = "1 - specificity", line = 1.3, cex = 0.8, col = "#000040")
           mtext(2, text = "Sensitivity", line = 1.3, cex = 0.8, col = "#000040")
           mtext(3, text = i.graph.subtitle, cex = 0.8, col = "#000040")
-          mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
+          if (i.mem.info) mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
         }
         par(opar)
         if (i.graph.file) dev.off()

@@ -127,6 +127,15 @@ To calculate the thresholds for season 2010/2011, data from 2000/2001 to 2009/20
 \item threshold: The pre/post epidemic and intensity thresholds are fixed values for all the seasons and
 are compared with the epidemic as determined by MEM algorithm.
 }
+
+The \code{i.calculation.method} is used to determine when the alert based on the epidemic threshold.
+The "default" method sets all values above the threshold as epidemic, and all the values below as non-epidemic.
+Pre-epidemic threshold is used for values before the peak, and post-epidemic threshold for values after 
+the peak.
+The "alternative" method sets an epidemic start and epidemic end, all the values in between are epidemic values.
+The epidemic start is when \code{i.weeks.above} (default=1) consecutive weeks are above the pre-epidemic threshold.
+The epidemic end is the first week below the post-epidemic threshold after the epidemic start.
+Note that if no post-epidemic threshold is provided, the pre-epidemic value is used instead.
 }
 \examples{
 # Castilla y Leon Influenza Rates data

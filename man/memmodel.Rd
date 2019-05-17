@@ -11,7 +11,7 @@ memmodel(i.data, i.seasons = 10, i.type.threshold = 5,
   i.tails.intensity = 1, i.type.curve = 2, i.level.curve = 0.95,
   i.type.other = 3, i.level.other = 0.95, i.method = 2,
   i.param = 2.8, i.centering = -1, i.n.max = -1,
-  i.type.boot = "norm", i.iter.boot = 10000)
+  i.type.boot = "norm", i.iter.boot = 10000, i.mem.info = T)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
@@ -49,6 +49,8 @@ memmodel(i.data, i.seasons = 10, i.type.threshold = 5,
 \item{i.type.boot}{Type of bootstrap technique.}
 
 \item{i.iter.boot}{Number of bootstrap iterations.}
+
+\item{i.mem.info}{include information about the package in the graph.}
 }
 \value{
 \code{memmodel} returns an object of class \code{mem}.
@@ -98,7 +100,7 @@ All three parameters must be a number between \code{1} and \code{6}:
 \item{6} {Geometric mean and point confidence interval (standard deviations).}
 }
 
-Option \code{3} uses the Hettmansperger and Sheather (1986) and Nyblom (1992) method, 
+Option \code{3} uses the Hettmansperger and Sheather (1986) and Nyblom (1992) method,
 when there is enough sample size. If sample size is small, then the normal aproximation
 will be used as described in Conover, 1980, p. 112. Refer to EnvStats package for
 more information.
@@ -166,11 +168,10 @@ with (1) for the first period, (2) for the second, and so on.
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Finds the timing of the first season: 2001/2002
-epi<-memmodel(flucyl)
+epi <- memmodel(flucyl)
 print(epi)
 summary(epi)
 plot(epi)
-
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

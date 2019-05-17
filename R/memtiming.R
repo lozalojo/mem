@@ -14,6 +14,7 @@
 #' @param i.n.values a number, which indicates how many pre-epidemic values are taken from the pre-epidemic period.
 #' @param i.method a number from 1 to 4, to select which optimization method to use.
 #' @param i.param an optional parameter used by the method.
+#' @param i.mem.info include information about the package in the graph.
 #'
 #' @return
 #' \code{memtiming} returns an object of class \code{epidemic}.
@@ -31,7 +32,7 @@
 #'   \item{epi.data }{epidemic rates}
 #'   \item{post.epi.data }{post-epidemic rates}
 #' }
-#' 
+#'
 #' @details
 #' The method to calculate the optimal timing of an epidemic is described as part of the
 #' \emph{Moving Epidemics Method} (MEM), used to monitor influenza activity in a weekly
@@ -78,11 +79,10 @@
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
 #' # Finds the timing of the first season: 2001/2002
-#' tim<-memtiming(flucyl[1])
+#' tim <- memtiming(flucyl[1])
 #' print(tim)
 #' summary(tim)
 #' plot(tim)
-#'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
@@ -103,73 +103,67 @@
 #' @keywords influenza
 #'
 #' @export
-memtiming<-function(i.data,
-                    i.n.values=5,
-                    i.method=2,
-                    i.param=2.8){
-  if (!is.null(dim(i.data))) if(ncol(i.data)!=1) stop('Incorrect use of this function. Use memtiming() with a single season.')
+memtiming <- function(i.data,
+                      i.n.values = 5,
+                      i.method = 2,
+                      i.param = 2.8,
+                      i.mem.info = T) {
+  if (!is.null(dim(i.data))) if (ncol(i.data) != 1) stop("Incorrect use of this function. Use memtiming() with a single season.")
   if (is.null(i.method)) i.method <- 2
   if (is.na(i.method)) i.method <- 2
   if (is.null(i.param)) i.param <- 2.8
   if (is.na(i.param)) i.param <- 2.8
-  
-  datos<-fill.missing(as.vector(as.matrix(i.data)))
 
-  curva.map<-calcular.map(datos)
+  datos <- fill.missing(as.vector(as.matrix(i.data)))
+
+  curva.map <- calcular.map(datos)
   # optimo.map<-calcular.optimo(curva.map,i.method,i.param)
-  temp1 <- calcular.optimo(curva.map,i.method,i.param)
+  temp1 <- calcular.optimo(curva.map, i.method, i.param)
   optimo.map <- temp1$resultados
   curva.slope <- temp1$datos
   umbral.slope <- temp1$umbral
-  epi.ini<-optimo.map[4]
-  epi.fin<-optimo.map[5]
-  n.datos<-length(datos)
-  if (is.na(epi.ini) & !is.na(epi.fin)) epi.ini<-1
-  if (!is.na(epi.ini) & is.na(epi.fin)) epi.fin<-n.datos
-  if (is.na(epi.ini) & is.na(epi.fin)){
-    pre.epi.datos<-datos
-    epi.datos<-NA
-    post.epi.datos<-NA
-  }else{
-    pre.epi.datos<-datos[-(epi.ini:n.datos)]
-    epi.datos<-datos[epi.ini:epi.fin]
-    post.epi.datos<-datos[-(1:epi.fin)]
+  epi.ini <- optimo.map[4]
+  epi.fin <- optimo.map[5]
+  n.datos <- length(datos)
+  if (is.na(epi.ini) & !is.na(epi.fin)) epi.ini <- 1
+  if (!is.na(epi.ini) & is.na(epi.fin)) epi.fin <- n.datos
+  if (is.na(epi.ini) & is.na(epi.fin)) {
+    pre.epi.datos <- datos
+    epi.datos <- NA
+    post.epi.datos <- NA
+  } else {
+    pre.epi.datos <- datos[-(epi.ini:n.datos)]
+    epi.datos <- datos[epi.ini:epi.fin]
+    post.epi.datos <- datos[-(1:epi.fin)]
   }
-  pre.epi<-max.n.valores(pre.epi.datos,i.n.values)
-  epi<-max.n.valores(epi.datos,i.n.values)
-  post.epi<-max.n.valores(post.epi.datos,i.n.values)
-  # if (!is.na(optimo.map[4])){
-  #   pre.epi<-max.n.valores(datos[-(optimo.map[4]:length(datos))],i.n.values)
-  # }else{
-  #   pre.epi<-max.n.valores(datos,i.n.values)
-  # }
-  # if (!is.na(optimo.map[5])){
-  #   post.epi<-max.n.valores(datos[-(1:optimo.map[5])],i.n.values)
-  # }else{
-  #   post.epi<-max.n.valores(datos,i.n.values)
-  # }
-  memtiming.output<-list(map.curve=curva.map,
-                         slope.curve=curva.slope,
-                         slope.threshold=umbral.slope,
-                         optimum.map=optimo.map,
-                         pre.epi=pre.epi,
-                         post.epi=post.epi,
-                         epi=epi,
-                         pre.epi.data=pre.epi.datos,
-                         post.epi.data=post.epi.datos,
-                         epi.data=epi.datos,
-                         data=datos,
-                         param.data=i.data,
-                         param.n.values=i.n.values,
-                         param.method=i.method,
-                         param.param=i.param)
-  memtiming.output$call<-match.call()
-  class(memtiming.output)<-"epidemic"
+  pre.epi <- max.n.valores(pre.epi.datos, i.n.values)
+  epi <- max.n.valores(epi.datos, i.n.values)
+  post.epi <- max.n.valores(post.epi.datos, i.n.values)
+  memtiming.output <- list(
+    map.curve = curva.map,
+    slope.curve = curva.slope,
+    slope.threshold = umbral.slope,
+    optimum.map = optimo.map,
+    pre.epi = pre.epi,
+    post.epi = post.epi,
+    epi = epi,
+    pre.epi.data = pre.epi.datos,
+    post.epi.data = post.epi.datos,
+    epi.data = epi.datos,
+    data = datos,
+    param.data = i.data,
+    param.n.values = i.n.values,
+    param.method = i.method,
+    param.param = i.param,
+    param.mem.info = i.mem.info
+  )
+  memtiming.output$call <- match.call()
+  class(memtiming.output) <- "epidemic"
   return(memtiming.output)
 }
 
 #' @export
-print.epidemic<- function(x, ...){
+print.epidemic <- function(x, ...) {
   cat("Call:\n")
   print(x$call)
   cat("\nOptimum:\n")
@@ -179,7 +173,7 @@ print.epidemic<- function(x, ...){
 }
 
 #' @export
-summary.epidemic<-function(object, ...){
+summary.epidemic <- function(object, ...) {
   cat("Call:\n")
   print(object$call)
   cat("\nOptimum:\n")
@@ -193,78 +187,85 @@ summary.epidemic<-function(object, ...){
 }
 
 #' @export
-plot.epidemic<-function(x, ...){
-  if (!(class(x)=="epidemic")) stop("input must be an object of class epidemic")
-  title.graph<-names(x$param.data)
-  if (is.null(title.graph)) title.graph=""
-  x.data<-as.vector(as.matrix(x$param.data))
-  x.data.fixed<-as.vector(as.matrix(x$data))
-  x.data.missing<-x.data.fixed
-  x.data.missing[!(is.na(x.data) & !is.na(x.data.fixed))]<-NA
-  semanas<-length(x.data)
-  i.epi<-x$optimum.map[4]
-  f.epi<-x$optimum.map[5]
-  otick<-optimal.tickmarks(0,max.n.valores(x.data.fixed),10)
-  range.y<-c(otick$range[1],otick$range[2]+otick$by/2)
-  opar<-par(mar=c(4,3,1,2)+0.1,mgp=c(3,0.5,0),xpd=T)
-  matplot(1:semanas,x.data.fixed,type="l",col="#808080",
-          lty=c(1,1),xaxt="n",main=title.graph,ylim=range.y,axes=F,xlab="",ylab="")
+plot.epidemic <- function(x, ...) {
+  if (!(class(x) == "epidemic")) stop("input must be an object of class epidemic")
+  title.graph <- names(x$param.data)
+  if (is.null(title.graph)) title.graph <- ""
+  x.data <- as.vector(as.matrix(x$param.data))
+  x.data.fixed <- as.vector(as.matrix(x$data))
+  x.data.missing <- x.data.fixed
+  x.data.missing[!(is.na(x.data) & !is.na(x.data.fixed))] <- NA
+  semanas <- length(x.data)
+  i.epi <- x$optimum.map[4]
+  f.epi <- x$optimum.map[5]
+  otick <- optimal.tickmarks(0, max.n.valores(x.data.fixed), 10)
+  range.y <- c(otick$range[1], otick$range[2] + otick$by / 2)
+  opar <- par(mar = c(4, 3, 1, 2) + 0.1, mgp = c(3, 0.5, 0), xpd = T)
+  matplot(1:semanas, x.data.fixed,
+    type = "l", col = "#808080",
+    lty = c(1, 1), xaxt = "n", main = title.graph, ylim = range.y, axes = F, xlab = "", ylab = ""
+  )
   # Axis
-  if (!is.null(rownames(x$param.data))){
-    week.labels<-rownames(x$param.data)
-  }else{
-    week.labels<-as.character(1:semanas)
+  if (!is.null(rownames(x$param.data))) {
+    week.labels <- rownames(x$param.data)
+  } else {
+    week.labels <- as.character(1:semanas)
   }
-  axis(1,at=seq(1,semanas,2),tick=F,
-       labels=week.labels[seq(1,semanas,2)],cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-  axis(1,at=seq(2,semanas,2),tick=F,
-       labels=week.labels[seq(2,semanas,2)],cex.axis=0.7,line=0.60,col.axis="#404040",col="#C0C0C0")
-  axis(1,at=seq(1,semanas,1),labels=F,cex.axis=0.7,col.axis="#404040",col="#C0C0C0")
-  mtext(1,text="Week",line=2,cex=0.8,col="#000040")
-  axis(2,at=otick$tickmarks,lwd=1,cex.axis=0.6,col.axis="#404040",col="#C0C0C0")
-  mtext(2,text="Weekly rate",line=1.3,cex=0.8,col="#000040")
-  mtext(4,text=paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem",sep=""),
-        line=0.75,cex=0.6,col="#404040")
-  if (is.na(i.epi)){
-    puntos<-x.data
-    points(1:semanas,puntos,pch=19,type="p",col="#00C000",cex=1.5)
-    puntos<-x.data.missing
-    points(1:semanas,puntos,pch=13,type="p",col="#00C000",cex=1.5)
-  }else{
+  axis(1,
+    at = seq(1, semanas, 2), tick = F,
+    labels = week.labels[seq(1, semanas, 2)], cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0"
+  )
+  axis(1,
+    at = seq(2, semanas, 2), tick = F,
+    labels = week.labels[seq(2, semanas, 2)], cex.axis = 0.7, line = 0.60, col.axis = "#404040", col = "#C0C0C0"
+  )
+  axis(1, at = seq(1, semanas, 1), labels = F, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
+  mtext(1, text = "Week", line = 2, cex = 0.8, col = "#000040")
+  axis(2, at = otick$tickmarks, lwd = 1, cex.axis = 0.6, col.axis = "#404040", col = "#C0C0C0")
+  mtext(2, text = "Weekly rate", line = 1.3, cex = 0.8, col = "#000040")
+  if (x$param.mem.info) mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
+  if (is.na(i.epi)) {
+    puntos <- x.data
+    points(1:semanas, puntos, pch = 19, type = "p", col = "#00C000", cex = 1.5)
+    puntos <- x.data.missing
+    points(1:semanas, puntos, pch = 13, type = "p", col = "#00C000", cex = 1.5)
+  } else {
     # pre
-    puntos<-x.data
-    puntos[i.epi:semanas]<-NA
-    points(1:semanas,puntos,pch=19,type="p",col="#00C000",cex=1.5)
-    puntos<-x.data.missing
-    puntos[i.epi:semanas]<-NA
-    points(1:semanas,puntos,pch=13,type="p",col="#00C000",cex=1.5)
+    puntos <- x.data
+    puntos[i.epi:semanas] <- NA
+    points(1:semanas, puntos, pch = 19, type = "p", col = "#00C000", cex = 1.5)
+    puntos <- x.data.missing
+    puntos[i.epi:semanas] <- NA
+    points(1:semanas, puntos, pch = 13, type = "p", col = "#00C000", cex = 1.5)
     # epi
-    puntos<-x.data
-    if (i.epi>1) puntos[1:(i.epi-1)]<-NA
-    if (f.epi<semanas) puntos[(f.epi+1):semanas]<-NA
-    points(1:semanas,puntos,pch=19,type="p",col="#800080",cex=1.5)
-    puntos<-x.data.missing
-    if (i.epi>1) puntos[1:(i.epi-1)]<-NA
-    if (f.epi<semanas) puntos[(f.epi+1):semanas]<-NA
-    points(1:semanas,puntos,pch=13,type="p",col="#800080",cex=1.5)
+    puntos <- x.data
+    if (i.epi > 1) puntos[1:(i.epi - 1)] <- NA
+    if (f.epi < semanas) puntos[(f.epi + 1):semanas] <- NA
+    points(1:semanas, puntos, pch = 19, type = "p", col = "#800080", cex = 1.5)
+    puntos <- x.data.missing
+    if (i.epi > 1) puntos[1:(i.epi - 1)] <- NA
+    if (f.epi < semanas) puntos[(f.epi + 1):semanas] <- NA
+    points(1:semanas, puntos, pch = 13, type = "p", col = "#800080", cex = 1.5)
     # post
-    puntos<-x.data
-    puntos[1:f.epi]<-NA
-    points(1:semanas,puntos,pch=19,type="p",col="#FFB401",cex=1.5)
-    puntos<-x.data.missing
-    puntos[1:f.epi]<-NA
-    points(1:semanas,puntos,pch=13,type="p",col="#FFB401",cex=1.5)
+    puntos <- x.data
+    puntos[1:f.epi] <- NA
+    points(1:semanas, puntos, pch = 19, type = "p", col = "#FFB401", cex = 1.5)
+    puntos <- x.data.missing
+    puntos[1:f.epi] <- NA
+    points(1:semanas, puntos, pch = 13, type = "p", col = "#FFB401", cex = 1.5)
   }
 
   # legend(semanas*0.70,otick$range[2]*0.99,
-  legend("topright",inset=c(0,0),
-         legend=c("Crude rate","Pre-epi period","Epidemic","Post-epi period"),
-         bty="n",
-         lty=c(1,1,1,1),
-         lwd=c(1,1,1,1),
-         col=c("#808080","#C0C0C0","#C0C0C0","#C0C0C0"),
-         pch=c(NA,21,21,21),
-         pt.bg=c(NA,"#00C000","#800080","#FFB401"),
-         cex=1)
+  legend("topright",
+    inset = c(0, 0),
+    legend = c("Crude rate", "Pre-epi period", "Epidemic", "Post-epi period"),
+    bty = "n",
+    lty = c(1, 1, 1, 1),
+    lwd = c(1, 1, 1, 1),
+    col = c("#808080", "#C0C0C0", "#C0C0C0", "#C0C0C0"),
+    pch = c(NA, 21, 21, 21),
+    pt.bg = c(NA, "#00C000", "#800080", "#FFB401"),
+    cex = 1
+  )
   par(opar)
 }
