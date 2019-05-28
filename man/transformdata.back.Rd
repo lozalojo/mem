@@ -36,8 +36,7 @@ two different years.
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Transform data
-newdata<-transformdata.back(flucyl)$data
-
+newdata <- transformdata.back(flucyl)$data
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

@@ -48,19 +48,20 @@ See \link{memsurveillance} for more details
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Data of the last season
-cur<-flucyl[8]
+cur <- flucyl[8]
 # The model
-epi<-memmodel(flucyl[1:7])
+epi <- memmodel(flucyl[1:7])
 # Epidemic thresholds
-e.thr<-epi$epidemic.thresholds
+e.thr <- epi$epidemic.thresholds
 # Intensity threhsolds
-i.thr<-epi$intensity.thresholds
+i.thr <- epi$intensity.thresholds
 # Set the working directory to whererever you want to store the graph file
 setwd(".")
-m1<-memsurveillance.animated(cur, i.animated.graph.file.name="Animated",
-i.epidemic.thresholds = e.thr,i.intensity.thresholds = i.thr, i.pos.epidemic = TRUE,
-i.animated.graph.file = FALSE)
-
+m1 <- memsurveillance.animated(cur,
+  i.animated.graph.file.name = "Animated",
+  i.epidemic.thresholds = e.thr, i.intensity.thresholds = i.thr, i.pos.epidemic = TRUE,
+  i.animated.graph.file = FALSE
+)
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

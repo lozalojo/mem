@@ -37,9 +37,8 @@ The \code{stability.seasons} output shows data used to calculate each particular
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Stability
-stability<-memstability(flucyl)
+stability <- memstability(flucyl)
 stability$stability.data
-
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

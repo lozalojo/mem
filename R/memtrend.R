@@ -51,11 +51,10 @@
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
 #' # mem model
-#' flucyl.mem<-memmodel(flucyl)
+#' flucyl.mem <- memmodel(flucyl)
 #' # Calculates trend thresholds
-#' trend<-memtrend(flucyl.mem)
+#' trend <- memtrend(flucyl.mem)
 #' trend
-#'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
@@ -76,53 +75,34 @@
 #' @keywords influenza
 #'
 #' @export
-memtrend<-function(i.flu,
-                   i.type=1,
-                   i.level=0.95,
-                   i.type.boot="norm",
-                   i.iter.boot=10000){
-#   temporadas<-dim(i.data)[2]
-#   if (i.seasons<1) i.seasons<-temporadas
-#   temporadas.usar<-(max(temporadas-i.seasons+1,1)):temporadas
-#   n.temp<-length(temporadas.usar)
-#   datos<-i.data[temporadas.usar]
-#   datos.2<-apply(datos,2,fill.missing)
-#
-#   datos<-i.flu$param.data
-#   datos.2<-i.flu$data
-
-  anios<-dim(i.flu$data)[2]
-  semanas<-dim(i.flu$data)[1]
-  datos.dif<-apply(i.flu$data,2,diff)
-  datos.dif<-rbind(NA,datos.dif)
-  rownames(datos.dif)[1]<-rownames(i.flu$data)[1]
-  # datos.flu<-memmodel(datos,i.seasons,i.type.threshold,i.level.threshold,i.tails.threshold,i.type.intensity,i.level.intensity,i.tails.intensity,i.type.curve,i.level.curve,i.type.other,i.level.other,i.method,i.param,i.n.max,i.type.boot,i.iter.boot)
-#   for (j in 1:anios){
-#     # epidemic real start
-#     i.i<-i.flu$seasons.data[1,j,1]-1
-#     # epidemic real end
-#     i.f<-i.flu$seasons.data[2,j,1]+2
-#     if (i.i>=1) datos.dif[1:i.i,j]<-NA
-#     if (i.f<=nrow(datos.dif)) datos.dif[i.f:nrow(datos.dif),j]<-NA
-#   }
-  for (j in 1:anios) datos.dif[-(i.flu$seasons.data[1,j,1]:min(semanas,1+i.flu$seasons.data[2,j,1])),j]<-NA
-  datos.menos<-datos.dif
-  datos.mas<-datos.dif
-  datos.menos[datos.dif<0]<-NA
-  datos.mas[datos.dif>0]<-NA
-#   limite.s<-iconfianza.completo(as.numeric(datos.menos),tipo=1)$mayor[1]
-#   limite.i<-iconfianza.completo(as.numeric(datos.mas),tipo=1)$menor[2]
-  limite.s<-iconfianza(datos=as.numeric(datos.menos),nivel=i.level,tipo=i.type,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=1)[1]
-  limite.i<-iconfianza(datos=as.numeric(datos.mas),nivel=i.level,tipo=i.type,ic=T,tipo.boot=i.type.boot,iteraciones.boot=i.iter.boot,colas=1)[3]
-  trend.thresholds<-matrix(c(limite.s,limite.i),ncol=2)
-  colnames(trend.thresholds)<-c("Ascending Threshold","Descending Threshold")
-  rownames(trend.thresholds)<-"Trend Thresholds"
-  memtrend.output<-list(trend.thresholds=trend.thresholds,
-                         param.flu=i.flu,
-                         param.type=i.type,
-                         param.level=i.level,
-                         param.type.boot=i.type.boot,
-                         param.iter.boot=i.iter.boot)
-  memtrend.output$call<-match.call()
+memtrend <- function(i.flu,
+                     i.type = 1,
+                     i.level = 0.95,
+                     i.type.boot = "norm",
+                     i.iter.boot = 10000) {
+  anios <- dim(i.flu$data)[2]
+  semanas <- dim(i.flu$data)[1]
+  datos.dif <- apply(i.flu$data, 2, diff)
+  datos.dif <- rbind(NA, datos.dif)
+  rownames(datos.dif)[1] <- rownames(i.flu$data)[1]
+  for (j in 1:anios) datos.dif[-(i.flu$seasons.data[1, j, 1]:min(semanas, 1 + i.flu$seasons.data[2, j, 1])), j] <- NA
+  datos.menos <- datos.dif
+  datos.mas <- datos.dif
+  datos.menos[datos.dif < 0] <- NA
+  datos.mas[datos.dif > 0] <- NA
+  limite.s <- iconfianza(datos = as.numeric(datos.menos), nivel = i.level, tipo = i.type, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 1)[1]
+  limite.i <- iconfianza(datos = as.numeric(datos.mas), nivel = i.level, tipo = i.type, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 1)[3]
+  trend.thresholds <- matrix(c(limite.s, limite.i), ncol = 2)
+  colnames(trend.thresholds) <- c("Ascending Threshold", "Descending Threshold")
+  rownames(trend.thresholds) <- "Trend Thresholds"
+  memtrend.output <- list(
+    trend.thresholds = trend.thresholds,
+    param.flu = i.flu,
+    param.type = i.type,
+    param.level = i.level,
+    param.type.boot = i.type.boot,
+    param.iter.boot = i.iter.boot
+  )
+  memtrend.output$call <- match.call()
   return(memtrend.output)
 }

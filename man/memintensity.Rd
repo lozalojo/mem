@@ -61,11 +61,10 @@ Intensity thresholds and Epidemic threshold defines 5 levels of intensity:
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # mem model
-flucyl.mem<-memmodel(flucyl)
+flucyl.mem <- memmodel(flucyl)
 # Calculates intensity thresholds
-intensity<-memintensity(flucyl.mem)
+intensity <- memintensity(flucyl.mem)
 intensity
-
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

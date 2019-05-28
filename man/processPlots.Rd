@@ -28,9 +28,8 @@ and how the timing is calculated.
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Graphs
-epi<-memmodel(flucyl)
+epi <- memmodel(flucyl)
 processPlots(epi)
-
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

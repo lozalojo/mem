@@ -61,11 +61,10 @@ first time the rate is below the epidemic threshold after having been above it.}
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # mem model
-flucyl.mem<-memmodel(flucyl)
+flucyl.mem <- memmodel(flucyl)
 # Calculates trend thresholds
-trend<-memtrend(flucyl.mem)
+trend <- memtrend(flucyl.mem)
 trend
-
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

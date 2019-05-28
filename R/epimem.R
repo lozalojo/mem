@@ -20,14 +20,16 @@
 #'   \code{epimem} \tab now a synonym for \code{\link{memmodel}}
 #' }
 #'
-epimem <- function(i.data, i.tails=1, i.levels=c(0.40,0.90,0.975), i.type=2, i.level=0.95, ...) {
+epimem <- function(i.data, i.tails = 1, i.levels = c(0.40, 0.90, 0.975), i.type = 2, i.level = 0.95, ...) {
   .Deprecated("memmodel")
-  memmodel(i.data = i.data,
-           i.tails.threshold=i.tails,
-           i.type.intensity=6,
-           i.level.intensity=i.levels,
-           i.tails.intensity=i.tails,
-           i.type.other=i.type,
-           i.level.other=i.level,
-           ...)
+  memmodel(
+    i.data = i.data,
+    i.tails.threshold = i.tails,
+    i.type.intensity = 6,
+    i.level.intensity = i.levels,
+    i.tails.intensity = i.tails,
+    i.type.other = i.type,
+    i.level.other = i.level,
+    ...
+  )
 }

@@ -31,9 +31,8 @@
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
 #' # Stability
-#' stability<-memstability(flucyl)
+#' stability <- memstability(flucyl)
 #' stability$stability.data
-#'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
@@ -54,41 +53,44 @@
 #' @keywords influenza
 #'
 #' @export
-memstability<-function(i.data, ...){
-  anios<-dim(i.data)[2]
-  semanas<-dim(i.data)[1]
-  stability.data<-numeric()
-  stability.seasons<-logical()
+memstability <- function(i.data, ...) {
+  anios <- dim(i.data)[2]
+  semanas <- dim(i.data)[1]
+  stability.data <- numeric()
+  stability.seasons <- logical()
 
-  if (anios<2){
-    stability.data<-NULL
-    stability.seasons<-NULL
-  }else{
-    for (i in 2:anios){
-      indices.modelo<-(anios-i+1):anios
-      datos.modelo<-memmodel(i.data[indices.modelo], i.seasons=NA, ...)
-      stability.data.i<-c(datos.modelo$n.seasons,
-        datos.modelo$ci.length[1,],
-        datos.modelo$ci.start[1,],
+  if (anios < 2) {
+    stability.data <- NULL
+    stability.seasons <- NULL
+  } else {
+    for (i in 2:anios) {
+      indices.modelo <- (anios - i + 1):anios
+      datos.modelo <- memmodel(i.data[indices.modelo], i.seasons = NA, ...)
+      stability.data.i <- c(
+        datos.modelo$n.seasons,
+        datos.modelo$ci.length[1, ],
+        datos.modelo$ci.start[1, ],
         datos.modelo$ci.percent,
         datos.modelo$epidemic.thresholds,
-        datos.modelo$intensity.thresholds)
-      stability.data<-rbind(stability.data,stability.data.i)
-      stability.seasons<-rbind(stability.seasons,1:anios %in% indices.modelo)
-    rm("stability.data.i")
+        datos.modelo$intensity.thresholds
+      )
+      stability.data <- rbind(stability.data, stability.data.i)
+      stability.seasons <- rbind(stability.seasons, 1:anios %in% indices.modelo)
+      rm("stability.data.i")
     }
-    stability.data<-data.frame(stability.data, row.names=NULL, stringsAsFactors = F)
-    names(stability.data)<-c("number","durationll","duration","durationul","startll","start","startul","percentagell","percentage","percentageul","epidemic","postepidemic","medium","high","veryhigh")
-    rownames(stability.data)<-stability.data$number
-    stability.seasons<-data.frame(stability.seasons, row.names=NULL, stringsAsFactors = F)
-    names(stability.seasons)<-names(i.data)
-    rownames(stability.seasons)<-stability.data$number
-    stability.data$number<-NULL
+    stability.data <- data.frame(stability.data, row.names = NULL, stringsAsFactors = F)
+    names(stability.data) <- c("number", "durationll", "duration", "durationul", "startll", "start", "startul", "percentagell", "percentage", "percentageul", "epidemic", "postepidemic", "medium", "high", "veryhigh")
+    rownames(stability.data) <- stability.data$number
+    stability.seasons <- data.frame(stability.seasons, row.names = NULL, stringsAsFactors = F)
+    names(stability.seasons) <- names(i.data)
+    rownames(stability.seasons) <- stability.data$number
+    stability.data$number <- NULL
   }
-  memstability.output<-list(stability.data=stability.data,
-                            stability.seasons=stability.seasons,
-                          param.data=i.data)
-  memstability.output$call<-match.call()
+  memstability.output <- list(
+    stability.data = stability.data,
+    stability.seasons = stability.seasons,
+    param.data = i.data
+  )
+  memstability.output$call <- match.call()
   return(memstability.output)
 }
-

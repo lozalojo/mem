@@ -35,12 +35,11 @@ week names as rownames of the data.frame.
 # Castilla y Leon Influenza Rates data
 data(flucylraw)
 # Transform data
-newdata<-transformdata(flucylraw, i.range.x=c(40,20))$data
-epi<-memmodel(newdata)
+newdata <- transformdata(flucylraw, i.range.x = c(40, 20))$data
+epi <- memmodel(newdata)
 print(epi)
 summary(epi)
 plot(epi)
-
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

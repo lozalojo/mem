@@ -389,18 +389,6 @@ memsurveillance <- function(i.current,
     puntos.leyenda <- puntos.leyenda[-quitar.columnas]
     bg.leyenda <- bg.leyenda[-quitar.columnas]
   }
-  # Leyenda
-  #   legend("topright",inset=c(-0.30,0),
-  #          legend=rev(etiquetas.leyenda),
-  #          bty="n",
-  #          lty=rev(tipos.leyenda),
-  #          lwd=rev(anchos.leyenda),
-  #          col=rev(colores.leyenda),
-  #          pch=rev(puntos.leyenda),
-  #          bg=rev(bg.leyenda),
-  #          cex=0.9
-  #          )
-
   if (is.na(semana.inicio) | is.na(semana.fin)) {
     xa <- "topright"
     ya <- NULL

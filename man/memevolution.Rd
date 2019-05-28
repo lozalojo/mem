@@ -62,9 +62,8 @@ level parameters of \link{memmodel}.
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # evolution of estimators
-evolution<-memevolution(flucyl)
+evolution <- memevolution(flucyl)
 evolution$evolution.data
-
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

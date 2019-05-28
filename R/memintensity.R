@@ -56,11 +56,10 @@
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
 #' # mem model
-#' flucyl.mem<-memmodel(flucyl)
+#' flucyl.mem <- memmodel(flucyl)
 #' # Calculates intensity thresholds
-#' intensity<-memintensity(flucyl.mem)
+#' intensity <- memintensity(flucyl.mem)
 #' intensity
-#'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references

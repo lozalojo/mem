@@ -73,30 +73,30 @@ transformseries.multiple <- function(i.data,
     as.matrix() %>%
     as.numeric() %>%
     sort() %>%
-    head(NCOL(i.data)*NROW(i.data)/3) %>%
-    median
+    head(NCOL(i.data) * NROW(i.data) / 3) %>%
+    median()
   yrweek <- season <- year <- week <- rates <- mrate <- mratej <- NULL
   # I create the dataset for analysis, i fill missing values outside the epidemic period with the
   # values I've just calculated before (median values outside epidemic) with a little jitter
   data <- i.data %>%
     apply(2, fill.missing) %>%
     as.data.frame() %>%
-    transformdata.back(i.range.x.final=c(1,53)) %>%
+    transformdata.back(i.range.x.final = c(1, 53)) %>%
     `[[`(1) %>%
     dplyr::arrange(yrweek) %>%
     dplyr::mutate(n = 1:n()) %>%
     dplyr::select(-season, -year, -week) %>%
-    mutate(mrate=temp1, mratej=jitter(mrate), y=ifelse(is.na(rates), mratej, rates)) %>%
+    mutate(mrate = temp1, mratej = jitter(mrate), y = ifelse(is.na(rates), mratej, rates)) %>%
     select(-mrate, -mratej)
   model.smooth <- loess(y ~ n, data, span = 0.05)
   p.model.smooth <- predict(model.smooth, newdata = data$n)
-  p.model.smooth[p.model.smooth<0] <- 0
+  p.model.smooth[p.model.smooth < 0] <- 0
   rm(temp1)
   rates <- rates.smooth <- NULL
   data.plus <- data %>%
     dplyr::select(-y) %>%
     dplyr::mutate(rates.orig = rates)
-  data.plus$rates.smooth = p.model.smooth
+  data.plus$rates.smooth <- p.model.smooth
   # In data.plus I've got the original data, the smoothed data and the filled data (filling missing
   # values with that of the prediction)
   data.plus <- data.plus %>%
@@ -146,15 +146,16 @@ transformseries.multiple <- function(i.data,
     sum <- cumsumper <- totsum <- difcumsumper <- sumcum <- NULL
     results <- results %>%
       bind_rows(peradd.chosen) %>%
-      dplyr::mutate(sumcum = cumsum(sum), totsum=sum(data.plus$rates.filled, na.rm = T), cumsumper = sumcum / totsum) %>%
+      dplyr::mutate(sumcum = cumsum(sum), totsum = sum(data.plus$rates.filled, na.rm = T), cumsumper = sumcum / totsum) %>%
       dplyr::mutate(difcumsumper = cumsumper - lag(cumsumper))
     results$difcumsumper[1] <- results$cumsumper[1]
     data.plot <- data.plot %>%
       bind_rows(
         data.frame(iteration = j, x = peradd.chosen$start:peradd.chosen$end, y = data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end], stringsAsFactors = F) %>%
           inner_join(results %>%
-                       select(iteration, difcumsumper), by="iteration") %>%
-          mutate(iteration.label=paste0("Iter: ", sprintf("%02d", iteration),", Per: ", sprintf("%3.2f", 100*difcumsumper))))
+            select(iteration, difcumsumper), by = "iteration") %>%
+          mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper)))
+      )
     label <- percentage <- NULL
     last.point <- data.plot %>%
       group_by(iteration) %>%
@@ -162,30 +163,30 @@ transformseries.multiple <- function(i.data,
       slice(1) %>%
       ungroup() %>%
       bind_rows(data.plot %>%
-                  group_by(iteration) %>%
-                  arrange(-x) %>%
-                  slice(1) %>%
-                  ungroup()) %>%
+        group_by(iteration) %>%
+        arrange(-x) %>%
+        slice(1) %>%
+        ungroup()) %>%
       group_by(iteration) %>%
       arrange(y) %>%
       slice(1) %>%
       ungroup() %>%
       inner_join(results %>%
-                   select(iteration, percentage), by="iteration") %>%
-      mutate(label=sprintf("%3.2f", 100*percentage))
-    
+        select(iteration, percentage), by = "iteration") %>%
+      mutate(label = sprintf("%3.2f", 100 * percentage))
+
     n <- rates.filled <- x <- y <- iteration.label <- NULL
     p2[[j]] <- ggplot() +
       geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
       geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
       geom_point(data = data.plot, aes(x = x, y = y, color = factor(iteration.label)), size = 4) +
-      geom_point(data = last.point, aes(x = x, y = y), color="#FFFFFF", size = 2) + 
-      geom_text(data = last.point, aes(x = x, y = y, label=label), vjust=1) +
+      geom_point(data = last.point, aes(x = x, y = y), color = "#FFFFFF", size = 2) +
+      geom_text(data = last.point, aes(x = x, y = y, label = label), vjust = 1) +
       scale_colour_manual(values = colorRampPalette(solpalette)(j), guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
       labs(title = paste0("Iteration #", j), x = "Week", y = "Data") +
-      guides(color = guide_legend(title = paste0("Iteration (Lim: ", sprintf("%3.2f",param.2),")"))) +
+      guides(color = guide_legend(title = paste0("Iteration (Lim: ", sprintf("%3.2f", param.2), ")"))) +
       theme_light() +
       theme(plot.title = element_text(hjust = 0.5))
     data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end] <- NA
@@ -240,7 +241,7 @@ transformseries.multiple <- function(i.data,
           n = data.plus %>%
             filter(n >= temp2$from[i] & n <= temp2$to[i]) %>%
             filter(rank(rates.smooth, ties.method = "min") == 1) %>%
-            summarise(mediann=quantile(n, probs=0.50, type=3)) %>%
+            summarise(mediann = quantile(n, probs = 0.50, type = 3)) %>%
             pull(mediann)
         )
       )
