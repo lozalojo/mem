@@ -4,7 +4,7 @@
 #'
 #' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline aes labs %+% element_text geom_point guide_legend scale_colour_manual scale_x_continuous scale_y_continuous theme geom_segment geom_text unit arrow guides theme_light
 #' @importFrom stats smooth.spline predict median loess
-#' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join inner_join pull slice summarise ungroup
+#' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join inner_join pull slice summarise ungroup desc rename
 #' @importFrom tidyr spread
 #' @importFrom utils tail head
 transformseries.multiple <- function(i.data,
@@ -153,7 +153,7 @@ transformseries.multiple <- function(i.data,
       bind_rows(
         data.frame(iteration = j, x = peradd.chosen$start:peradd.chosen$end, y = data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end], stringsAsFactors = F) %>%
           inner_join(results %>%
-            select(iteration, difcumsumper), by = "iteration") %>%
+                       select(iteration, difcumsumper), by = "iteration") %>%
           mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper)))
       )
     label <- percentage <- NULL
@@ -163,25 +163,63 @@ transformseries.multiple <- function(i.data,
       slice(1) %>%
       ungroup() %>%
       bind_rows(data.plot %>%
-        group_by(iteration) %>%
-        arrange(-x) %>%
-        slice(1) %>%
-        ungroup()) %>%
+                  group_by(iteration) %>%
+                  arrange(-x) %>%
+                  slice(1) %>%
+                  ungroup()) %>%
       group_by(iteration) %>%
       arrange(y) %>%
       slice(1) %>%
       ungroup() %>%
       inner_join(results %>%
-        select(iteration, percentage), by = "iteration") %>%
+                   select(iteration, percentage), by = "iteration") %>%
       mutate(label = sprintf("%3.2f", 100 * percentage))
-
+    data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end] <- NA
+  }
+  
+  # Sometimes results$sum is not sorted in descending order, depending no how the epidemics were detected, a high
+  # value surrounded by 0's might cause an epidemic of length 1 (it stops stacking weeks), and the next one could
+  # have 15 values whose sum might be higher than the 1-week epidemic, so I have to rearrange results dataset
+  
+  iteration2 <- NULL
+  reorderedit <- results %>%
+    mutate(iteration2 = rank(desc(sum), ties.method = "first")) %>%
+    select(iteration, iteration2)
+  
+  results <- results %>%
+    left_join(reorderedit, by="iteration") %>%
+    select(-iteration, -sumcum, -cumsumper) %>%
+    arrange(iteration2) %>%
+    rename(iteration=iteration2) %>%
+    mutate(sumcum=cumsum(sum)) %>%
+    mutate(cumsumper=sumcum/totsum)
+  
+  data.plot <- data.plot %>%
+    left_join(reorderedit, by="iteration") %>%
+    select(-iteration, -iteration.label) %>%
+    arrange(iteration2, x) %>%
+    rename(iteration=iteration2) %>%
+    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper)))
+  
+  last.point <- last.point %>%
+    left_join(reorderedit, by="iteration") %>%
+    select(-iteration, -iteration.label) %>%
+    arrange(iteration2) %>%
+    rename(iteration=iteration2) %>%
+    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper)))
+  
+  for (j in 1:max.waves) {
+    data.plot.j <- data.plot %>%
+      filter(iteration<=j)
+    last.point.j <- last.point %>%
+      filter(iteration<=j)
     n <- rates.filled <- x <- y <- iteration.label <- NULL
     p2[[j]] <- ggplot() +
       geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
       geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
-      geom_point(data = data.plot, aes(x = x, y = y, color = factor(iteration.label)), size = 4) +
-      geom_point(data = last.point, aes(x = x, y = y), color = "#FFFFFF", size = 2) +
-      geom_text(data = last.point, aes(x = x, y = y, label = label), vjust = 1) +
+      geom_point(data = data.plot.j, aes(x = x, y = y, color = factor(iteration.label)), size = 4) +
+      geom_point(data = last.point.j, aes(x = x, y = y), color = "#FFFFFF", size = 2) +
+      geom_text(data = last.point.j, aes(x = x, y = y, label = label), vjust = 1) +
       scale_colour_manual(values = colorRampPalette(solpalette)(j), guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
@@ -272,25 +310,55 @@ transformseries.multiple <- function(i.data,
     theme(plot.title = element_text(hjust = 0.5))
   if (n.parts > 1) p3[[2]] <- p3[[2]] + geom_vline(data = cut.united, aes(xintercept = n), color = "#000000", alpha = 0.5)
   # Now limit the length of each season to i.max.season.duration
-  temp4 <- numeric()
+  # data.limited <- numeric()
+  # for (k in 1:n.parts) {
+  #   temp1 <- data.plot.united %>%
+  #     filter(iteration==k)
+  #   xmin <- max(temp1$x)-max.season.duration+1
+  #   xmax <- max.season.duration+min(temp1$x)-1
+  #   xmin <- max(min(data.united$n), xmin)
+  #   xmax <- min(max(data.united$n), xmax)
+  #   temp2 <- data.united %>%
+  #     filter(part == k)
+  #   temp3 <- temp2 %>%
+  #     filter(n>=xmin & n<=xmax)
+  #   temp4 <- percentage.added(temp3$rates.filled, max.season.duration)
+  #   temp4$start <- temp4$start + min(temp3$n) -1
+  #   temp4$end <- temp4$end + min(temp3$n) -1
+  #   temp5 <- c(
+  #     rep(NA, temp4$start - min(temp3$n) + 1 - 1),
+  #     rep(k, temp4$end - temp4$start + 1),
+  #     rep(NA, NROW(temp2) - temp4$end + min(temp3$n) - 1)
+  #   )
+  #   data.limited <- c(data.limited, temp5)
+  #   rm("temp1", "temp2", "temp3", "temp4", "temp5")
+  # }
+  data.limited <- numeric()
   for (k in 1:n.parts) {
     temp1 <- data.united %>%
-      filter(part == k) %>%
-      pull(rates.filled)
-    temp2 <- percentage.added(temp1, max.season.duration)
-
-    temp3 <- c(
-      rep(NA, temp2$start - 1),
-      rep(k, temp2$end - temp2$start + 1),
-      rep(NA, length(temp1) - temp2$end)
+      filter(part == k)
+    temp2 <- data.plot.united %>%
+      filter(iteration==k)
+    xmin <- max(temp2$x)-max.season.duration+1
+    xmax <- max.season.duration+min(temp2$x)-1
+    xmin <- max(min(temp1$n), xmin)
+    xmax <- min(max(temp1$n), xmax)
+    temp1$rates.filled[temp1$n<xmin] <- NA
+    temp1$rates.filled[temp1$n>xmax] <- NA
+    temp3 <- percentage.added(temp1$rates.filled, max.season.duration)
+    temp4 <- c(
+      rep(NA, temp3$start - 1),
+      rep(k, temp3$end - temp3$start + 1),
+      rep(NA, NROW(temp1) - temp3$end)
     )
-
-    temp4 <- c(temp4, temp3)
+    data.limited <- c(data.limited, temp4)
+    rm("temp1", "temp2", "temp3", "temp4")
   }
+
   season.original <- part <- season <- NULL
   data.united <- data.united %>%
     mutate(rates.filled.original = rates.filled, part.original = part, season.original = season) %>%
-    mutate(rates.filled = ifelse(is.na(temp4), NA, rates.filled), part = temp4, season = ifelse(is.na(temp4), NA, season.original))
+    mutate(rates.filled = ifelse(is.na(data.limited), NA, rates.filled), part = data.limited, season = ifelse(is.na(data.limited), NA, season.original))
   season <- yrweek <- week <- rates.orig <- part <- NULL
   season.desc <- data.united %>%
     dplyr::filter(!is.na(part)) %>%
