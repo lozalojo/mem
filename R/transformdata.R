@@ -53,7 +53,7 @@
 #' @export
 #' @importFrom stats aggregate
 #' @importFrom tidyr spread
-#' @importFrom dplyr select %>%
+#' @importFrom dplyr select %>% filter
 transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per = 100, i.function = NULL) {
   if (is.null(i.range.x)) i.range.x <- NA
   if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x) != 2) i.range.x <- c(min(as.numeric(i.data$week)), max(as.numeric(i.data$week)))
@@ -64,10 +64,17 @@ transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per
   if (i.range.x[1] == i.range.x[2]) i.range.x[2] <- i.range.x[2] - 1
   if (i.range.x[2] == 0) i.range.x[2] <- 52
   # Input scheme numbering
+  if (!all(c("year", "week") %in% tolower(names(i.data)))) stop("Input data must have a year, week, rate format\n")
+  if (!(i.name %in% names(i.data))) stop(paste0(i.name, " variable not found in input data\n"))
+  data <- i.data[tolower(names(i.data)) %in% c("year", "week") | names(i.data) %in% i.name]
+  names(data)[names(data) == i.name] <- "rates"
+  names(data) <- tolower(names(data))
+  year <- week <- NULL
+  data <- data %>%
+    filter(!is.na(year) & !is.na(week))
+  # data <- subset(i.data, select = c("year", "week", i.name))
   week.f <- i.range.x[1]
   week.l <- i.range.x[2]
-  data <- subset(i.data, select = c("year", "week", i.name))
-  names(data)[names(data) == i.name] <- "rates"
   data$season <- ""
   if (week.f > week.l) {
     i.range.x.length <- 52 - week.f + 1 + week.l
