@@ -60,15 +60,7 @@ transformseries.multiple <- function(i.data,
     max.waves <- 2 * NCOL(i.data)
   }
   # Prepare the data
-  # data <- transformdata.back(i.data)$data %>%
-  #   dplyr::arrange(yrweek) %>%
-  #   dplyr::mutate(n = 1:n()) %>%
-  #   dplyr::select(-season, -year, -week)
-  # temp1 <- data %>%
-  #   filter(!is.na(rates))
-  # model.smooth <- smooth.spline(temp1$n, temp1$rates)
-  # p.model.smooth <- predict(model.smooth, x =  data$n)$y
-  # temp1 contains the median of the values outside the epidemic, I take only the 1/3 lowest rates.
+  # This value is for missing values, its the median of the a third lowest values
   temp1 <- i.data %>%
     as.matrix() %>%
     as.numeric() %>%
@@ -185,7 +177,6 @@ transformseries.multiple <- function(i.data,
   reorderedit <- results %>%
     mutate(iteration2 = rank(desc(sum), ties.method = "first")) %>%
     select(iteration, iteration2)
-  
   results <- results %>%
     left_join(reorderedit, by="iteration") %>%
     select(-iteration, -sumcum, -cumsumper) %>%
@@ -193,21 +184,18 @@ transformseries.multiple <- function(i.data,
     rename(iteration=iteration2) %>%
     mutate(sumcum=cumsum(sum)) %>%
     mutate(cumsumper=sumcum/totsum)
-  
   data.plot <- data.plot %>%
     left_join(reorderedit, by="iteration") %>%
     select(-iteration, -iteration.label) %>%
     arrange(iteration2, x) %>%
     rename(iteration=iteration2) %>%
     mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper)))
-  
   last.point <- last.point %>%
     left_join(reorderedit, by="iteration") %>%
     select(-iteration, -iteration.label) %>%
     arrange(iteration2) %>%
     rename(iteration=iteration2) %>%
     mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper)))
-  
   for (j in 1:max.waves) {
     data.plot.j <- data.plot %>%
       filter(iteration<=j)
@@ -234,12 +222,19 @@ transformseries.multiple <- function(i.data,
   results <- results %>%
     filter(iteration <= max.waves.dif)
   # I join epidemics with a separation lower than i.min.separation
-  iteration <- start <- end <- n <- sum <- lend <- dif <- unite <- sunite <- x <- from <- to <- NULL
+  iteration <- start <- end <- n <- sum <- lend <- dif <- unite <- sunite <- x <- from <- to <- iteration.old <- NULL
   temp1 <- results %>%
     dplyr::select(iteration, start, end, n, sum) %>%
     dplyr::arrange(start) %>%
     dplyr::mutate(lend = lag(end), dif = (start - lend - 1), unite = (is.na(dif) | dif >= i.min.separation), sunite = cumsum(unite))
+  results.united <- results %>%
+    dplyr::mutate(iteration.old = iteration) %>%
+    dplyr::inner_join(dplyr::select(temp1, iteration, sunite), by = "iteration") %>%
+    dplyr::mutate(iteration = sunite) %>%
+    dplyr::select(-sunite) %>%
+    dplyr::arrange(iteration.old)
   data.plot.united <- data.plot %>%
+    dplyr::mutate(iteration.old = iteration) %>%
     dplyr::inner_join(dplyr::select(temp1, iteration, sunite), by = "iteration") %>%
     dplyr::mutate(iteration = sunite) %>%
     dplyr::select(-sunite) %>%
@@ -310,37 +305,18 @@ transformseries.multiple <- function(i.data,
     theme(plot.title = element_text(hjust = 0.5))
   if (n.parts > 1) p3[[2]] <- p3[[2]] + geom_vline(data = cut.united, aes(xintercept = n), color = "#000000", alpha = 0.5)
   # Now limit the length of each season to i.max.season.duration
-  # data.limited <- numeric()
-  # for (k in 1:n.parts) {
-  #   temp1 <- data.plot.united %>%
-  #     filter(iteration==k)
-  #   xmin <- max(temp1$x)-max.season.duration+1
-  #   xmax <- max.season.duration+min(temp1$x)-1
-  #   xmin <- max(min(data.united$n), xmin)
-  #   xmax <- min(max(data.united$n), xmax)
-  #   temp2 <- data.united %>%
-  #     filter(part == k)
-  #   temp3 <- temp2 %>%
-  #     filter(n>=xmin & n<=xmax)
-  #   temp4 <- percentage.added(temp3$rates.filled, max.season.duration)
-  #   temp4$start <- temp4$start + min(temp3$n) -1
-  #   temp4$end <- temp4$end + min(temp3$n) -1
-  #   temp5 <- c(
-  #     rep(NA, temp4$start - min(temp3$n) + 1 - 1),
-  #     rep(k, temp4$end - temp4$start + 1),
-  #     rep(NA, NROW(temp2) - temp4$end + min(temp3$n) - 1)
-  #   )
-  #   data.limited <- c(data.limited, temp5)
-  #   rm("temp1", "temp2", "temp3", "temp4", "temp5")
-  # }
   data.limited <- numeric()
   for (k in 1:n.parts) {
     temp1 <- data.united %>%
       filter(part == k)
-    temp2 <- data.plot.united %>%
-      filter(iteration==k)
-    xmin <- max(temp2$x)-max.season.duration+1
-    xmax <- max.season.duration+min(temp2$x)-1
+    # temp2 <- data.plot.united %>%
+    #   filter(iteration==k)
+    temp2 <- results.united %>%
+      filter(iteration==k) %>%
+      arrange(iteration.old) %>%
+      slice(1)
+    xmin <- temp2$end-max.season.duration+1
+    xmax <- max.season.duration+temp2$start-1
     xmin <- max(min(temp1$n), xmin)
     xmax <- min(max(temp1$n), xmax)
     temp1$rates.filled[temp1$n<xmin] <- NA
