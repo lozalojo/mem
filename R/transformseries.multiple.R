@@ -65,7 +65,7 @@ transformseries.multiple <- function(i.data,
     as.matrix() %>%
     as.numeric() %>%
     sort() %>%
-    head(NCOL(i.data) * NROW(i.data) / 3) %>%
+    head(floor(NCOL(i.data) * NROW(i.data) * 2*param.2/100)) %>%
     median()
   yrweek <- season <- year <- week <- rates <- mrate <- mratej <- NULL
   # I create the dataset for analysis, i fill missing values outside the epidemic period with the
@@ -78,7 +78,7 @@ transformseries.multiple <- function(i.data,
     dplyr::arrange(yrweek) %>%
     dplyr::mutate(n = 1:n()) %>%
     dplyr::select(-season, -year, -week) %>%
-    mutate(mrate = temp1, mratej = jitter(mrate), y = ifelse(is.na(rates), mratej, rates)) %>%
+    mutate(mrate = temp1, mratej = jitter(mrate, factor=10, amount=0), y = ifelse(is.na(rates), mratej, rates)) %>%
     select(-mrate, -mratej)
   model.smooth <- loess(y ~ n, data, span = 0.05)
   p.model.smooth <- predict(model.smooth, newdata = data$n)
