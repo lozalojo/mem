@@ -22,6 +22,7 @@ transformseries.multiple <- function(i.data,
   p2 <- list()
   p3 <- list()
   p4 <- list()
+  p5 <- list()
   if (length(i.param.1) == 1) {
     if (!is.na(i.param.1) & i.param.1 > 0) {
       param.1 <- i.param.1
@@ -78,7 +79,7 @@ transformseries.multiple <- function(i.data,
     dplyr::arrange(yrweek) %>%
     dplyr::mutate(n = 1:n()) %>%
     dplyr::select(-season, -year, -week) %>%
-    mutate(mrate = temp1, mratej = jitter(mrate, factor=10, amount=0), y = ifelse(is.na(rates), mratej, rates)) %>%
+    mutate(mrate = temp1, mratej = max(0, jitter(mrate, factor=3, amount=0)), y = ifelse(is.na(rates), mratej, rates)) %>%
     select(-mrate, -mratej)
   model.smooth <- loess(y ~ n, data, span = 0.05)
   p.model.smooth <- predict(model.smooth, newdata = data$n)
@@ -89,6 +90,7 @@ transformseries.multiple <- function(i.data,
     dplyr::select(-y) %>%
     dplyr::mutate(rates.orig = rates)
   data.plus$rates.smooth <- p.model.smooth
+  rm(model.smooth, p.model.smooth)
   # In data.plus I've got the original data, the smoothed data and the filled data (filling missing
   # values with that of the prediction)
   data.plus <- data.plus %>%
@@ -130,6 +132,8 @@ transformseries.multiple <- function(i.data,
   results <- data.frame()
   data.plot <- data.frame()
   data.temp <- data.plus
+  minimum.value <- max(0, min(data.temp$rates.filled, na.rm=T) - max(data.temp$rates.filled, na.rm=T)/10)
+  data.temp$rates.filled <- data.temp$rates.filled - minimum.value
   for (j in 1:max.waves) {
     peradd <- as.data.frame(matrix(unlist(sapply(1:max.epidemic.duration, percentage.added, i.data = data.temp$rates.filled)), ncol = 6, byrow = T), stringsAsFactors = F)
     names(peradd) <- c("percentage", "start", "end", "duration", "sum", "max")
@@ -145,8 +149,8 @@ transformseries.multiple <- function(i.data,
       bind_rows(
         data.frame(iteration = j, x = peradd.chosen$start:peradd.chosen$end, y = data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end], stringsAsFactors = F) %>%
           inner_join(results %>%
-                       select(iteration, difcumsumper), by = "iteration") %>%
-          mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper)))
+                       select(iteration, difcumsumper, n), by = "iteration") %>%
+          mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n))
       )
     label <- percentage <- NULL
     last.point <- data.plot %>%
@@ -168,11 +172,36 @@ transformseries.multiple <- function(i.data,
       mutate(label = sprintf("%3.2f", 100 * percentage))
     data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end] <- NA
   }
-  
+  rm(data.temp)
+  data.plot <- data.plot %>%
+    mutate(y=y+minimum.value)
+  last.point <- last.point %>%
+    mutate(y=y+minimum.value)
+  # Plot of the iterative process
+  solpalette.full <- colorRampPalette(solpalette)(max.waves)
+  for (j in 1:max.waves) {
+    data.plot.j <- data.plot %>%
+      filter(iteration<=j)
+    last.point.j <- last.point %>%
+      filter(iteration<=j)
+    n <- rates.filled <- x <- y <- iteration.label <- NULL
+    p2[[j]] <- ggplot() +
+      geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
+      geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
+      geom_point(data = data.plot.j, aes(x = x, y = y, color = factor(iteration.label)), size = 4) +
+      geom_point(data = last.point.j, aes(x = x, y = y), color = "#FFFFFF", size = 2) +
+      geom_text(data = last.point.j, aes(x = x, y = y, label = label), vjust = 1) +
+      scale_colour_manual(values = solpalette.full[1:j], guide = guide_legend(nrow = 3)) +
+      scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
+      scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
+      labs(title = paste0("Iteration #", j), x = "Week", y = "Data") +
+      guides(color = guide_legend(title = paste0("Iteration (Lim: ", sprintf("%3.2f", param.2), ")"))) +
+      theme_light() +
+      theme(plot.title = element_text(hjust = 0.5))
+  }
   # Sometimes results$sum is not sorted in descending order, depending no how the epidemics were detected, a high
   # value surrounded by 0's might cause an epidemic of length 1 (it stops stacking weeks), and the next one could
   # have 15 values whose sum might be higher than the 1-week epidemic, so I have to rearrange results dataset
-  
   iteration2 <- NULL
   reorderedit <- results %>%
     mutate(iteration2 = rank(desc(sum), ties.method = "first")) %>%
@@ -189,33 +218,32 @@ transformseries.multiple <- function(i.data,
     select(-iteration, -iteration.label) %>%
     arrange(iteration2, x) %>%
     rename(iteration=iteration2) %>%
-    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper)))
+    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n))
   last.point <- last.point %>%
     left_join(reorderedit, by="iteration") %>%
     select(-iteration, -iteration.label) %>%
     arrange(iteration2) %>%
     rename(iteration=iteration2) %>%
-    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper)))
+    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n))
   for (j in 1:max.waves) {
     data.plot.j <- data.plot %>%
       filter(iteration<=j)
     last.point.j <- last.point %>%
       filter(iteration<=j)
     n <- rates.filled <- x <- y <- iteration.label <- NULL
-    p2[[j]] <- ggplot() +
+    p3[[j]] <- ggplot() +
       geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
       geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
       geom_point(data = data.plot.j, aes(x = x, y = y, color = factor(iteration.label)), size = 4) +
       geom_point(data = last.point.j, aes(x = x, y = y), color = "#FFFFFF", size = 2) +
       geom_text(data = last.point.j, aes(x = x, y = y, label = label), vjust = 1) +
-      scale_colour_manual(values = colorRampPalette(solpalette)(j), guide = guide_legend(nrow = 3)) +
+      scale_colour_manual(values = solpalette.full[1:j], guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
       labs(title = paste0("Iteration #", j), x = "Week", y = "Data") +
       guides(color = guide_legend(title = paste0("Iteration (Lim: ", sprintf("%3.2f", param.2), ")"))) +
       theme_light() +
       theme(plot.title = element_text(hjust = 0.5))
-    data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end] <- NA
   }
   # The stopping point is determined by param.2
   max.waves.dif <- max(min.waves, min(results$iteration[results$difcumsumper < (param.2 / 100)][1] - 1, max.waves, na.rm = T), ra.rm = T)
@@ -239,12 +267,13 @@ transformseries.multiple <- function(i.data,
     dplyr::mutate(iteration = sunite) %>%
     dplyr::select(-sunite) %>%
     dplyr::arrange(x)
+  n.parts <- max(temp1$sunite)
   n <- rates.filled <- x <- y <- NULL
-  p3[[1]] <- ggplot() +
+  p4[[1]] <- ggplot() +
     geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
     geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
     geom_point(data = data.plot.united, aes(x = x, y = y, color = factor(iteration)), size = 4) +
-    scale_colour_manual(values = colorRampPalette(solpalette)(j), guide = guide_legend(nrow = 3)) +
+    scale_colour_manual(values = solpalette.full[1:n.parts], guide = guide_legend(nrow = 3)) +
     scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
     scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
     labs(title = paste0("Merged epidemics (separation: ", i.min.separation, ")"), x = "Week", y = "Data") +
@@ -253,7 +282,6 @@ transformseries.multiple <- function(i.data,
     theme(plot.title = element_text(hjust = 0.5))
   # Now I separate each part for the lowest vale between epidemics, but using the smooth data to avoid irregular
   # low values between epidemics
-  n.parts <- max(temp1$sunite)
   if (n.parts > 1) {
     temp2 <- temp1 %>%
       dplyr::group_by(sunite) %>%
@@ -292,18 +320,18 @@ transformseries.multiple <- function(i.data,
       dplyr::mutate(part = 1, season = 1000 + part)
   }
   n <- rates.filled <- x <- y <- NULL
-  p3[[2]] <- ggplot() +
+  p4[[2]] <- ggplot() +
     geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
     geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
     geom_point(data = data.plot.united, aes(x = x, y = y, color = factor(iteration)), size = 4) +
-    scale_colour_manual(values = colorRampPalette(solpalette)(j), guide = guide_legend(nrow = 3)) +
+    scale_colour_manual(values = solpalette.full[1:n.parts], guide = guide_legend(nrow = 3)) +
     scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
     scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
     labs(title = paste0("Merged epidemics (separation: ", i.min.separation, ")"), x = "Week", y = "Data") +
     guides(color = guide_legend(title = "Parts")) +
     theme_light() +
     theme(plot.title = element_text(hjust = 0.5))
-  if (n.parts > 1) p3[[2]] <- p3[[2]] + geom_vline(data = cut.united, aes(xintercept = n), color = "#000000", alpha = 0.5)
+  if (n.parts > 1) p4[[2]] <- p4[[2]] + geom_vline(data = cut.united, aes(xintercept = n), color = "#000000", alpha = 0.5)
   # Now limit the length of each season to i.max.season.duration
   data.limited <- numeric()
   for (k in 1:n.parts) {
@@ -362,7 +390,7 @@ transformseries.multiple <- function(i.data,
     group_by(season) %>%
     summarise(cut1 = min(n), cut2 = max(n), cut3 = mean(n))
   n <- rates.filled <- rates.filled.original <- x <- y <- cut1 <- cut2 <- cut3 <- epidemic <- NULL
-  p4[[1]] <- ggplot() +
+  p5[[1]] <- ggplot() +
     geom_line(data = data.united, aes(x = n, y = rates.filled.original), color = "#A0A0A0", size = 1) +
     geom_point(data = data.united, aes(x = n, y = rates.filled.original), color = "#A0A0A0", size = 1.5, alpha = 0.75) +
     geom_point(data = data.united, aes(x = n, y = rates.filled), color = "#FFB401", size = 4, alpha = 0.75) +
@@ -378,7 +406,7 @@ transformseries.multiple <- function(i.data,
   # temp3 <- axis.y.ticks[1] + diff(range(axis.y.ticks)) / 15
   temp2 <- axis.y.range[1]
   temp3 <- axis.y.range[1]
-  p4[[2]] <- ggplot() +
+  p5[[2]] <- ggplot() +
     geom_line(data = data.united, aes(x = n, y = rates.filled.original), color = "#A0A0A0", size = 1) +
     geom_point(data = data.united, aes(x = n, y = rates.filled.original), color = "#A0A0A0", size = 1.5, alpha = 0.75) +
     geom_point(data = subset(data.united, !is.na(epidemic)), aes(x = n, y = rates.filled.original, color = factor(epidemic, levels = 1:3, labels = c("Pre", "Epidemic", "Post"))), size = 4, alpha = 0.75) +
@@ -408,15 +436,16 @@ transformseries.multiple <- function(i.data,
   if (!is.na(i.output)) {
     outputdir <- file.path(getwd(), i.output)
     if (!dir.exists(outputdir)) dir.create(outputdir)
-    ggsave(paste0(i.prefix, "-1.1. Original Vs Smooth.png"), p1[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
-    ggsave(paste0(i.prefix, "-1.2. Data to be used.png"), p1[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(i.prefix, " - 1.1. Original Vs Smooth.png"), p1[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(i.prefix, " - 1.2. Data to be used.png"), p1[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
     # We plot each iteration to the stopping point and filter the results
-    for (j in 1:max.waves.dif) ggsave(paste0(i.prefix, "-2.", j, ". Iteration ", j, ".png"), p2[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
-    ggsave(paste0(i.prefix, "-3.1. Merged epidemics.png"), p3[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
-    ggsave(paste0(i.prefix, "-3.2. Merged epidemics separated.png"), p3[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
-    ggsave(paste0(i.prefix, "-4.1. Seasons separated.png"), p4[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
-    ggsave(paste0(i.prefix, "-4.2. Seasons separated and MEM epidemics.png"), p4[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
+    for (j in 1:max.waves) ggsave(paste0(i.prefix, " - 2.", j, ". Iteration (unordered) ", j, ".png"), p2[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
+    for (j in 1:max.waves.dif) ggsave(paste0(i.prefix, " - 3.", j, ". Iteration (final) ", j, ".png"), p3[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(i.prefix, "- 4.1. Merged epidemics separated.png"), p4[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(i.prefix, "- 4.2. Merged epidemics separated plus cut points.png"), p4[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(i.prefix, "- 5.1. Seasons separated.png"), p5[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(i.prefix, "- 5.2. Seasons separated and MEM epidemics.png"), p5[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
   }
-  plots <- list(p1 = p1, p2 = p2, p3 = p3, p4 = p4)
+  plots <- list(p1 = p1, p2 = p2, p3 = p3, p4 = p4, p5 = p5)
   list(data.final = data.final, data.united = data.united, data.plot.united = data.plot.united, cut.united = cut.united, season.desc = season.desc, plots = plots)
 }
