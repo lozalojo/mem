@@ -4,8 +4,13 @@
 \alias{memtrend}
 \title{Methods for influenza trend calculation}
 \usage{
-memtrend(i.flu, i.type = 1, i.level = 0.95, i.type.boot = "norm",
-  i.iter.boot = 10000)
+memtrend(
+  i.flu,
+  i.type = 1,
+  i.level = 0.95,
+  i.type.boot = "norm",
+  i.iter.boot = 10000
+)
 }
 \arguments{
 \item{i.flu}{An object of class \code{mem}.}

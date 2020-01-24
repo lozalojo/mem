@@ -4,8 +4,13 @@
 \alias{transformdata}
 \title{Data transformation}
 \usage{
-transformdata(i.data, i.range.x = NA, i.name = "rates",
-  i.max.na.per = 100, i.function = NULL)
+transformdata(
+  i.data,
+  i.range.x = NA,
+  i.name = "rates",
+  i.max.na.per = 100,
+  i.function = NULL
+)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}

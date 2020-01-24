@@ -4,8 +4,15 @@
 \alias{iconfianza.percentil.boot}
 \title{confidence interval por the median using bootstrap methods}
 \usage{
-iconfianza.percentil.boot(datos, q = 0.5, nivel = 0.95, ic = T,
-  tipo.boot = "norm", iteraciones.boot = 10000, colas = 2)
+iconfianza.percentil.boot(
+  datos,
+  q = 0.5,
+  nivel = 0.95,
+  ic = T,
+  tipo.boot = "norm",
+  iteraciones.boot = 10000,
+  colas = 2
+)
 }
 \description{
 confidence interval por the median using bootstrap methods

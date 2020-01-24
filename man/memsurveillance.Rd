@@ -4,14 +4,30 @@
 \alias{memsurveillance}
 \title{Creates the surveillance graph of the current season}
 \usage{
-memsurveillance(i.current, i.epidemic.thresholds = NA,
-  i.intensity.thresholds = NA, i.mean.length = 10,
-  i.force.length = F, i.output = ".", i.graph.title = "",
-  i.graph.subtitle = "", i.graph.file = T, i.graph.file.name = "",
-  i.week.report = NA, i.equal = F, i.pos.epidemic = F,
-  i.no.epidemic = F, i.no.intensity = F, i.epidemic.start = NA,
-  i.range.x = c(40, 20), i.range.x.53 = F, i.range.y = NA,
-  i.no.labels = F, i.start.end.marks = T, i.mem.info = T)
+memsurveillance(
+  i.current,
+  i.epidemic.thresholds = NA,
+  i.intensity.thresholds = NA,
+  i.mean.length = 10,
+  i.force.length = F,
+  i.output = ".",
+  i.graph.title = "",
+  i.graph.subtitle = "",
+  i.graph.file = T,
+  i.graph.file.name = "",
+  i.week.report = NA,
+  i.equal = F,
+  i.pos.epidemic = F,
+  i.no.epidemic = F,
+  i.no.intensity = F,
+  i.epidemic.start = NA,
+  i.range.x = c(40, 20),
+  i.range.x.53 = F,
+  i.range.y = NA,
+  i.no.labels = F,
+  i.start.end.marks = T,
+  i.mem.info = T
+)
 }
 \arguments{
 \item{i.current}{Current season weekly rates.}

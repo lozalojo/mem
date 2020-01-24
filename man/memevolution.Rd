@@ -4,8 +4,12 @@
 \alias{memevolution}
 \title{Evolution of estimators}
 \usage{
-memevolution(i.data, i.evolution.seasons = 10,
-  i.evolution.method = "sequential", ...)
+memevolution(
+  i.data,
+  i.evolution.seasons = 10,
+  i.evolution.method = "sequential",
+  ...
+)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}

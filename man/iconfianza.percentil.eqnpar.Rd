@@ -4,8 +4,7 @@
 \alias{iconfianza.percentil.eqnpar}
 \title{confidence interval por the median using KC Method}
 \usage{
-iconfianza.percentil.eqnpar(datos, q = 0.5, nivel = 0.95, ic = T,
-  colas = 2)
+iconfianza.percentil.eqnpar(datos, q = 0.5, nivel = 0.95, ic = T, colas = 2)
 }
 \description{
 confidence interval por the median using KC Method

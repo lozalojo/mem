@@ -5,8 +5,7 @@
 \alias{summary.epidemic,plot.epidemic,print.epidemic}
 \title{Influenza Epidemic Timing}
 \usage{
-memtiming(i.data, i.n.values = 5, i.method = 2, i.param = 2.8,
-  i.mem.info = T)
+memtiming(i.data, i.n.values = 5, i.method = 2, i.param = 2.8, i.mem.info = T)
 }
 \arguments{
 \item{i.data}{a numeric object  (or one that can be coerced to that class).}

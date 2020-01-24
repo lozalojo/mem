@@ -4,10 +4,18 @@
 \alias{calcular.indicadores.2.timings}
 \title{Calculates specificity and sensitivity}
 \usage{
-calcular.indicadores.2.timings(i.current, i.timing.1, i.timing.2,
-  i.timing.absolute = F, i.timing.labels, i.output = ".",
-  i.graph.title = "", i.graph.file = F, i.graph.file.name = "",
-  i.mem.info = T)
+calcular.indicadores.2.timings(
+  i.current,
+  i.timing.1,
+  i.timing.2,
+  i.timing.absolute = F,
+  i.timing.labels,
+  i.output = ".",
+  i.graph.title = "",
+  i.graph.file = F,
+  i.graph.file.name = "",
+  i.mem.info = T
+)
 }
 \description{
 Calculates specificity and sensitivity

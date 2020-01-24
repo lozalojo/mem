@@ -5,10 +5,15 @@
 \title{Find tickmarks for a given range of the y-axis that best fit an optimal number of tickmarks
 you decide. f.i: what if i want to have a graph with 8 tickmarks in a range of 34 to 345}
 \usage{
-optimal.tickmarks(i.min, i.max, i.number.ticks = 10,
-  i.valid.ticks = apply(expand.grid(c(1, 2, 2.5, 5), 10^(-10:10)), 1, FUN
-  = function(x) {     x[1] * x[2] }), i.include.min = F,
-  i.include.max = F)
+optimal.tickmarks(
+  i.min,
+  i.max,
+  i.number.ticks = 10,
+  i.valid.ticks = apply(expand.grid(c(1, 2, 2.5, 5), 10^(-10:10)), 1, FUN = function(x)
+    {     x[1] * x[2] }),
+  i.include.min = F,
+  i.include.max = F
+)
 }
 \description{
 Find tickmarks for a given range of the y-axis that best fit an optimal number of tickmarks

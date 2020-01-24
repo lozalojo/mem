@@ -4,11 +4,21 @@
 \alias{calcular.indicadores}
 \title{Calculates specificity and sensitivity}
 \usage{
-calcular.indicadores(i.current, i.umbral.pre, i.umbral.pos = NA,
-  i.intensidades, i.duracion.intensidad = 10, i.equal = F,
-  i.metodo.calculo = "default", i.semanas.por.encima = 1,
-  i.valores.parametro.deteccion = seq(0.1, 5, 0.1), i.output = ".",
-  i.graph = F, i.graph.name = "", i.mem.info = T)
+calcular.indicadores(
+  i.current,
+  i.umbral.pre,
+  i.umbral.pos = NA,
+  i.intensidades,
+  i.duracion.intensidad = 10,
+  i.equal = F,
+  i.metodo.calculo = "default",
+  i.semanas.por.encima = 1,
+  i.valores.parametro.deteccion = seq(0.1, 5, 0.1),
+  i.output = ".",
+  i.graph = F,
+  i.graph.name = "",
+  i.mem.info = T
+)
 }
 \description{
 Calculates specificity and sensitivity

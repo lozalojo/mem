@@ -4,8 +4,13 @@
 \alias{transformdata.back}
 \title{Data transformation}
 \usage{
-transformdata.back(i.data, i.name = "rates", i.cutoff.original = NA,
-  i.range.x.final = NA, i.fun = mean)
+transformdata.back(
+  i.data,
+  i.name = "rates",
+  i.cutoff.original = NA,
+  i.range.x.final = NA,
+  i.fun = mean
+)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}

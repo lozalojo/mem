@@ -4,8 +4,14 @@
 \alias{iconfianza.percentil.kc}
 \title{confidence interval por the median using KC Method}
 \usage{
-iconfianza.percentil.kc(datos, q = 0.5, nivel = 0.95, ic = T,
-  colas = 2, use.t = F)
+iconfianza.percentil.kc(
+  datos,
+  q = 0.5,
+  nivel = 0.95,
+  ic = T,
+  colas = 2,
+  use.t = F
+)
 }
 \description{
 confidence interval por the median using KC Method

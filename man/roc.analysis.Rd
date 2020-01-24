@@ -4,10 +4,19 @@
 \alias{roc.analysis}
 \title{Analysis of different indicators to find the optimum value of the window parameter}
 \usage{
-roc.analysis(i.data, i.param.values = seq(1, 5, 0.1),
-  i.min.seasons = 6, i.graph = F, i.graph.file = F,
-  i.graph.file.name = "", i.graph.title = "", i.graph.subtitle = "",
-  i.output = ".", i.mem.info = T, ...)
+roc.analysis(
+  i.data,
+  i.param.values = seq(1, 5, 0.1),
+  i.min.seasons = 6,
+  i.graph = F,
+  i.graph.file = F,
+  i.graph.file.name = "",
+  i.graph.title = "",
+  i.graph.subtitle = "",
+  i.output = ".",
+  i.mem.info = T,
+  ...
+)
 }
 \arguments{
 \item{i.data}{Data frame of input data.}
