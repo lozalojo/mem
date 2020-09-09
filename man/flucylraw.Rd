@@ -4,13 +4,15 @@
 \name{flucylraw}
 \alias{flucylraw}
 \title{Castilla y Leon influenza standarised rates}
-\format{A data frame with 267 observations on 2 variables. Each observation is one surveillance
+\format{
+A data frame with 267 observations on 2 variables. Each observation is one surveillance
 week and rate,
 \describe{
   \item{\code{year}}{a numeric vector - year.}
   \item{\code{week}}{a numeric vector - week.}
   \item{\code{rates}}{a numeric vector - standarised rates per 100,000 inhabitants.}
-}}
+}
+}
 \source{
 Influenza Surveillance Programme. Castilla y Leon Health Sentinel Network. Consejeria
 de Sanidad. Junta de Castilla y Leon 2001-2008.
@@ -38,8 +40,8 @@ plot(flucylraw$rates,type="l")
 }
 \references{
 Castilla y Leon Health Sentinel Network Reports (Informes de la Red Centinela Sanitaria
-de Castilla y Leon: \url{http://www.salud.jcyl.es/centinelas}).
-Influenza Surveillance Programme (Programa de vigilancia de la gripe:
-\url{http://www.salud.jcyl.es/centinelas}).
+de Castilla y Leon).\cr
+Influenza Surveillance Programme (Programa de vigilancia de la gripe).\cr
+\url{https://www.saludcastillayleon.es/profesionales/es/centinelas}
 }
 \keyword{datasets}

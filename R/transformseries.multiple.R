@@ -4,9 +4,10 @@
 #'
 #' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline aes labs %+% element_text geom_point guide_legend scale_colour_manual scale_x_continuous scale_y_continuous theme geom_segment geom_text unit arrow guides theme_light
 #' @importFrom stats smooth.spline predict median loess
-#' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join inner_join pull slice summarise ungroup desc rename
+#' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join inner_join full_join pull slice summarise ungroup desc rename
 #' @importFrom tidyr spread
 #' @importFrom utils tail head
+#' @importFrom purrr pluck
 transformseries.multiple <- function(i.data,
                                      i.max.epidemic.duration = NA,
                                      i.max.season.duration = NA,
@@ -71,11 +72,18 @@ transformseries.multiple <- function(i.data,
   yrweek <- season <- year <- week <- rates <- mrate <- mratej <- NULL
   # I create the dataset for analysis, i fill missing values outside the epidemic period with the
   # values I've just calculated before (median values outside epidemic) with a little jitter
-  data <- i.data %>%
+  temp2 <- i.data %>%
     apply(2, fill.missing) %>%
     as.data.frame() %>%
     transformdata.back(i.range.x.final = c(1, 53)) %>%
-    `[[`(1) %>%
+    pluck("data")
+  temp3 <- expand.grid(year=min(temp2$year):max(temp2$year), week=1:52)
+  temp4 <- temp2 %>%
+    full_join(temp3, by=c("year", "week")) %>%
+    mutate(season=ifelse(is.na(season),paste(year,year,sep="/"),season),
+           yrweek=ifelse(is.na(yrweek),year*100+week,yrweek)) %>%
+    arrange(year, week)
+  data <- temp4 %>%  
     dplyr::arrange(yrweek) %>%
     dplyr::mutate(n = 1:n()) %>%
     dplyr::select(-season, -year, -week) %>%
@@ -84,7 +92,7 @@ transformseries.multiple <- function(i.data,
   model.smooth <- loess(y ~ n, data, span = 0.05)
   p.model.smooth <- predict(model.smooth, newdata = data$n)
   p.model.smooth[p.model.smooth < 0] <- 0
-  rm(temp1)
+  rm(temp1, temp2, temp3, temp4)
   rates <- rates.smooth <- NULL
   data.plus <- data %>%
     dplyr::select(-y) %>%
