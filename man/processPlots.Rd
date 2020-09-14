@@ -25,11 +25,15 @@ output directory, showing the MAP curves and the slope of the MAP curve
 and how the timing is calculated.
 }
 \examples{
+\donttest{
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Graphs
 epi <- memmodel(flucyl)
-processPlots(epi)
+# uncomment to execute
+# processPlots(epi)
+}
+
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

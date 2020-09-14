@@ -82,10 +82,14 @@ Color codes:
 }
 }
 \examples{
+\donttest{
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Data of the last season
-full.series.graph(flucyl)
+# uncomment to execute
+# full.series.graph(flucyl)
+}
+
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

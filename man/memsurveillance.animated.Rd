@@ -53,6 +53,7 @@ only the epidemic threshold is placed.
 See \link{memsurveillance} for more details
 }
 \examples{
+\donttest{
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Data of the last season
@@ -65,11 +66,14 @@ e.thr <- epi$epidemic.thresholds
 i.thr <- epi$intensity.thresholds
 # Set the working directory to whererever you want to store the graph file
 setwd(".")
-m1 <- memsurveillance.animated(cur,
-  i.animated.graph.file.name = "Animated",
-  i.epidemic.thresholds = e.thr, i.intensity.thresholds = i.thr, i.pos.epidemic = TRUE,
-  i.animated.graph.file = FALSE
-)
+# uncomment to execute
+# m1 <- memsurveillance.animated(cur,
+#    i.animated.graph.file.name = "Animated",
+#    i.epidemic.thresholds = e.thr, i.intensity.thresholds = i.thr, i.pos.epidemic = TRUE,
+#    i.animated.graph.file = FALSE
+# )
+}
+
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

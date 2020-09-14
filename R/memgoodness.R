@@ -100,7 +100,7 @@
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
 #' # Goodness of fit
-#' epi.good <- memgoodness(flucyl, i.detection.values = seq(2.5, 2.8, 0.1))
+#' epi.good <- memgoodness(flucyl, i.detection.values = seq(2.6, 2.8, 0.1))
 #' epi.good$results
 #' epi.good$peaks
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}

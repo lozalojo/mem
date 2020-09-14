@@ -159,7 +159,7 @@ Note that if no post-epidemic threshold is provided, the pre-epidemic value is u
 # Castilla y Leon Influenza Rates data
 data(flucyl)
 # Goodness of fit
-epi.good <- memgoodness(flucyl, i.detection.values = seq(2.5, 2.8, 0.1))
+epi.good <- memgoodness(flucyl, i.detection.values = seq(2.6, 2.8, 0.1))
 epi.good$results
 epi.good$peaks
 }

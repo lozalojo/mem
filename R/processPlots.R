@@ -18,11 +18,15 @@
 #' and how the timing is calculated.
 #'
 #' @examples
+#' \donttest{
 #' # Castilla y Leon Influenza Rates data
 #' data(flucyl)
 #' # Graphs
 #' epi <- memmodel(flucyl)
-#' processPlots(epi)
+#' # uncomment to execute
+#' # processPlots(epi)
+#' }
+#'
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references
