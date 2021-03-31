@@ -7,6 +7,9 @@ r:
   - release
   - devel
 
+services:
+  - xvfb
+
 env:
   global:
   - _R_CHECK_FORCE_SUGGESTS_=false
@@ -20,7 +23,6 @@ after_success:
 
 before_install:
   - export DISPLAY=:99.0
-  - sh -e /etc/init.d/xvfb start
   - sudo apt-get --yes --force-yes update -qq
   - sudo apt-get install --yes libmagick++-dev imagemagick
   - Rscript -e 'update.packages(ask = FALSE)'
