@@ -25,4 +25,3 @@ before_install:
   - export DISPLAY=:99.0
   - sudo apt-get --yes --force-yes update -qq
   - sudo apt-get install --yes libmagick++-dev imagemagick
-  - Rscript -e 'update.packages(ask = FALSE)'
