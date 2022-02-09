@@ -205,7 +205,7 @@ memmodel <- function(i.data,
       rownames(datos)<-i.data[,1]
     }else{
       datos <- i.data
-      rownames(datos)<-1:NROW(i.data)
+      if (!all(rownames(i.data) %in% 1:53)) rownames(datos)<-1:NROW(i.data)
     }
     datos <- datos[apply(datos, 2, function(x) sum(x, na.rm = T) > 0)]
     if (!(ncol(datos) > 1)) {
