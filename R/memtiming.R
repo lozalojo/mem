@@ -103,6 +103,7 @@
 #' @keywords influenza
 #'
 #' @export
+#' @importFrom methods is
 memtiming <- function(i.data,
                       i.n.values = 5,
                       i.method = 2,
@@ -188,7 +189,7 @@ summary.epidemic <- function(object, ...) {
 
 #' @export
 plot.epidemic <- function(x, ...) {
-  if (!(class(x) == "epidemic")) stop("input must be an object of class epidemic")
+  if (!is(x, "epidemic")) stop("input must be an object of class epidemic")
   title.graph <- names(x$param.data)
   if (is.null(title.graph)) title.graph <- ""
   x.data <- as.vector(as.matrix(x$param.data))

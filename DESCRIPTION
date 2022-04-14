@@ -16,7 +16,8 @@ Imports:
     dplyr,
     purrr,
     RcppRoll,
-    EnvStats
+    EnvStats,
+		methods
 Suggests:
     magick
 License: GPL (>= 2)
