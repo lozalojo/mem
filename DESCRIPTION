@@ -17,7 +17,7 @@ Imports:
     purrr,
     RcppRoll,
     EnvStats,
-		methods
+	methods
 Suggests:
     magick
 License: GPL (>= 2)
