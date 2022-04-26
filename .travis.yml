@@ -18,6 +18,11 @@ r_packages:
   - devtools
   - covr
 
+branches:
+  only:
+    - master
+    - development
+
 after_success:
   - Rscript -e 'library(covr); codecov()'
 
