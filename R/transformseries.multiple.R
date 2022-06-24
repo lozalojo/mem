@@ -8,6 +8,7 @@
 #' @importFrom tidyr spread
 #' @importFrom utils tail head
 #' @importFrom purrr pluck
+#' @importFrom stats loess.control
 transformseries.multiple <- function(i.data,
                                      i.max.epidemic.duration = NA,
                                      i.max.season.duration = NA,
@@ -55,14 +56,14 @@ transformseries.multiple <- function(i.data,
       max.waves <- i.waves.range
     } else {
       min.waves <- 1
-      max.waves <- 2 * NCOL(i.data)
+      max.waves <- 3 * NCOL(i.data)
     }
   } else if (length(i.waves.range) == 2) {
     if (!is.na(i.waves.range[1])) min.waves <- i.waves.range[1] else min.waves <- 1
     if (!is.na(i.waves.range[2])) max.waves <- max(min.waves, i.waves.range[2]) else max.waves <- max(min.waves, 2 * NCOL(i.data))
   } else {
     min.waves <- 1
-    max.waves <- 2 * NCOL(i.data)
+    max.waves <- 3 * NCOL(i.data)
   }
   if (length(i.waves) == 1) {
     if (!is.na(i.waves) & i.waves > 0) {
@@ -308,6 +309,7 @@ transformseries.multiple <- function(i.data,
       theme_light() +
       theme(plot.title = element_text(hjust = 0.5))
   }
+  results.original <- results
   # The stopping point is determined by param.2
   if (is.na(waves)) max.waves.dif <- max(min.waves, min(results$iteration[results$difcumsumper < (param.2 / 100)][1] - 1, max.waves, na.rm = T), ra.rm = T) else max.waves.dif = waves
   results <- results %>%
@@ -565,5 +567,5 @@ transformseries.multiple <- function(i.data,
     ggsave(paste0(i.prefix, "- 5.2. Seasons separated and MEM epidemics.png"), p5[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
   }
   plots <- list(p1 = p1, p2 = p2, p3 = p3, p4 = p4, p5 = p5)
-  list(data.final = data.final, data.united = data.united, data.plot.united = data.plot.united, cut.united = cut.united, season.desc = season.desc, plots = plots)
+  list(data.final = data.final, data.united = data.united, data.plot.united = data.plot.united, cut.united = cut.united, season.desc = season.desc, results.original=results.original, results.final = results, plots = plots)
 }
