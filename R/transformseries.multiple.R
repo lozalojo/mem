@@ -12,30 +12,32 @@ transformseries.multiple <- function(i.data,
                                      i.max.epidemic.duration = NA,
                                      i.max.season.duration = NA,
                                      i.waves = NA,
-                                     i.param.1 = 3,
-                                     i.param.2 = 2,
+                                     i.waves.range = NA,
+                                     i.intra.param = 3,
+                                     i.inter.param = 2,
                                      i.min.separation = 1,
                                      i.output = NA,
                                      i.prefix = "Multiple waves",
                                      i.force.smooth = F,
+                                     i.split.top = 3,
                                      ...) {
   p1 <- list()
   p2 <- list()
   p3 <- list()
   p4 <- list()
   p5 <- list()
-  if (length(i.param.1) == 1) {
-    if (!is.na(i.param.1) & i.param.1 > 0) {
-      param.1 <- i.param.1
+  if (length(i.intra.param) == 1) {
+    if (!is.na(i.intra.param) & i.intra.param > 0) {
+      param.1 <- i.intra.param
     } else {
       param.1 <- 3
     }
   } else {
     param.1 <- 3
   }
-  if (length(i.param.2) == 1) {
-    if (!is.na(i.param.2) & i.param.2 > 0) {
-      param.2 <- i.param.2 * 10 / NCOL(i.data)
+  if (length(i.inter.param) == 1) {
+    if (!is.na(i.inter.param) & i.inter.param > 0) {
+      param.2 <- i.inter.param * 10 / NCOL(i.data)
     } else {
       param.2 <- 2 * 10 / NCOL(i.data)
     }
@@ -46,20 +48,31 @@ transformseries.multiple <- function(i.data,
   # Prepare the parameters
   if (is.na(i.max.epidemic.duration) | i.max.epidemic.duration == 0) max.epidemic.duration <- NROW(i.data) else max.epidemic.duration <- i.max.epidemic.duration
   if (is.na(i.max.season.duration) | i.max.season.duration == 0) max.season.duration <- NROW(i.data) else max.season.duration <- i.max.season.duration
-  if (length(i.waves) == 1) {
-    if (!is.na(i.waves) & i.waves > 0) {
-      min.waves <- i.waves
-      max.waves <- i.waves
+  if (length(i.waves.range) == 1) {
+    if (!is.na(i.waves.range) & i.waves.range > 0) {
+      min.waves <- i.waves.range
+      max.waves <- i.waves.range
     } else {
       min.waves <- 1
       max.waves <- 2 * NCOL(i.data)
     }
-  } else if (length(i.waves) == 2) {
-    if (!is.na(i.waves[1])) min.waves <- i.waves[1] else min.waves <- 1
-    if (!is.na(i.waves[2])) max.waves <- max(min.waves, i.waves[2]) else max.waves <- max(min.waves, 2 * NCOL(i.data))
+  } else if (length(i.waves.range) == 2) {
+    if (!is.na(i.waves.range[1])) min.waves <- i.waves.range[1] else min.waves <- 1
+    if (!is.na(i.waves.range[2])) max.waves <- max(min.waves, i.waves.range[2]) else max.waves <- max(min.waves, 2 * NCOL(i.data))
   } else {
     min.waves <- 1
     max.waves <- 2 * NCOL(i.data)
+  }
+  if (length(i.waves) == 1) {
+    if (!is.na(i.waves) & i.waves > 0) {
+      min.waves <- i.waves
+      max.waves <- i.waves
+    }
+  }
+  if (length(i.split.top) == 1) {
+    if (!is.na(i.split.top) & i.split.top > 0) {
+      split.top <- i.split.top
+    }
   }
   # Prepare the data
   # This value is for missing values, its the median of the a third lowest values
@@ -150,6 +163,8 @@ transformseries.multiple <- function(i.data,
     n.chosen <- max(1, head((1:max.epidemic.duration)[peradd$percentage < (param.1 / 100)], 1) - 1)
     peradd.chosen <- data.frame(iteration = j, percentage.added(data.temp$rates.filled, n.chosen))
     peradd.chosen$sum.original <- sum(data.plus$rates.filled[peradd.chosen$start:peradd.chosen$end], na.rm=T)
+    peradd.chosen$mean <- peradd.chosen$sum/peradd.chosen$n
+    peradd.chosen$mean.original <- peradd.chosen$sum.original/peradd.chosen$n
     sum <- cumsumper <- totsum <- difcumsumper <- sumcum <- NULL
     results <- results %>%
       bind_rows(peradd.chosen) %>%
@@ -188,6 +203,24 @@ transformseries.multiple <- function(i.data,
     mutate(y=y+minimum.value)
   last.point <- last.point %>%
     mutate(y=y+minimum.value)
+  # Get the 3 top cum sum from each iteration
+  topiterations <- startt <- endt <- NULL
+  topiterations <- data.frame()
+  data.temp <- data.plus
+  minimum.value <- max(0, min(data.temp$rates.filled, na.rm=T) - max(data.temp$rates.filled, na.rm=T)/10)
+  data.temp$rates.filled <- data.temp$rates.filled - minimum.value
+  data.plot.top <- data.frame()
+  for (j in 1:NROW(results)){
+    starendt <- percentage.added(data.temp$rates.filled[results$start[j]:results$end[j]], split.top)
+    topiterations <- topiterations %>%
+      bind_rows(data.frame(iteration=j, startt=results$start[j] + starendt$start - 1, endt=min(results$end[j],results$start[j] + starendt$start -1 + split.top - 1)))
+    data.plot.top <- data.plot.top %>%
+      bind_rows(data.plot %>%
+                  filter(x>=(results$start[j] + starendt$start - 1) & 
+                           x<=(min(results$end[j],results$start[j] + starendt$start -1 + split.top - 1))))    
+  }
+  results <- results %>%
+    left_join(topiterations, by="iteration")
   # Plot of the iterative process
   solpalette.full <- colorRampPalette(solpalette)(max.waves)
   for (j in 1:max.waves) {
@@ -195,12 +228,15 @@ transformseries.multiple <- function(i.data,
       filter(iteration<=j)
     last.point.j <- last.point %>%
       filter(iteration<=j)
+    data.plot.top.j <- data.plot.top %>%
+      filter(iteration<=j)
     n <- rates.filled <- x <- y <- iteration.label <- NULL
     p2[[j]] <- ggplot() +
       geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
       geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
       geom_point(data = data.plot.j, aes(x = x, y = y, color = factor(iteration.label)), size = 4) +
       geom_point(data = last.point.j, aes(x = x, y = y), color = "#FFFFFF", size = 2) +
+      geom_point(data = data.plot.top.j, aes(x = x, y = y), color = "#000000", size = 1.5) +
       geom_text(data = last.point.j, aes(x = x, y = y, label = label), vjust = 1) +
       scale_colour_manual(values = solpalette.full[1:j], guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
@@ -238,17 +274,26 @@ transformseries.multiple <- function(i.data,
     arrange(iteration2) %>%
     rename(iteration=iteration2) %>%
     mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n))
+  data.plot.top <- data.plot.top %>%
+    inner_join(reorderedit, by="iteration") %>%
+    select(-iteration, -iteration.label) %>%
+    arrange(iteration2, x) %>%
+    rename(iteration=iteration2) %>%
+    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n))
   if (NROW(results)>0) for (j in 1:NROW(results)) {
     data.plot.j <- data.plot %>%
       filter(iteration<=j)
     last.point.j <- last.point %>%
       filter(iteration<=j)
+    data.plot.top.j <- data.plot.top %>%
+      filter(iteration<=j)    
     n <- rates.filled <- x <- y <- iteration.label <- NULL
     p3[[j]] <- ggplot() +
       geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
       geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
       geom_point(data = data.plot.j, aes(x = x, y = y, color = factor(iteration.label)), size = 4) +
       geom_point(data = last.point.j, aes(x = x, y = y), color = "#FFFFFF", size = 2) +
+      geom_point(data = data.plot.top.j, aes(x = x, y = y), color = "#000000", size = 2) +
       geom_text(data = last.point.j, aes(x = x, y = y, label = label), vjust = 1) +
       scale_colour_manual(values = solpalette.full[1:j], guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
@@ -280,6 +325,22 @@ transformseries.multiple <- function(i.data,
     dplyr::mutate(iteration = sunite) %>%
     dplyr::select(-sunite) %>%
     dplyr::arrange(x)
+  
+  temp2 <- data.plot.top %>%
+    dplyr::mutate(iteration.old = iteration) %>%
+    dplyr::inner_join(dplyr::select(temp1, iteration, sunite), by = "iteration") %>%
+    group_by(sunite) %>%
+    arrange(-difcumsumper) %>%
+    slice(1) %>%
+    ungroup() %>%
+    select(iteration)
+  data.plot.top.united <- data.plot.top %>%
+    dplyr::mutate(iteration.old = iteration) %>%
+    dplyr::inner_join(dplyr::select(temp1, iteration, sunite), by = "iteration") %>%
+    inner_join(temp2, by="iteration") %>%
+    dplyr::mutate(iteration = sunite) %>%
+    dplyr::select(-sunite) %>%
+    dplyr::arrange(x)
   n.parts <- max(temp1$sunite)
   if (n.parts>0){
     n <- rates.filled <- x <- y <- NULL
@@ -287,6 +348,7 @@ transformseries.multiple <- function(i.data,
       geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
       geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
       geom_point(data = data.plot.united, aes(x = x, y = y, color = factor(iteration)), size = 4) +
+      geom_point(data = data.plot.top.united, aes(x = x, y = y), color = "#000000", size = 1.5) +
       scale_colour_manual(values = solpalette.full[1:n.parts], guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
@@ -297,10 +359,19 @@ transformseries.multiple <- function(i.data,
     # Now I separate each part for the lowest vale between epidemics, but using the smooth data to avoid irregular
     # low values between epidemics
     if (n.parts > 1) {
-      temp2 <- temp1 %>%
-        dplyr::group_by(sunite) %>%
-        dplyr::summarise(start = min(start), end = max(end)) %>%
-        dplyr::select(iteration = sunite, start, end) %>%
+      # temp2 <- temp1 %>%
+      #   dplyr::group_by(sunite) %>%
+      #   dplyr::summarise(start = min(start), end = max(end)) %>%
+      #   dplyr::select(iteration = sunite, start, end) %>%
+      #   dplyr::arrange(start) %>%
+      #   dplyr::ungroup() %>%
+      #   dplyr::mutate(from = 1 + lag(end), to = start) %>%
+      #   dplyr::slice(-1) %>%
+      #   dplyr::select(from, to)
+      temp2 <- results.united %>%
+        dplyr::group_by(iteration) %>%
+        dplyr::summarise(start = min(startt), end = max(endt)) %>%
+        dplyr::select(iteration, start, end) %>%
         dplyr::arrange(start) %>%
         dplyr::ungroup() %>%
         dplyr::mutate(from = 1 + lag(end), to = start) %>%
@@ -333,11 +404,28 @@ transformseries.multiple <- function(i.data,
       data.united <- data.plus %>%
         dplyr::mutate(part = 1, season = 1000 + part)
     }
+    # Si tras la division alguna epidemia queda cortada a la mitad (ahora pertenecerá a otra parte), entonces la quitamos de la epidemia detectada
+    dummy1 <- nparte <- ok <- NULL
+    temp1 <- data.frame(x=data.plus$n) %>%
+      mutate(dummy1=x %in% cut.united$n) %>%
+      mutate(nparte=1+cumsum(dummy1)) %>%
+      select(-dummy1)
+    data.plot.united <- data.plot.united %>%
+      left_join(temp1, by="x") %>%
+      mutate(ok=iteration==nparte) %>%
+      filter(ok) %>%
+      select(-ok,-nparte)
+    data.plot.top.united <- data.plot.top.united %>%
+      left_join(temp1, by="x") %>%
+      mutate(ok=iteration==nparte) %>%
+      filter(ok) %>%
+      select(-ok,-nparte)
     n <- rates.filled <- x <- y <- NULL
     p4[[2]] <- ggplot() +
       geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
       geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
       geom_point(data = data.plot.united, aes(x = x, y = y, color = factor(iteration)), size = 4) +
+      geom_point(data = data.plot.top.united, aes(x = x, y = y), color = "#000000", size = 1.5) +
       scale_colour_manual(values = solpalette.full[1:n.parts], guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
