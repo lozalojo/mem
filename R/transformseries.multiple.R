@@ -21,11 +21,13 @@ transformseries.multiple <- function(i.data,
                                      i.force.smooth = F,
                                      i.split.top = 3,
                                      ...) {
+  # Prepare outputs
   p1 <- list()
   p2 <- list()
   p3 <- list()
   p4 <- list()
   p5 <- list()
+  # Check input parameters
   if (length(i.intra.param) == 1) {
     if (!is.na(i.intra.param) & i.intra.param > 0) {
       param.1 <- i.intra.param
@@ -45,7 +47,6 @@ transformseries.multiple <- function(i.data,
     param.2 <- 2 * 10 / NCOL(i.data)
   }
   solpalette <- c("#268bd2", "#b58900", "#cb4b16", "#dc322f", "#d33682", "#6c71c4", "#2aa198", "#859900")
-  # Prepare the parameters
   if (is.na(i.max.epidemic.duration) | i.max.epidemic.duration == 0) max.epidemic.duration <- NROW(i.data) else max.epidemic.duration <- i.max.epidemic.duration
   if (is.na(i.max.season.duration) | i.max.season.duration == 0) max.season.duration <- NROW(i.data) else max.season.duration <- i.max.season.duration
   if (length(i.waves.range) == 1) {
@@ -65,9 +66,12 @@ transformseries.multiple <- function(i.data,
   }
   if (length(i.waves) == 1) {
     if (!is.na(i.waves) & i.waves > 0) {
-      min.waves <- i.waves
-      max.waves <- i.waves
+      waves <- i.waves
+    } else {
+      waves <- NA
     }
+  } else {
+    waves <- NA
   }
   if (length(i.split.top) == 1) {
     if (!is.na(i.split.top) & i.split.top > 0) {
@@ -75,13 +79,13 @@ transformseries.multiple <- function(i.data,
     }
   }
   # Prepare the data
-  # This value is for missing values, its the median of the a third lowest values
+  # This value is for missing values, its the median of the lowest values
   temp1 <- i.data %>%
     as.matrix() %>%
     as.numeric() %>%
     sort() %>%
     head(floor(NCOL(i.data) * NROW(i.data) * 2*param.2/100)) %>%
-    median()
+    median(na.rm=T)
   yrweek <- season <- year <- week <- rates <- mrate <- mratej <- NULL
   # I create the dataset for analysis, i fill missing values outside the epidemic period with the
   # values I've just calculated before (median values outside epidemic) with a little jitter
@@ -100,12 +104,13 @@ transformseries.multiple <- function(i.data,
     dplyr::arrange(yrweek) %>%
     dplyr::mutate(n = 1:n()) %>%
     dplyr::select(-season, -year, -week) %>%
-    mutate(mrate = temp1, mratej = max(0, jitter(mrate, factor=3, amount=0)), y = ifelse(is.na(rates), mratej, rates)) %>%
+    mutate(mrate = temp1, mratej = pmax(0, jitter(mrate, factor=1, amount=median(as.numeric(as.matrix(i.data)), na.rm=T)/5)), y = ifelse(is.na(rates), mratej, rates)) %>%
     select(-mrate, -mratej)
-  model.smooth <- loess(y ~ n, data, span = 0.05)
+  rm(temp1, temp2, temp3, temp4)
+  # Add smoothed data and create data.plus
+  model.smooth <- loess(y ~ n, data, span = 0.05, control = loess.control(surface = "direct"))
   p.model.smooth <- predict(model.smooth, newdata = data$n)
   p.model.smooth[p.model.smooth < 0] <- 0
-  rm(temp1, temp2, temp3, temp4)
   rates <- rates.smooth <- NULL
   data.plus <- data %>%
     dplyr::select(-y) %>%
@@ -304,7 +309,7 @@ transformseries.multiple <- function(i.data,
       theme(plot.title = element_text(hjust = 0.5))
   }
   # The stopping point is determined by param.2
-  max.waves.dif <- max(min.waves, min(results$iteration[results$difcumsumper < (param.2 / 100)][1] - 1, max.waves, na.rm = T), ra.rm = T)
+  if (is.na(waves)) max.waves.dif <- max(min.waves, min(results$iteration[results$difcumsumper < (param.2 / 100)][1] - 1, max.waves, na.rm = T), ra.rm = T) else max.waves.dif = waves
   results <- results %>%
     filter(iteration <= max.waves.dif)
   # I join epidemics with a separation lower than i.min.separation
