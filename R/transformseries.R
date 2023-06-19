@@ -27,6 +27,7 @@
 #' \item{6} {Two waves (expected)}
 #' \item{7} {Loess}
 #' \item{8} {Spline}
+#' \item{9} {Moving Average}
 #' }
 #'
 #' Fill missings sustitute missing values with predicted values from a loess regression fit.
@@ -41,6 +42,9 @@
 #' Two waves (observed) is used when there are two waves per season. It divides the original
 #' dataset in two using a mixture of two normal distributions. The expected option uses the
 #' same procedure but also substitutes all data with predicted values of the mixture fit.
+#'
+#' Moving Average has an additional parameter i.number for the number of observation to 
+#' calculate the average.
 #'
 #' @examples
 #' # Castilla y Leon Influenza Rates data
@@ -101,6 +105,10 @@ transformseries <- function(i.data, i.transformation = 1, ...) {
       rownames(i.data.transf) <- rownames(i.data)
     } else if (i.transformation == 8) {
       i.data.transf <- data.frame(apply(i.data, 2, transformseries.spline, ...), stringsAsFactors = F)
+      names(i.data.transf) <- names(i.data)
+      rownames(i.data.transf) <- rownames(i.data)
+    } else if (i.transformation == 9) {
+      i.data.transf <- data.frame(apply(i.data, 2, transformseries.moving.average, ...), stringsAsFactors = F)
       names(i.data.transf) <- names(i.data)
       rownames(i.data.transf) <- rownames(i.data)
     } else {
