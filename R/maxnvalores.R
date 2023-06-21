@@ -1,7 +1,7 @@
 #' highest n values of a data set, removing Inf and -Inf
 #'
 #' @keywords internal
-max.n.valores <- function(mis.datos, n.max = 1) {
+maxnvalores <- function(mis.datos, n.max = 1) {
   mis.datos[mis.datos == Inf] <- NA
   mis.datos[mis.datos == -Inf] <- NA
   ordenado <- sort(mis.datos, decreasing = T, na.last = T)

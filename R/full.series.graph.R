@@ -171,9 +171,9 @@ full.series.graph <- function(i.data,
   if (is.numeric(i.range.y)) {
     range.y.bus <- i.range.y
   } else if (i.plot.intensity) {
-    range.y.bus <- c(0, max.fix.na(c(datos.y, intensity)))
+    range.y.bus <- c(0, maxFixNA(c(datos.y, intensity)))
   } else {
-    range.y.bus <- c(0, max.fix.na(datos.y))
+    range.y.bus <- c(0, maxFixNA(datos.y))
   }
   otick <- optimal.tickmarks(range.y.bus[1], range.y.bus[2], 10)
   range.y <- c(otick$range[1], otick$range[2] + otick$by / 2)

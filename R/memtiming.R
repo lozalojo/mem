@@ -137,9 +137,9 @@ memtiming <- function(i.data,
     epi.datos <- datos[epi.ini:epi.fin]
     post.epi.datos <- datos[-(1:epi.fin)]
   }
-  pre.epi <- max.n.valores(pre.epi.datos, i.n.values)
-  epi <- max.n.valores(epi.datos, i.n.values)
-  post.epi <- max.n.valores(post.epi.datos, i.n.values)
+  pre.epi <- maxnvalores(pre.epi.datos, i.n.values)
+  epi <- maxnvalores(epi.datos, i.n.values)
+  post.epi <- maxnvalores(post.epi.datos, i.n.values)
   memtiming.output <- list(
     map.curve = curva.map,
     slope.curve = curva.slope,
@@ -199,7 +199,7 @@ plot.epidemic <- function(x, ...) {
   semanas <- length(x.data)
   i.epi <- x$optimum.map[4]
   f.epi <- x$optimum.map[5]
-  otick <- optimal.tickmarks(0, max.n.valores(x.data.fixed), 10)
+  otick <- optimal.tickmarks(0, maxnvalores(x.data.fixed), 10)
   range.y <- c(otick$range[1], otick$range[2] + otick$by / 2)
   opar <- par(mar = c(4, 3, 1, 2) + 0.1, mgp = c(3, 0.5, 0), xpd = T)
   matplot(1:semanas, x.data.fixed,

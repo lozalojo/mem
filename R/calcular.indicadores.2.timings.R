@@ -86,7 +86,7 @@ calcular.indicadores.2.timings <- function(i.current,
 
   # calculo el rango y para que tenga 10 marcas o este cerca
 
-  maximo.y <- max.fix.na(dgraf)
+  maximo.y <- maxFixNA(dgraf)
   posicion.ticks <- optimal.tickmarks(0, maximo.y, 10)$by
   range.y <- c(-1.5 * posicion.ticks, ceiling(maximo.y / posicion.ticks) * posicion.ticks)
   range.y.seq <- seq(0, ceiling(maximo.y / posicion.ticks) * posicion.ticks, posicion.ticks)

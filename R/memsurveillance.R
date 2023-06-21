@@ -268,7 +268,7 @@ memsurveillance <- function(i.current,
   anchos <- c(3, 2, 2, 2, 2)
   colores <- c("#808080", "#8c6bb1", "#88419d", "#810f7c", "#4d004b")
 
-  if (is.numeric(i.range.y)) range.y.bus <- i.range.y else range.y.bus <- c(0, max.fix.na(dgraf))
+  if (is.numeric(i.range.y)) range.y.bus <- i.range.y else range.y.bus <- c(0, maxFixNA(dgraf))
   otick <- optimal.tickmarks(range.y.bus[1], range.y.bus[2], 10)
   range.y <- c(otick$range[1], otick$range[2] + otick$by / 2)
 
