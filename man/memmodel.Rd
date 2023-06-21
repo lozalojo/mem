@@ -24,7 +24,8 @@ memmodel(
   i.n.max = -1,
   i.type.boot = "norm",
   i.iter.boot = 10000,
-  i.mem.info = T
+  i.mem.info = T,
+  i.use.t = F
 )
 }
 \arguments{
@@ -65,6 +66,8 @@ memmodel(
 \item{i.iter.boot}{Number of bootstrap iterations.}
 
 \item{i.mem.info}{include information about the package in the graph.}
+
+\item{i.use.t}{Whether to use t-values (t distribution) instead of z-values (normal distribution).}
 }
 \value{
 \code{memmodel} returns an object of class \code{mem}.
@@ -136,6 +139,10 @@ recommended).
 Parameters \code{i.method} and \code{i.param} indicates how to find the optimal timing
 of the epidemics. See \code{\link{memtiming}} for details on the values this parameters
 can have.
+
+The \code{i.use.t} parameter allows to use the t-value (from a t distribution) instead 
+of the z-value (from a normal distribution) for confidence intervals that rely on z/t-values.
+Useful when using less than 30 values to calculate confidence intervals.
 
 It is important to know how to arrange information in order to use with memapp. The key points are:
 

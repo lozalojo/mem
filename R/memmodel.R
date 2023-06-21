@@ -30,6 +30,7 @@
 #' @param i.type.boot Type of bootstrap technique.
 #' @param i.iter.boot Number of bootstrap iterations.
 #' @param i.mem.info include information about the package in the graph.
+#' @param i.use.t Whether to use t-values (t distribution) instead of z-values (normal distribution).
 #'
 #' @return
 #' \code{memmodel} returns an object of class \code{mem}.
@@ -94,6 +95,10 @@
 #' Parameters \code{i.method} and \code{i.param} indicates how to find the optimal timing
 #' of the epidemics. See \code{\link{memtiming}} for details on the values this parameters
 #' can have.
+#'
+#' The \code{i.use.t} parameter allows to use the t-value (from a t distribution) instead 
+#' of the z-value (from a normal distribution) for confidence intervals that rely on z/t-values.
+#' Useful when using less than 30 values to calculate confidence intervals.
 #'
 #' It is important to know how to arrange information in order to use with memapp. The key points are:
 #'
@@ -194,7 +199,8 @@ memmodel <- function(i.data,
                      i.n.max = -1,
                      i.type.boot = "norm",
                      i.iter.boot = 10000,
-                     i.mem.info = T) {
+                     i.mem.info = T, 
+					 i.use.t = F) {
   if (is.null(dim(i.data))) {
     memmodel.output <- NULL
     cat("Incorrect number of dimensions, input must be a data.frame\n")
@@ -240,9 +246,9 @@ memmodel <- function(i.data,
       datos.duracion.real <- extraer.datos.optimo.map(optimo)
       
       # por defecto la aritmetica en ambos
-      ic.duracion <- iconfianza(as.numeric(datos.duracion.real[1, ]), i.level.other, i.type.other, T, i.type.boot, i.iter.boot, 2)
+      ic.duracion <- iconfianza(datos=as.numeric(datos.duracion.real[1, ]), nivel = i.level.other, tipo = i.type.other, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t)
       ic.duracion <- rbind(ic.duracion, c(floor(ic.duracion[1]), round(ic.duracion[2]), ceiling(ic.duracion[3])))
-      ic.porcentaje <- iconfianza(as.numeric(datos.duracion.real[2, ]), i.level.other, i.type.other, T, i.type.boot, i.iter.boot, 2)
+      ic.porcentaje <- iconfianza(datos=as.numeric(datos.duracion.real[2, ]), nivel = i.level.other, tipo = i.type.other, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t)
       duracion.media <- ic.duracion[2, 2]
       
       if (is.na(i.centering) | i.centering == -1) duracion.centrado <- duracion.media else duracion.centrado <- i.centering
@@ -265,13 +271,13 @@ memmodel <- function(i.data,
       
       ## Estimacion del numero de semana en el  comienza la gripe
       
-      ic.inicio <- iconfianza(as.numeric(datos.duracion.real[4, ]), i.level.other, i.type.other, T, i.type.boot, i.iter.boot, 2)
+      ic.inicio <- iconfianza(datos=as.numeric(datos.duracion.real[4, ]), nivel = i.level.other, tipo = i.type.other, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t)
       ic.inicio <- rbind(ic.inicio, c(floor(ic.inicio[1]), round(ic.inicio[2]), ceiling(ic.inicio[3])))
       ic.inicio <- rbind(ic.inicio, c(semana.absoluta(ic.inicio[2, 1], semana.inicio), semana.absoluta(ic.inicio[2, 2], semana.inicio), semana.absoluta(ic.inicio[2, 3], semana.inicio)))
       ic.inicio <- ic.inicio[c(2, 3, 1), ]
       inicio.medio <- ic.inicio[1, 2]
       
-      ic.inicio.centrado <- iconfianza(as.numeric(datos.duracion.centrado[4, ]), i.level.other, i.type.other, T, i.type.boot, i.iter.boot, 2)
+      ic.inicio.centrado <- iconfianza(datos=as.numeric(datos.duracion.centrado[4, ]), nivel = i.level.other, tipo = i.type.other, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t)
       ic.inicio.centrado <- rbind(ic.inicio.centrado, c(floor(ic.inicio.centrado[1]), round(ic.inicio.centrado[2]), ceiling(ic.inicio.centrado[3])))
       ic.inicio.centrado <- rbind(ic.inicio.centrado, c(semana.absoluta(ic.inicio.centrado[2, 1], semana.inicio), semana.absoluta(ic.inicio.centrado[2, 2], semana.inicio), semana.absoluta(ic.inicio.centrado[2, 3], semana.inicio)))
       ic.inicio.centrado <- ic.inicio.centrado[c(2, 3, 1), ]
@@ -410,7 +416,7 @@ memmodel <- function(i.data,
       iy <- is.na(temporadas.moviles.recortada)
       temporadas.moviles.recortada.no.ceros <- temporadas.moviles.recortada
       temporadas.moviles.recortada.no.ceros[iy] <- NA
-      curva.tipo <- t(apply(temporadas.moviles.recortada.no.ceros, 1, iconfianza, nivel = i.level.curve, tipo = i.type.curve, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2))
+      curva.tipo <- t(apply(temporadas.moviles.recortada.no.ceros, 1, iconfianza, nivel = i.level.curve, tipo = i.type.curve, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t))
       
       ## Seleccionamos los periodos pre, epidemia, y post
       
@@ -438,12 +444,12 @@ memmodel <- function(i.data,
       epi.d <- epi.datos[!is.na(epi.datos)]
       epi.d.2 <- epi.datos.2[!is.na(epi.datos.2)]
       
-      pre.i <- iconfianza(pre.d, nivel = i.level.threshold, tipo = i.type.threshold, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.threshold)
-      post.i <- iconfianza(post.d, nivel = i.level.threshold, tipo = i.type.threshold, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.threshold)
+      pre.i <- iconfianza(datos=pre.d, nivel = i.level.threshold, tipo = i.type.threshold, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.threshold, use.t = i.use.t)
+      post.i <- iconfianza(datos=post.d, nivel = i.level.threshold, tipo = i.type.threshold, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.threshold, use.t = i.use.t)
       epi.intervalos <- numeric()
-      for (niv in i.level.intensity) epi.intervalos <- rbind(epi.intervalos, c(niv, iconfianza(epi.d, nivel = niv, tipo = i.type.intensity, ic = T, colas = i.tails.intensity)))
+      for (niv in i.level.intensity) epi.intervalos <- rbind(epi.intervalos, c(niv, iconfianza(datos=epi.d, nivel = niv, tipo = i.type.intensity, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.intensity, use.t = i.use.t)))
       epi.intervalos.2 <- numeric()
-      for (niv in i.level.intensity) epi.intervalos.2 <- rbind(epi.intervalos.2, c(niv, iconfianza(epi.d.2, nivel = niv, tipo = i.type.intensity, ic = T, colas = i.tails.intensity)))
+      for (niv in i.level.intensity) epi.intervalos.2 <- rbind(epi.intervalos.2, c(niv, iconfianza(datos=epi.d.2, nivel = niv, tipo = i.type.intensity, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.intensity, use.t = i.use.t)))
       
       pre.post.intervalos <- rbind(pre.i, post.i)
       
