@@ -10,7 +10,9 @@ optimal.tickmarks(
   i.max,
   i.number.ticks = 10,
   i.valid.ticks = apply(expand.grid(c(1, 2, 2.5, 5), 10^(-10:10)), 1, FUN = function(x)
-    {     x[1] * x[2] }),
+    {
+     x[1] * x[2]
+ }),
   i.include.min = F,
   i.include.max = F
 )

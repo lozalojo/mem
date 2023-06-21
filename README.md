@@ -15,21 +15,36 @@ As a result of the collaboration with *ECDC* and *WHO-E*, two papers have been p
 
 ## Installation
 
-To install the lastest stable version from the official R repositories (*CRAN*):
+The stable package can be installed from the official R repositories (*CRAN*) using the built-in install function (or from the package manager in some GUIs for R):
 
 ```
-# install the mem CRAN version
+# install the memapp CRAN version
 install.packages("mem")
 ```
 
-To install the lastest development version of *mem*.
+Or from the official repository:
+
+```
+if(!require("devtools")) install.packages("devtools")
+library("devtools")
+# install the mem stable version from GitHub
+install_github("lozalojo/mem", ref = "master")
+```
+
+To install the development version of *mem* use the *devtools* package.
 
 ```
 if(!require("devtools")) install.packages("devtools")
 library("devtools")
 # install the memapp development version from GitHub
-install_github("lozalojo/mem", branch = "development")
+install_github("lozalojo/mem", ref = "development")
 ```
+
+# Web application
+
+There is a package that acts as a Graphical User Interface (GUI) for *mem*. The package is called *memapp*, you can find more information on the official repository:
+
+[memapp repository](https://github.com/lozalojo/memapp "The Moving Epidemic Method Web Application")
 
 ## Usage
 

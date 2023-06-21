@@ -225,7 +225,7 @@ memgoodness <- function(i.data,
           )
           validacion[, i] <- validacion.i$indicadores.t
           rownames(validacion) <- rownames(validacion.i$indicadores.t)
-          peak.i <- max.fix.na(datos.actual)
+          peak.i <- maxFixNA(datos.actual)
           peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual])])
           umbrales.i <- memintensity(datos.modelo)$intensity.thresholds
           if (is.na(umbrales.i[1])) umbrales.i[1] <- 0
@@ -260,7 +260,7 @@ memgoodness <- function(i.data,
           )
           validacion[, i] <- validacion.i$indicadores.t
           rownames(validacion) <- rownames(validacion.i$indicadores.t)
-          peak.i <- max.fix.na(datos.actual)
+          peak.i <- maxFixNA(datos.actual)
           peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual], na.rm = T)])
           umbrales.i <- c(i.goodness.threshold.pre, i.goodness.intensity)
           if (is.na(umbrales.i[1])) umbrales.i[1] <- 0
@@ -313,7 +313,7 @@ memgoodness <- function(i.data,
           )
           validacion[, i] <- validacion.i$indicadores.t
           rownames(validacion) <- rownames(validacion.i$indicadores.t)
-          peak.i <- max.fix.na(datos.actual)
+          peak.i <- maxFixNA(datos.actual)
           peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual], na.rm = T)])
           umbrales.i <- memintensity(datos.modelo)$intensity.thresholds
           if (is.na(umbrales.i[1])) umbrales.i[1] <- 0

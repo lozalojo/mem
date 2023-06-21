@@ -6,7 +6,7 @@
 \alias{mem-package}
 \title{mem: The Moving Epidemic Method}
 \description{
-The Moving Epidemic Method, created by T Vega and JE Lozano (2012, 2015) <doi:10.1111/j.1750-2659.2012.00422.x>, <doi:10.1111/irv.12330>, allows the weekly assessment of the epidemic and intensity status to help in routine respiratory infections surveillance in health systems. Allows the comparison of different epidemic indicators, timing and shape with past epidemics and across different regions or countries with different surveillance systems. Also, it gives a measure of the performance of the method in terms of sensitivity and specificity of the alert week.
+The Moving Epidemic Method, created by T Vega and JE Lozano (2012, 2015) \doi{10.1111/j.1750-2659.2012.00422.x}, \doi{10.1111/irv.12330}, allows the weekly assessment of the epidemic and intensity status to help in routine respiratory infections surveillance in health systems. Allows the comparison of different epidemic indicators, timing and shape with past epidemics and across different regions or countries with different surveillance systems. Also, it gives a measure of the performance of the method in terms of sensitivity and specificity of the alert week.
 }
 \seealso{
 Useful links:

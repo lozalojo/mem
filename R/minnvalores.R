@@ -1,7 +1,7 @@
 #' lowest n values of a data set, removing Inf and -Inf
 #'
 #' @keywords internal
-min.n.valores <- function(mis.datos, n.min = 1) {
+minnvalores <- function(mis.datos, n.min = 1) {
   mis.datos[mis.datos == Inf] <- NA
   mis.datos[mis.datos == -Inf] <- NA
   ordenado <- sort(mis.datos, decreasing = F)

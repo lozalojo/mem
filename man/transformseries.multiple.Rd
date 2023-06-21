@@ -9,12 +9,14 @@ transformseries.multiple(
   i.max.epidemic.duration = NA,
   i.max.season.duration = NA,
   i.waves = NA,
-  i.param.1 = 3,
-  i.param.2 = 2,
+  i.waves.range = NA,
+  i.intra.param = 3,
+  i.inter.param = 2,
   i.min.separation = 1,
   i.output = NA,
   i.prefix = "Multiple waves",
   i.force.smooth = F,
+  i.split.top = 3,
   ...
 )
 }

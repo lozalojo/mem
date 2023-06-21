@@ -336,9 +336,9 @@ memmodel <- function(i.data,
       
       # Grafico del esquema de las temporadas gripales para su union
       
-      longitud.esquema <- semanas + max.fix.na(datos.duracion.centrado[4, ]) - min.fix.na(datos.duracion.centrado[4, ])
-      inicio.epidemia.esquema <- max.fix.na(datos.duracion.centrado[4, ])
-      fin.epidemia.esquema <- max.fix.na(datos.duracion.centrado[5, ])
+      longitud.esquema <- semanas + maxFixNA(datos.duracion.centrado[4, ]) - minFixNA(datos.duracion.centrado[4, ])
+      inicio.epidemia.esquema <- maxFixNA(datos.duracion.centrado[4, ])
+      fin.epidemia.esquema <- maxFixNA(datos.duracion.centrado[5, ])
       
       esquema.temporadas <- array(dim = c(longitud.esquema, anios + 2, 3), dimnames = list(
         "dummy weeks" = as.character(1:longitud.esquema),
@@ -422,7 +422,7 @@ memmodel <- function(i.data,
       pre.datos <- as.vector(as.matrix(extraer.datos.pre.epi(optimo)))
       post.datos <- as.vector(as.matrix(extraer.datos.post.epi(optimo)))
       epi.datos <- as.vector(as.matrix(extraer.datos.epi(optimo)))
-      epi.datos.2 <- as.vector(as.matrix(apply(datos, 2, max.n.valores, n.max = n.max)))
+      epi.datos.2 <- as.vector(as.matrix(apply(datos, 2, maxnvalores, n.max = n.max)))
       
       pre.post.datos <- rbind(pre.datos, post.datos)
       
@@ -596,8 +596,8 @@ plot.mem <- function(x, ...) {
   pal <- colorRampPalette(brewer.pal(4, "Spectral"))
   colores <- pal(anios)
   # colores<-c(rgb(runif(anios-1),runif(anios-1),runif(anios-1)),"#FF0000")
-  # limite.superior<-c(1.05*max.fix.na(datos.graf))
-  otick <- optimal.tickmarks(0, max.fix.na(datos.graf), 10)
+  # limite.superior<-c(1.05*maxFixNA(datos.graf))
+  otick <- optimal.tickmarks(0, maxFixNA(datos.graf), 10)
   range.y <- c(otick$range[1], otick$range[2] + otick$by / 2)
   matplot(1:semanas,
     datos.graf,

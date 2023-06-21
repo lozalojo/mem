@@ -18,7 +18,7 @@ iconfianza.percentil.boot <- function(datos, q = 0.50, nivel = 0.95, ic = T, tip
       iconfres <- rep(quantile(datos, probs = q), 3)
     } else {
       datos.boot <- boot(x, quantile.fun, iteraciones.boot)
-      if (!all(min.fix.na(x) == x, na.rm = T)) {
+      if (!all(minFixNA(x) == x, na.rm = T)) {
         inter.boot <- boot.ci(datos.boot, type = c("norm", "basic", "perc", "stud"), conf = ((3 - colas) * nivel - 2 + colas))
         if (tipo.boot == "norm" || tipo.boot == "normal") {
           iconfres <- c(inter.boot$normal[2], inter.boot$t0[1], inter.boot$normal[3])

@@ -119,7 +119,7 @@ processPlots <- function(i.flu, i.output = ".", i.prefix = "") {
     puntos[1:i.flu$seasons.data[2, j, 1], 2] <- NA
     points(puntos, pch = 19, type = "p", col = "#FFB401", cex = 1.5)
     x <- semanas - 10
-    y <- max.fix.na(i.flu$param.data[, j]) - 1
+    y <- maxFixNA(i.flu$param.data[, j]) - 1
     legend("topright",
       inset = c(-0.375, 0),
       legend = c("Crude rate", "Pre-epi period", "Epidemic", "Post-epi period"),
@@ -261,8 +261,8 @@ processPlots <- function(i.flu, i.output = ".", i.prefix = "") {
   pal <- colorRampPalette(brewer.pal(4, "Spectral"))
   colores <- pal(anios)
   # colores<-brewer.pal(anios,"Blues")
-  # limite.superior<-c(0,50+max.fix.na(i.flu$moving.epidemics))
-  limite.superior <- c(0, 1.05 * max.fix.na(i.flu$moving.epidemics))
+  # limite.superior<-c(0,50+maxFixNA(i.flu$moving.epidemics))
+  limite.superior <- c(0, 1.05 * maxFixNA(i.flu$moving.epidemics))
   rango.superior <- limite.superior[2] - limite.superior[1]
   matplot(tempdatos[, 1], tempdatos[, 2:(anios + 1)],
     type = "l", lty = tipos, lwd = anchos, col = colores,
@@ -318,8 +318,8 @@ processPlots <- function(i.flu, i.output = ".", i.prefix = "") {
   # Limites normales
   dgraf <- cbind(i.flu$typ.curve, lineas.basicas)
   nulos <- is.na(dgraf[, 1]) | is.na(dgraf[, 3])
-  # limite.superior<-c(0,50+max.fix.na(dgraf))
-  limite.superior <- c(0, 1.05 * max.fix.na(dgraf))
+  # limite.superior<-c(0,50+maxFixNA(dgraf))
+  limite.superior <- c(0, 1.05 * maxFixNA(dgraf))
   matplot(1:semanas, dgraf,
     type = "l", lty = tipos, lwd = anchos, col = colores,
     main = paste("Typical influenza epidemic\n", substring(names(i.flu$param.data)[1], 1, nchar(names(i.flu$param.data)[1]) - 12)),
@@ -342,7 +342,7 @@ processPlots <- function(i.flu, i.output = ".", i.prefix = "") {
   text(x, y, texto, font = 2)
   abline(v = c(limites.temporada[1, 1] - 0.5, limites.temporada[1, 2] + 0.5), col = c("#00C000", "#FFB401"), lty = 2)
   x <- semanas - 10
-  y <- max.fix.na(tempdatos) - 1
+  y <- maxFixNA(tempdatos) - 1
   legend("topright",
     inset = c(-0.375, 0),
     legend = c("Typical curve", "Limits of the curve", "Threshold", "Epidemic start", "Epidemic end"),
@@ -381,7 +381,7 @@ processPlots <- function(i.flu, i.output = ".", i.prefix = "") {
   # Limites normales
   par(mfrow = c(1, 1))
   dgraf <- tempdatos[, -1]
-  limite.superior <- c(0, 1.05 * max.fix.na(dgraf))
+  limite.superior <- c(0, 1.05 * maxFixNA(dgraf))
   # cat("Lineas:",dim(dgraf)[2],"\n")
   matplot(1:semanas, dgraf,
     type = "l",
