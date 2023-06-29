@@ -35,8 +35,8 @@ transformseries.twowaves <- function(i.data,
     y2 <- y1[!is.na(y1)]
     data.rep <- rep(x2, times = y2)
     # Sometimes densityMClust return errors, I have to check it
-    mixmdl.normal.v <- try(densityMclust(data.rep, G = 2, modelNames = "V", verbose = F), silent = T)
-    mixmdl.normal.e <- try(densityMclust(data.rep, G = 2, modelNames = "E", verbose = F), silent = T)
+    mixmdl.normal.v <- try({setTimeLimit(cpu = 5, elapsed = Inf); densityMclust(data.rep, G = 2, modelNames = "V", verbose = F)}, silent = T)
+    mixmdl.normal.e <- try({setTimeLimit(cpu = 5, elapsed = Inf); densityMclust(data.rep, G = 2, modelNames = "E", verbose = F)}, silent = T)
     if (i.model != "V") {
       if (!("try-error" %in% class(mixmdl.normal.e))) {
         mixmdl.normal <- mixmdl.normal.e
