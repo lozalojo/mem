@@ -7,7 +7,7 @@ iconfianza.x <- function(datos, nivel = 0.95, ic = T, colas = 2, use.t = F) {
   n <- sum(!is.na(datos))
   if (n != 0) {
     # pnor<-qnorm((1-nivel)/colas,lower.tail=FALSE)
-    if (use.t) pnor <- qt(1 - (1 - nivel) / colas, n - 1) else pnor <- qnorm(1 - (1 - nivel) / colas)
+    if (use.t) pnor <- qt(1 - (1 - nivel) / colas, n - 1)*sqrt(1+1/n) else pnor <- qnorm(1 - (1 - nivel) / colas)
     med <- mean(datos, na.rm = T)
     std <- sqrt(var(datos, na.rm = T))
     l.i <- med - pnor * std
