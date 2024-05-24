@@ -92,12 +92,12 @@ memgoodness(
 \value{
 \code{memgoodness} returns a list.
 A list containing at least the following components:
-\itemize{
-  \item{validity.data} {data for each value analysed.}
-  \item{results} {Total weeks, non-missing weeks, true positives, false positives
+\describe{
+  \item{validity.data}{data for each value analysed.}
+  \item{results}{Total weeks, non-missing weeks, true positives, false positives
 true negatives, false negatives, sensitivity, specificity .}
-  \item{peaks} {distribution of the levels of intensity of the peaks.}
-  \item{peaks.data} {Peak value, week of the peak value, epidemic and intensity thresholds and intensity level of each season analysed.}
+  \item{peaks}{distribution of the levels of intensity of the peaks.}
+  \item{peaks.data}{Peak value, week of the peak value, epidemic and intensity thresholds and intensity level of each season analysed.}
 }
 }
 \description{

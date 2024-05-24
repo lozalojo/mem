@@ -35,18 +35,18 @@
 #' @return
 #' \code{memmodel} returns an object of class \code{mem}.
 #' An object of class \code{mem} is a list containing at least the following components:
-#' \itemize{
-#'   \item{i.data} {input data}
-#'   \item{pre.post.intervals} {Pre/post confidence intervals (Threhold is the upper limit
+#' \describe{
+#'   \item{i.data}{input data}
+#'   \item{pre.post.intervals}{Pre/post confidence intervals (Threhold is the upper limit
 #'   of the confidence interval).}
-#'   \item{ci.length} {Mean epidemic length confidence interval.}
-#'   \item{ci.percent} {Mean covered percentage confidence interval.}
-#'   \item{mean.length} {Mean length.}
-#'   \item{moving.epidemics} {Moving epidemic rates.}
-#'   \item{mean.start} {Mean epidemic start.}
-#'   \item{epi.intervals} {Epidemic levels of intensity.}
-#'   \item{typ.curve} {Typical epidemic curve.}
-#'   \item{n.max} {Effective number of pre epidemic values.}
+#'   \item{ci.length}{Mean epidemic length confidence interval.}
+#'   \item{ci.percent}{Mean covered percentage confidence interval.}
+#'   \item{mean.length}{Mean length.}
+#'   \item{moving.epidemics}{Moving epidemic rates.}
+#'   \item{mean.start}{Mean epidemic start.}
+#'   \item{epi.intervals}{Epidemic levels of intensity.}
+#'   \item{typ.curve}{Typical epidemic curve.}
+#'   \item{n.max}{Effective number of pre epidemic values.}
 #' }
 #'
 #' @details
@@ -64,13 +64,13 @@
 #'
 #' All three parameters must be a number between \code{1} and \code{6}:
 #'
-#' \itemize{
-#' \item{1} {Arithmetic mean and mean confidence interval.}
-#' \item{2} {Geometric mean and mean confidence interval.}
-#' \item{3} {Median and the Nyblom/normal aproximation confidence interval.}
-#' \item{4} {Median and bootstrap confidence interval.}
-#' \item{5} {Arithmetic mean and point confidence interval (standard deviations).}
-#' \item{6} {Geometric mean and point confidence interval (standard deviations).}
+#' \describe{
+#' \item{1}{Arithmetic mean and mean confidence interval.}
+#' \item{2}{Geometric mean and mean confidence interval.}
+#' \item{3}{Median and the Nyblom/normal aproximation confidence interval.}
+#' \item{4}{Median and bootstrap confidence interval.}
+#' \item{5}{Arithmetic mean and point confidence interval (standard deviations).}
+#' \item{6}{Geometric mean and point confidence interval (standard deviations).}
 #' }
 #'
 #' Option \code{3} uses the Hettmansperger and Sheather (1986) and Nyblom (1992) method,
@@ -89,7 +89,7 @@
 #' The \code{i.n.max} parameter indicates how many pre epidemic values to use to calculate
 #' the threshold. A value of -1 indicates the program to use an appropiate number of points
 #' depending on the number of seasons provided as input. \code{i.tails} tells the program
-#' to use {1} or {2} tailed confidence intervals when calculating the threshold (1 is
+#' to use 1 or 2 tailed confidence intervals when calculating the threshold (1 is
 #' recommended).
 #'
 #' Parameters \code{i.method} and \code{i.param} indicates how to find the optimal timing

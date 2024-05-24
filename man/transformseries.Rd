@@ -25,16 +25,16 @@ row a week.
 
 Transformation options:
 
-\itemize{
-\item{1} {No transformation}
-\item{2} {Odd}
-\item{3} {Fill missing data}
-\item{4} {Smoothing regression}
-\item{5} {Two waves (observed)}
-\item{6} {Two waves (expected)}
-\item{7} {Loess}
-\item{8} {Spline}
-\item{9} {Moving Average}
+\describe{
+\item{1}{No transformation}
+\item{2}{Odd}
+\item{3}{Fill missing data}
+\item{4}{Smoothing regression}
+\item{5}{Two waves (observed)}
+\item{6}{Two waves (expected)}
+\item{7}{Loess}
+\item{8}{Spline}
+\item{9}{Moving Average}
 }
 
 Fill missings sustitute missing values with predicted values from a loess regression fit.

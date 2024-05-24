@@ -20,9 +20,9 @@
 #' @return
 #' \code{roc.analysis} returns a list.
 #' An object of class \code{mem} is a list containing at least the following components:
-#' \itemize{
-#'   \item{optimum} {optimum value.}
-#'   \item{results} {Detailed results of each iteration.}
+#' \describe{
+#'   \item{optimum}{optimum value.}
+#'   \item{results}{Detailed results of each iteration.}
 #' }
 #'
 #' @details

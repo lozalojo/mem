@@ -19,18 +19,18 @@
 #' @return
 #' \code{memtiming} returns an object of class \code{epidemic}.
 #' An object of class \code{epidemic} is a list containing at least the following components:
-#' \itemize{
-#'   \item{i.data }{input data}
-#'   \item{data }{data with missing rates filled with data from smothing regression}
-#'   \item{map.curve }{MAP curve}
-#'   \item{slope.curve }{slope of the MAP curve}
-#'   \item{optimum.map }{optimum}
-#'   \item{pre.epi }{pre-epidemic highest rates}
-#'   \item{epi }{epidemic highest rates}
-#'   \item{post.epi }{post-epidemic highest rates}
-#'   \item{pre.epi.data }{pre-epidemic rates}
-#'   \item{epi.data }{epidemic rates}
-#'   \item{post.epi.data }{post-epidemic rates}
+#' \describe{
+#'   \item{i.data}{input data}
+#'   \item{data}{data with missing rates filled with data from smothing regression}
+#'   \item{map.curve}{MAP curve}
+#'   \item{slope.curve}{slope of the MAP curve}
+#'   \item{optimum.map}{optimum}
+#'   \item{pre.epi}{pre-epidemic highest rates}
+#'   \item{epi}{epidemic highest rates}
+#'   \item{post.epi}{post-epidemic highest rates}
+#'   \item{pre.epi.data}{pre-epidemic rates}
+#'   \item{epi.data}{epidemic rates}
+#'   \item{post.epi.data}{post-epidemic rates}
 #' }
 #'
 #' @details
@@ -51,11 +51,11 @@
 #' Depending of the value \code{i.method}, the function will use a different method to
 #' calculate the optimum epidemic timing.
 #'
-#' \itemize{
-#' \item{1} {original method}
-#' \item{2} {fixed criterium method}
-#' \item{3} {slope method}
-#' \item{4} {second derivative method}
+#' \describe{
+#' \item{1}{original method}
+#' \item{2}{fixed criterium method}
+#' \item{3}{slope method}
+#' \item{4}{second derivative method}
 #' }
 #'
 #' All methods are based upon the MAP curve, as described in the MEM Method.

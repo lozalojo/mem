@@ -13,8 +13,8 @@
 #' @return
 #' \code{memevolution} returns a list.
 #' A list containing at least the following components:
-#' \itemize{
-#'   \item{evolution.data} {data for each value analysed.}
+#' \describe{
+#'   \item{evolution.data}{data for each value analysed.}
 #' }
 #'
 #' @details

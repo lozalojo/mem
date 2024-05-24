@@ -42,14 +42,14 @@
 #' There are three different states for trend, to determine the state, the current rate
 #' and the difference of the current and last weekly rate are needed:
 #'
-#' \itemize{
-#' \item{2} {Ascending - When the weekly rate is above the epidemic threshold and
+#' \describe{
+#' \item{2}{Ascending - When the weekly rate is above the epidemic threshold and
 #' the difference of the current and last weekly rate is higher than Delta OR this is the
 #' first time the rate is above the epidemic threshold.}
-#' \item{3} {Descending - When the weekly rate is above the epidemic threshold
+#' \item{3}{Descending - When the weekly rate is above the epidemic threshold
 #' and the difference of the current and last weekly rate is lower than Eta OR this is the
 #' first time the rate is below the epidemic threshold after having been above it.}
-#' \item{1} {Stable - Otherwise.}
+#' \item{1}{Stable - Otherwise.}
 #' }
 #'
 #' @examples
