@@ -21,6 +21,11 @@ transformseries.multiple <- function(i.data,
                                      i.prefix = "Multiple waves",
                                      i.force.smooth = F,
                                      i.split.top = 3,
+																		 i.p1titles = c("Series and smooth","Data to be used","Week","Data"),
+i.p2titles = c("Iteration", "Week", "Data"),
+i.p3titles = c("Iteration", "Week", "Data"),
+i.p4titles = c("Merged epidemics", "separation" ,"Iteration", "Week", "Data"),
+i.p5titles = c("Series separated in artificial seasons", "Series separated and MEM epidemics", "Week", "Data"),
                                      ...) {
   # Prepare outputs
   p1 <- list()
@@ -144,7 +149,7 @@ transformseries.multiple <- function(i.data,
     geom_point(aes(x = n, y = rates.smooth), color = "#CC0066", size = 1.5) +
     scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
     scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
-    labs(title = "Series and smooth", x = "Week", y = "Data") +
+    labs(title = i.p1titles[1], x = i.p1titles[3], y = i.p1titles[4]) +
     theme_light() +
     theme(plot.title = element_text(hjust = 0.5))
   p1[[2]] <- ggplot(data.plus) +
@@ -152,7 +157,7 @@ transformseries.multiple <- function(i.data,
     geom_point(aes(x = n, y = rates.filled), color = "#004000", size = 1.5) +
     scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
     scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
-    labs(title = "Data to be used", x = "Week", y = "Data") +
+    labs(title = i.p1titles[2], x = i.p1titles[3], y = i.p1titles[4]) +
     theme_light() +
     theme(plot.title = element_text(hjust = 0.5))
   # Iterative process to know the increment from one epidemic to the next one
@@ -247,8 +252,8 @@ transformseries.multiple <- function(i.data,
       scale_colour_manual(values = solpalette.full[1:j], guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
-      labs(title = paste0("Iteration #", j), x = "Week", y = "Data") +
-      guides(color = guide_legend(title = paste0("Iteration (Lim: ", sprintf("%3.2f", param.2), ")"))) +
+      labs(title = paste0(i.p2titles[1], " #", j), x = i.p2titles[2], y = i.p2titles[3]) +
+      guides(color = guide_legend(title = paste0(i.p2titles[1], " (Lim: ", sprintf("%3.2f", param.2), ")"))) +
       theme_light() +
       theme(plot.title = element_text(hjust = 0.5))
   }
@@ -304,8 +309,8 @@ transformseries.multiple <- function(i.data,
       scale_colour_manual(values = solpalette.full[1:j], guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
-      labs(title = paste0("Iteration #", j), x = "Week", y = "Data") +
-      guides(color = guide_legend(title = paste0("Iteration (Lim: ", sprintf("%3.2f", param.2), ")"))) +
+      labs(title = paste0(i.p3titles[1], " #", j), x = i.p3titles[2], y = i.p3titles[3]) +
+      guides(color = guide_legend(title = paste0(i.p3titles[1], " (Lim: ", sprintf("%3.2f", param.2), ")"))) +
       theme_light() +
       theme(plot.title = element_text(hjust = 0.5))
   }
@@ -359,8 +364,8 @@ transformseries.multiple <- function(i.data,
       scale_colour_manual(values = solpalette.full[1:n.parts], guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
-      labs(title = paste0("Merged epidemics (separation: ", i.min.separation, ")"), x = "Week", y = "Data") +
-      guides(color = guide_legend(title = "Iteration")) +
+      labs(title = paste0(i.p4titles[1], " (",i.p4titles[2],": ", i.min.separation, ")"), x = i.p4titles[4], y = i.p4titles[5]) +
+      guides(color = guide_legend(title = i.p4titles[3])) +
       theme_light() +
       theme(plot.title = element_text(hjust = 0.5))
     # Now I separate each part for the lowest vale between epidemics, but using the smooth data to avoid irregular
@@ -436,8 +441,8 @@ transformseries.multiple <- function(i.data,
       scale_colour_manual(values = solpalette.full[1:n.parts], guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
-      labs(title = paste0("Merged epidemics (separation: ", i.min.separation, ")"), x = "Week", y = "Data") +
-      guides(color = guide_legend(title = "Parts")) +
+			labs(title = paste0(i.p4titles[1], " (",i.p4titles[2],": ", i.min.separation, ")"), x = i.p4titles[4], y = i.p4titles[5]) +
+      guides(color = guide_legend(title = i.p4titles[3])) +
       theme_light() +
       theme(plot.title = element_text(hjust = 0.5))
     if (n.parts > 1) p4[[2]] <- p4[[2]] + geom_vline(data = cut.united, aes(xintercept = n), color = "#000000", alpha = 0.5)
@@ -506,7 +511,7 @@ transformseries.multiple <- function(i.data,
       geom_point(data = data.plot.united, aes(x = x, y = y), color = "#800080", size = 4, alpha = 0.75) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
-      labs(title = "Series separated in artificial seasons", x = "Week", y = "Data") +
+      labs(title = i.p5titles[1], x = i.p5titles[3], y = i.p5titles[4]) +
       geom_vline(data = temp1, aes(xintercept = cut1), color = "#FF0000", alpha = 0.5) +
       geom_vline(data = temp1, aes(xintercept = cut2), color = "#40FF40", alpha = 0.5) +
       theme_light() +
@@ -522,7 +527,7 @@ transformseries.multiple <- function(i.data,
       scale_colour_manual(values = c("#00C000", "#800080", "#FFB401"), guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
-      labs(title = "Series separated and MEM epidemics", x = "Week", y = "Data") +
+      labs(title = i.p5titles[2], x = i.p5titles[3], y = i.p5titles[4]) +
       geom_segment(data = temp1, aes(x = cut1, xend = cut2, y = temp3, yend = temp3), color = "#0000CC", alpha = 0.75, size = 1, arrow = arrow(ends = "both", type = "closed", angle = "90", length = unit(5, "points"))) +
       geom_text(data = temp1, aes(x = cut3, y = temp2, label = season), color = "#0066CC", alpha = 0.75, vjust = 1) +
       # geom_vline(data=temp1, aes(xintercept=cut1), color="#FF0000", alpha=0.5) +
