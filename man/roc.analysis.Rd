@@ -8,13 +8,15 @@ roc.analysis(
   i.data,
   i.param.values = seq(1, 5, 0.1),
   i.min.seasons = 6,
-  i.graph = F,
-  i.graph.file = F,
+  i.graph = FALSE,
+  i.graph.file = FALSE,
   i.graph.file.name = "",
   i.graph.title = "",
   i.graph.subtitle = "",
   i.output = ".",
-  i.mem.info = T,
+  i.mem.info = TRUE,
+  i.min.sensitivity = NA,
+  i.min.specificity = NA,
   ...
 )
 }
@@ -38,6 +40,10 @@ roc.analysis(
 \item{i.output}{output directory.}
 
 \item{i.mem.info}{include information about the package in the graph.}
+
+\item{i.min.sensitivity}{set a minimum sensitivity when finding the optimum}
+
+\item{i.min.specificity}{set a minimum specificity when finding the optimum}
 
 \item{...}{other paramaters to be used by memgoodness function.}
 }
