@@ -17,7 +17,9 @@ Imports:
     purrr,
     RcppRoll,
     EnvStats,
-	methods
+	methods,
+	doParallel,
+	foreach
 Suggests:
     magick
 License: GPL (>= 2)
