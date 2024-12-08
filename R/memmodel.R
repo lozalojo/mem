@@ -96,7 +96,7 @@
 #' of the epidemics. See \code{\link{memtiming}} for details on the values this parameters
 #' can have.
 #'
-#' The \code{i.use.t} parameter allows to use the t-value (from a t distribution) instead 
+#' The \code{i.use.t} parameter allows to use the t-value (from a t distribution) instead
 #' of the z-value (from a normal distribution) for confidence intervals that rely on z/t-values.
 #' Useful when using less than 30 values to calculate confidence intervals.
 #'
@@ -199,21 +199,21 @@ memmodel <- function(i.data,
                      i.n.max = -1,
                      i.type.boot = "norm",
                      i.iter.boot = 10000,
-                     i.mem.info = T, 
-					 i.use.t = F) {
+                     i.mem.info = TRUE,
+                     i.use.t = FALSE) {
   if (is.null(dim(i.data))) {
     memmodel.output <- NULL
     cat("Incorrect number of dimensions, input must be a data.frame\n")
   } else {
     # Test if first column is week.name
-    if (all(i.data[,1] %in% 1:53)){
+    if (all(i.data[, 1] %in% 1:53)) {
       datos <- i.data[-1]
-      rownames(datos)<-i.data[,1]
-    }else{
+      rownames(datos) <- i.data[, 1]
+    } else {
       datos <- i.data
-      if (!all(rownames(i.data) %in% 1:53)) rownames(datos)<-1:NROW(i.data)
+      if (!all(rownames(i.data) %in% 1:53)) rownames(datos) <- seq_len(NROW(i.data))
     }
-    datos <- datos[apply(datos, 2, function(x) sum(x, na.rm = T) > 0)]
+    datos <- datos[apply(datos, 2, function(x) sum(x, na.rm = TRUE) > 0)]
     if (!(ncol(datos) > 1)) {
       memmodel.output <- NULL
       cat("Incorrect number of dimensions, at least two seasons of valid data (non-zero values) required\n")
@@ -230,7 +230,6 @@ memmodel <- function(i.data,
       } else {
         if (i.n.max == -1) {
           n.max <- max(1, round(30 / anios, 0))
-          # if (anios>=10) n.max=3 else n.max=5
         } else if (i.n.max == 0) {
           n.max <- semanas
         } else {
@@ -242,24 +241,24 @@ memmodel <- function(i.data,
       if (is.null(i.param)) i.param <- 2.8
       if (is.na(i.param)) i.param <- 2.8
       optimo <- apply(datos, 2, memtiming, i.n.values = n.max, i.method = i.method, i.param = i.param)
-      
+
       datos.duracion.real <- extraer.datos.optimo.map(optimo)
-      
+
       # por defecto la aritmetica en ambos
-      ic.duracion <- iconfianza(datos=as.numeric(datos.duracion.real[1, ]), nivel = i.level.other, tipo = i.type.other, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t)
+      ic.duracion <- iconfianza(datos = as.numeric(datos.duracion.real[1, ]), nivel = i.level.other, tipo = i.type.other, ic = TRUE, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t)
       ic.duracion <- rbind(ic.duracion, c(floor(ic.duracion[1]), round(ic.duracion[2]), ceiling(ic.duracion[3])))
-      ic.porcentaje <- iconfianza(datos=as.numeric(datos.duracion.real[2, ]), nivel = i.level.other, tipo = i.type.other, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t)
+      ic.porcentaje <- iconfianza(datos = as.numeric(datos.duracion.real[2, ]), nivel = i.level.other, tipo = i.type.other, ic = TRUE, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t)
       duracion.media <- ic.duracion[2, 2]
-      
-      if (is.na(i.centering) | i.centering == -1) duracion.centrado <- duracion.media else duracion.centrado <- i.centering
-      
+
+      if (is.na(i.centering) || i.centering == -1) duracion.centrado <- duracion.media else duracion.centrado <- i.centering
+
       ########################################################################################
       # Calcula todos los parametros asociados a la temporada gripal en base a la estimacion #
       # del numero de semanas de duracion total.                                             #
       ########################################################################################
-      
+
       # Datos de la gripe en la temporada REAL y en la temporada MEDIA, esta ultima sirve para unir las temporadas.
-      
+
       semana.inicio <- as.integer(rownames(datos)[1])
       gripe <- array(dim = c(7, anios, 3), dimnames = list(
         "indicators" = c("epidemic start", "epidemic end", "sum of epidemic values", "sum of values", "covered percentage", "sum of pre-epidemic values", "sum of post-epidemic values"),
@@ -268,21 +267,21 @@ memmodel <- function(i.data,
       ))
       datos.duracion.media <- extraer.datos.curva.map(optimo, duracion.media)
       datos.duracion.centrado <- extraer.datos.curva.map(optimo, duracion.centrado)
-      
+
       ## Estimacion del numero de semana en el  comienza la gripe
-      
-      ic.inicio <- iconfianza(datos=as.numeric(datos.duracion.real[4, ]), nivel = i.level.other, tipo = i.type.other, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t)
+
+      ic.inicio <- iconfianza(datos = as.numeric(datos.duracion.real[4, ]), nivel = i.level.other, tipo = i.type.other, ic = TRUE, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t)
       ic.inicio <- rbind(ic.inicio, c(floor(ic.inicio[1]), round(ic.inicio[2]), ceiling(ic.inicio[3])))
       ic.inicio <- rbind(ic.inicio, c(semana.absoluta(ic.inicio[2, 1], semana.inicio), semana.absoluta(ic.inicio[2, 2], semana.inicio), semana.absoluta(ic.inicio[2, 3], semana.inicio)))
       ic.inicio <- ic.inicio[c(2, 3, 1), ]
       inicio.medio <- ic.inicio[1, 2]
-      
-      ic.inicio.centrado <- iconfianza(datos=as.numeric(datos.duracion.centrado[4, ]), nivel = i.level.other, tipo = i.type.other, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t)
+
+      ic.inicio.centrado <- iconfianza(datos = as.numeric(datos.duracion.centrado[4, ]), nivel = i.level.other, tipo = i.type.other, ic = TRUE, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t)
       ic.inicio.centrado <- rbind(ic.inicio.centrado, c(floor(ic.inicio.centrado[1]), round(ic.inicio.centrado[2]), ceiling(ic.inicio.centrado[3])))
       ic.inicio.centrado <- rbind(ic.inicio.centrado, c(semana.absoluta(ic.inicio.centrado[2, 1], semana.inicio), semana.absoluta(ic.inicio.centrado[2, 2], semana.inicio), semana.absoluta(ic.inicio.centrado[2, 3], semana.inicio)))
       ic.inicio.centrado <- ic.inicio.centrado[c(2, 3, 1), ]
       inicio.centrado <- ic.inicio.centrado[1, 2]
-      
+
       for (j in 1:anios) {
         ## Semana en la q comienza la temporada.real
         gripe[1, j, 1] <- datos.duracion.real[4, j]
@@ -298,7 +297,7 @@ memmodel <- function(i.data,
         if (gripe[1, j, 1] > 1) gripe[6, j, 1] <- sum(datos[1:(gripe[1, j, 1] - 1), j], na.rm = TRUE) else gripe[6, j, 1] <- 0
         ## Casos Despues de la temporada gripal
         if (gripe[2, j, 1] < semanas) gripe[7, j, 1] <- sum(datos[(gripe[2, j, 1] + 1):semanas, j], na.rm = TRUE) else gripe[7, j, 1] <- 0
-        
+
         gripe[1, j, 2] <- datos.duracion.media[4, j]
         gripe[2, j, 2] <- datos.duracion.media[5, j]
         gripe[3, j, 2] <- datos.duracion.media[3, j]
@@ -306,7 +305,7 @@ memmodel <- function(i.data,
         gripe[5, j, 2] <- datos.duracion.media[2, j]
         if (gripe[1, j, 2] > 1) gripe[6, j, 2] <- sum(datos[1:(gripe[1, j, 2] - 1), j], na.rm = TRUE) else gripe[6, j, 2] <- 0
         if (gripe[2, j, 2] < semanas) gripe[7, j, 2] <- sum(datos[(gripe[2, j, 2] + 1):semanas, j], na.rm = TRUE) else gripe[7, j, 2] <- 0
-        
+
         gripe[1, j, 3] <- datos.duracion.centrado[4, j]
         gripe[2, j, 3] <- datos.duracion.centrado[5, j]
         gripe[3, j, 3] <- datos.duracion.centrado[3, j]
@@ -315,11 +314,11 @@ memmodel <- function(i.data,
         if (gripe[1, j, 3] > 1) gripe[6, j, 3] <- sum(datos[1:(gripe[1, j, 3] - 1), j], na.rm = TRUE) else gripe[6, j, 3] <- 0
         if (gripe[2, j, 3] < semanas) gripe[7, j, 3] <- sum(datos[(gripe[2, j, 3] + 1):semanas, j], na.rm = TRUE) else gripe[7, j, 3] <- 0
       }
-      
+
       # Indice de estado temporal. Si es un 1 me dice que estamos en epoca pretemporada,
       # si pone un 2 indica que estamos en temporada gripal. Si pone un 3 indica que
       # estamos en posttemporada.
-      
+
       indices.temporada <- array(dim = c(semanas, anios, 3), dimnames = list(
         "weeks" = rownames(datos),
         "seasons" = names(datos),
@@ -329,29 +328,28 @@ memmodel <- function(i.data,
         indices.temporada[-((datos.duracion.real[4, j]):semanas), j, 1] <- 1
         indices.temporada[(datos.duracion.real[4, j]):(datos.duracion.real[5, j]), j, 1] <- 2
         indices.temporada[-(1:(datos.duracion.real[5, j])), j, 1] <- 3
-        
+
         indices.temporada[-((datos.duracion.media[4, j]):semanas), j, 2] <- 1
         indices.temporada[(datos.duracion.media[4, j]):(datos.duracion.media[5, j]), j, 2] <- 2
         indices.temporada[-(1:(datos.duracion.media[5, j])), j, 2] <- 3
-        
+
         indices.temporada[-((datos.duracion.centrado[4, j]):semanas), j, 3] <- 1
         indices.temporada[(datos.duracion.centrado[4, j]):(datos.duracion.centrado[5, j]), j, 3] <- 2
         indices.temporada[-(1:(datos.duracion.centrado[5, j])), j, 3] <- 3
       }
-      
-      
+
+
       # Grafico del esquema de las temporadas gripales para su union
-      
+
       longitud.esquema <- semanas + maxFixNA(datos.duracion.centrado[4, ]) - minFixNA(datos.duracion.centrado[4, ])
       inicio.epidemia.esquema <- maxFixNA(datos.duracion.centrado[4, ])
-      fin.epidemia.esquema <- maxFixNA(datos.duracion.centrado[5, ])
-      
+
       esquema.temporadas <- array(dim = c(longitud.esquema, anios + 2, 3), dimnames = list(
         "dummy weeks" = as.character(1:longitud.esquema),
         "seasons" = c(names(datos), "mean season week", "mean season index"),
         "type" = c("absolute week", "relative week", "values")
       ))
-      
+
       for (j in 1:anios) {
         diferencia.anual <- inicio.epidemia.esquema - datos.duracion.centrado[4, j]
         for (i in 1:semanas) {
@@ -360,99 +358,91 @@ memmodel <- function(i.data,
           esquema.temporadas[i + diferencia.anual, j, 3] <- datos[i, j]
         }
       }
-      
+
       diferencia.global <- inicio.epidemia.esquema - inicio.centrado
       for (i in 1:semanas) {
-        if ((i + diferencia.global) >= 1 & (i + diferencia.global) <= longitud.esquema) {
+        if ((i + diferencia.global) >= 1 && (i + diferencia.global) <= longitud.esquema) {
           esquema.temporadas[i + diferencia.global, anios + 1, 1] <- i
           esquema.temporadas[i + diferencia.global, anios + 1, 2] <- semana.absoluta(i, semana.inicio)
           esquema.temporadas[i + diferencia.global, anios + 1, 3] <- i
         }
       }
-      
+
       esquema.temporadas[, anios + 2, ] <- 3
       esquema.temporadas[1:(diferencia.global + inicio.medio - 1), anios + 2, ] <- 1
       esquema.temporadas[(diferencia.global + inicio.medio):(diferencia.global + inicio.medio + duracion.media - 1), anios + 2, ] <- 2
-      # esquema.temporadas[1:(inicio.epidemia.esquema-1),anios+2,2]<-1
-      # esquema.temporadas[(inicio.epidemia.esquema):(inicio.epidemia.esquema+duracion.media-1),anios+2,2]<-2
-      
+
       ## Temporadas moviles
-      
+
       temporadas.moviles <- esquema.temporadas[, c(1:anios), 3]
-      
+
       ## Limites de la temporada
-      
-      # limites.temporada<-c(inicio.medio,inicio.medio+duracion.media-1)
-      # limites.temporada<-rbind(limites.temporada,c(semana.absoluta(inicio.medio,semana.inicio),semana.absoluta(inicio.medio+duracion.media-1,semana.inicio)))
-      
+
       # Limites relativos
-      
-      # limites.esquema<-c(inicio.epidemia.esquema,inicio.epidemia.esquema+duracion.media-1)
-      
+
       ## En ttotal reordenamos la gripe para q todas las temporadas comiencen la semana "estinicio" (es decir, quitamos informacion
       ## por delante y por detras de esquema.temporada[,,3] para que queden 35 semanas (las que hay).
-      
+
       temporadas.moviles.recortada <- array(dim = c(semanas, anios), dimnames = list(
         "dummy weeks" = as.character(1:semanas),
         "seasons" = names(datos)
       ))
-      
+
       ## Temporada gripal comienza "estinicio" y termina en "estinicio+temporada-1"
-      
+
       for (j in 1:anios) {
         for (i in 1:semanas) {
-          if ((i + diferencia.global) >= 1 & (i + diferencia.global) <= longitud.esquema) {
+          if ((i + diferencia.global) >= 1 && (i + diferencia.global) <= longitud.esquema) {
             temporadas.moviles.recortada[i, j] <- temporadas.moviles[i + diferencia.global, j]
           } else {
             temporadas.moviles.recortada[i, j] <- NA
           }
         }
       }
-      
+
       ## Dibujamos la curva epidemica tipo
-      
+
       # Importante: ?Quitamos los ceros?
-      # iy<-(is.na(temporadas.moviles.recortada) | temporadas.moviles.recortada==0)
       iy <- is.na(temporadas.moviles.recortada)
-      temporadas.moviles.recortada.no.ceros <- temporadas.moviles.recortada
-      temporadas.moviles.recortada.no.ceros[iy] <- NA
-      curva.tipo <- t(apply(temporadas.moviles.recortada.no.ceros, 1, iconfianza, nivel = i.level.curve, tipo = i.type.curve, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t))
-      
+      tempmoviles.recortada.noceros <- temporadas.moviles.recortada
+      tempmoviles.recortada.noceros[iy] <- NA
+      curva.tipo <- t(apply(tempmoviles.recortada.noceros, 1, iconfianza, nivel = i.level.curve, tipo = i.type.curve, ic = TRUE, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 2, use.t = i.use.t))
+
       ## Seleccionamos los periodos pre, epidemia, y post
-      
+
       ## PRE y POST-TEMPORADA GRIPAL
-      
+
       ## Como no se registra mas q de la semana 40 a la 20, tenemos q muchas de las semanas tienen tasa 0, eliminamos esas semanas,
       ## ya q podrian llevar a una infraestimacion de la tasa base fuera de temporada
-      
+
       pre.datos <- as.vector(as.matrix(extraer.datos.pre.epi(optimo)))
       post.datos <- as.vector(as.matrix(extraer.datos.post.epi(optimo)))
       epi.datos <- as.vector(as.matrix(extraer.datos.epi(optimo)))
       epi.datos.2 <- as.vector(as.matrix(apply(datos, 2, maxnvalores, n.max = n.max)))
-      
+
       pre.post.datos <- rbind(pre.datos, post.datos)
-      
+
       # IC de la linea basica de pre y post temporada
-      
+
       # por defecto estaba la geometrica
-      # pre.d<-pre.datos[!(is.na(pre.datos) | pre.datos==0)]
-      # post.d<-post.datos[!(is.na(post.datos) | post.datos==0)]
-      # epi.d<-epi.datos[!(is.na(epi.datos) | epi.datos==0)]
-      # epi.d.2<-epi.datos.2[!(is.na(epi.datos.2) | epi.datos.2==0)]
       pre.d <- pre.datos[!is.na(pre.datos)]
       post.d <- post.datos[!is.na(post.datos)]
       epi.d <- epi.datos[!is.na(epi.datos)]
       epi.d.2 <- epi.datos.2[!is.na(epi.datos.2)]
-      
-      pre.i <- iconfianza(datos=pre.d, nivel = i.level.threshold, tipo = i.type.threshold, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.threshold, use.t = i.use.t)
-      post.i <- iconfianza(datos=post.d, nivel = i.level.threshold, tipo = i.type.threshold, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.threshold, use.t = i.use.t)
+
+      pre.i <- iconfianza(datos = pre.d, nivel = i.level.threshold, tipo = i.type.threshold, ic = TRUE, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.threshold, use.t = i.use.t)
+      post.i <- iconfianza(datos = post.d, nivel = i.level.threshold, tipo = i.type.threshold, ic = TRUE, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.threshold, use.t = i.use.t)
       epi.intervalos <- numeric()
-      for (niv in i.level.intensity) epi.intervalos <- rbind(epi.intervalos, c(niv, iconfianza(datos=epi.d, nivel = niv, tipo = i.type.intensity, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.intensity, use.t = i.use.t)))
+      for (niv in i.level.intensity) {
+        epi.intervalos <- rbind(epi.intervalos, c(niv, iconfianza(datos = epi.d, nivel = niv, tipo = i.type.intensity, ic = TRUE, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.intensity, use.t = i.use.t)))
+      }
       epi.intervalos.2 <- numeric()
-      for (niv in i.level.intensity) epi.intervalos.2 <- rbind(epi.intervalos.2, c(niv, iconfianza(datos=epi.d.2, nivel = niv, tipo = i.type.intensity, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.intensity, use.t = i.use.t)))
-      
+      for (niv in i.level.intensity) {
+        epi.intervalos.2 <- rbind(epi.intervalos.2, c(niv, iconfianza(datos = epi.d.2, nivel = niv, tipo = i.type.intensity, ic = TRUE, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = i.tails.intensity, use.t = i.use.t)))
+      }
+
       pre.post.intervalos <- rbind(pre.i, post.i)
-      
+
       memmodel.output <- list(
         pre.post.intervals = pre.post.intervalos,
         ci.length = ic.duracion,
@@ -506,7 +496,7 @@ memmodel <- function(i.data,
         param.iter.boot = i.iter.boot,
         param.mem.info = i.mem.info
       )
-      
+
       memmodel.output$call <- match.call()
       class(memmodel.output) <- "mem"
     }
@@ -584,16 +574,14 @@ summary.mem <- function(object, ...) {
 
 #' @export
 plot.mem <- function(x, ...) {
-  # opar<-par(mfrow=c(1,2))
-  opar <- par(mfrow = c(1, 2), mar = c(4, 3, 1, 2) + 0.1, mgp = c(3, 0.5, 0), xpd = T)
+  opar <- par(mfrow = c(1, 2), mar = c(4, 3, 1, 2) + 0.1, mgp = c(3, 0.5, 0), xpd = TRUE)
 
   # Graph 1
   semanas <- dim(x$data)[1]
   anios <- dim(x$data)[2]
-  names.seasons <- sub("^.*\\(([^\\)]*)\\)$", "\\1", names(x$data), perl = T)
+  names.seasons <- sub("^.*\\(([^\\)]*)\\)$", "\\1", names(x$data), perl = TRUE)
   datos.graf <- x$moving.epidemics
   colnames(datos.graf) <- names(x$data)
-  # lab.graf<-(1:semanas)+x$mean.start[2]-x$mean.start[1]
   lab.graf <- (1:semanas) + x$ci.start[2, 2] - x$ci.start[1, 2]
   lab.graf[lab.graf > 52] <- (lab.graf - 52)[lab.graf > 52]
   lab.graf[lab.graf < 1] <- (lab.graf + 52)[lab.graf < 1]
@@ -601,8 +589,6 @@ plot.mem <- function(x, ...) {
   anchos <- rep(2, anios)
   pal <- colorRampPalette(brewer.pal(4, "Spectral"))
   colores <- pal(anios)
-  # colores<-c(rgb(runif(anios-1),runif(anios-1),runif(anios-1)),"#FF0000")
-  # limite.superior<-c(1.05*maxFixNA(datos.graf))
   otick <- optimal.tickmarks(0, maxFixNA(datos.graf), 10)
   range.y <- c(otick$range[1], otick$range[2] + otick$by / 2)
   matplot(1:semanas,
@@ -613,25 +599,21 @@ plot.mem <- function(x, ...) {
     lwd = anchos,
     col = colores,
     xlim = c(1, semanas),
-    # xlab="Week",
-    # ylab="Rate",
     xlab = "",
     ylab = "",
-    axes = F,
-    # font.axis=1,
-    # font.lab=1,
+    axes = FALSE,
     font.main = 2,
     font.sub = 1,
     ylim = range.y
   )
   # Ejes
-  axis(1, at = seq(1, semanas, 1), labels = F, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
+  axis(1, at = seq(1, semanas, 1), labels = FALSE, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
   axis(1,
-    at = seq(1, semanas, 2), tick = F,
+    at = seq(1, semanas, 2), tick = FALSE,
     labels = as.character(lab.graf)[seq(1, semanas, 2)], cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0"
   )
   axis(1,
-    at = seq(2, semanas, 2), tick = F,
+    at = seq(2, semanas, 2), tick = FALSE,
     labels = as.character(lab.graf)[seq(2, semanas, 2)], cex.axis = 0.7, line = 0.60, col.axis = "#404040", col = "#C0C0C0"
   )
   mtext(1, text = "Week", line = 2, cex = 0.8, col = "#000040")
@@ -643,8 +625,6 @@ plot.mem <- function(x, ...) {
   lines(x = rep(i.temporada - 0.5, 2), y = range.y, col = "#FF0000", lty = 2, lwd = 2)
   lines(x = rep(f.temporada + 0.5, 2), y = range.y, col = "#40FF40", lty = 2, lwd = 2)
   lines(x = c(1, semanas), y = rep(x$epidemic.thresholds[1], 2), col = "#8c6bb1", lty = 2, lwd = 2)
-  # abline(v=c(i.temporada-0.5,f.temporada+0.5),col=c("#00C000","#FFB401"),lty=c(2,2))
-  # ya<-range.y[2]*0.975
   ya <- otick$range[2]
   if ((i.temporada - 1) <= (semanas - f.temporada)) xa <- f.temporada + 1 else xa <- 1
   legend(
@@ -661,24 +641,25 @@ plot.mem <- function(x, ...) {
     ncol = 1
   )
 
-  temp1 <- memsurveillance(
+  # Graph 2
+  memsurveillance(
     i.current = data.frame(rates = x$typ.curve[, 2], row.names = rownames(x$data)),
     i.epidemic.thresholds = x$epidemic.thresholds,
     i.intensity.thresholds = x$intensity.thresholds,
     i.mean.length = x$mean.length,
-    i.force.length = T,
-    i.graph.file = F,
+    i.force.length = TRUE,
+    i.graph.file = FALSE,
     i.week.report = NA,
-    i.equal = F,
-    i.pos.epidemic = T,
-    i.no.epidemic = F,
-    i.no.intensity = F,
+    i.equal = FALSE,
+    i.pos.epidemic = TRUE,
+    i.no.epidemic = FALSE,
+    i.no.intensity = FALSE,
     i.epidemic.start = x$ci.start[2, 2],
     i.range.x = as.numeric(c(rownames(x$data)[1], rownames(x$data)[semanas])),
-    i.range.x.53 = F,
+    i.range.x.53 = FALSE,
     i.range.y = NA,
-    i.no.labels = F,
-    i.start.end.marks = T
+    i.no.labels = FALSE,
+    i.start.end.marks = TRUE
   )
 
   par(opar)

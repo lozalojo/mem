@@ -11,14 +11,14 @@ full.series.graph(
   i.output = ".",
   i.graph.title = "",
   i.graph.subtitle = "",
-  i.graph.file = T,
+  i.graph.file = TRUE,
   i.graph.file.name = "",
-  i.plot.timing = F,
-  i.plot.intensity = F,
+  i.plot.timing = FALSE,
+  i.plot.intensity = FALSE,
   i.alternative.thresholds = NA,
   i.color.pattern = c("#C0C0C0", "#606060", "#000000", "#808080", "#000000", "#001933",
     "#00C000", "#800080", "#FFB401", "#8c6bb1", "#88419d", "#810f7c", "#4d004b"),
-  i.mem.info = T,
+  i.mem.info = TRUE,
   ...
 )
 }

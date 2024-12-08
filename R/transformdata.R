@@ -56,7 +56,7 @@
 #' @importFrom dplyr select %>% filter
 transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per = 100, i.function = NULL) {
   if (is.null(i.range.x)) i.range.x <- NA
-  if (any(is.na(i.range.x)) | !is.numeric(i.range.x) | length(i.range.x) != 2) i.range.x <- c(min(as.numeric(i.data$week)), max(as.numeric(i.data$week)))
+  if (any(is.na(i.range.x)) || !is.numeric(i.range.x) || length(i.range.x) != 2) i.range.x <- c(min(as.numeric(i.data$week)), max(as.numeric(i.data$week)))
   if (i.range.x[1] < 1) i.range.x[1] <- 1
   if (i.range.x[1] >= 52) i.range.x[1] <- 52
   if (i.range.x[2] < 1) i.range.x[2] <- 1
@@ -72,7 +72,7 @@ transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per
   year <- week <- NULL
   data <- data %>%
     filter(!is.na(year) & !is.na(week))
-  # data <- subset(i.data, select = c("year", "week", i.name))
+
   week.f <- i.range.x[1]
   week.l <- i.range.x[2]
   data$season <- ""
@@ -88,10 +88,10 @@ transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per
     seasons.53 <- unique(subset(data, data$week == 53)$season)
     seasons.52 <- seasons.all[!(seasons.all %in% seasons.53)]
     data.out <- rbind(
-      merge(data.frame(season = seasons.52, stringsAsFactors = F), i.range.x.values.52, stringsAsFactors = F),
-      merge(data.frame(season = seasons.53, stringsAsFactors = F), i.range.x.values.53, stringsAsFactors = F)
+      merge(data.frame(season = seasons.52, stringsAsFactors = FALSE), i.range.x.values.52, stringsAsFactors = FALSE),
+      merge(data.frame(season = seasons.53, stringsAsFactors = FALSE), i.range.x.values.53, stringsAsFactors = FALSE)
     )
-    data.out <- merge(data.out, data, by = c("season", "week"), all.x = T)
+    data.out <- merge(data.out, data, by = c("season", "week"), all.x = TRUE)
     data.out$year[data.out$week >= week.f] <- as.numeric(substr(data.out$season[data.out$week >= week.f], 1, 4))
     data.out$year[data.out$week < week.f] <- as.numeric(substr(data.out$season[data.out$week < week.f], 6, 9))
   } else {
@@ -108,10 +108,10 @@ transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per
     seasons.53 <- unique(subset(data, data$week == 53)$season)
     seasons.52 <- seasons.all[!(seasons.all %in% seasons.53)]
     data.out <- rbind(
-      merge(data.frame(season = seasons.52, stringsAsFactors = F), i.range.x.values.52, stringsAsFactors = F),
-      merge(data.frame(season = seasons.53, stringsAsFactors = F), i.range.x.values.53, stringsAsFactors = F)
+      merge(data.frame(season = seasons.52, stringsAsFactors = FALSE), i.range.x.values.52, stringsAsFactors = FALSE),
+      merge(data.frame(season = seasons.53, stringsAsFactors = FALSE), i.range.x.values.53, stringsAsFactors = FALSE)
     )
-    data.out <- merge(data.out, data, by = c("season", "week"), all.x = T)
+    data.out <- merge(data.out, data, by = c("season", "week"), all.x = TRUE)
     data.out$year <- as.numeric(substr(data.out$season, 1, 4))
   }
   data.out$yrweek <- data.out$year * 100 + data.out$week
@@ -125,7 +125,7 @@ transformdata <- function(i.data, i.range.x = NA, i.name = "rates", i.max.na.per
   data.out <- data.out %>%
     select(week.no, season, rates) %>%
     spread(season, rates)
-  data.out <- merge(i.range.x.values.52, data.out, by = "week.no", all.x = T)
+  data.out <- merge(i.range.x.values.52, data.out, by = "week.no", all.x = TRUE)
   data.out <- data.out[apply(data.out, 2, function(x) sum(is.na(x)) / length(x) < i.max.na.per / 100)]
   data.out <- data.out[order(data.out$week.no), ]
   rownames(data.out) <- data.out$week

@@ -6,7 +6,7 @@ optimal.tickmarks <- function(i.min, i.max, i.number.ticks = 10,
                               i.valid.ticks = apply(expand.grid(c(1, 2, 2.5, 5), 10^(-10:10)), 1, FUN = function(x) {
                                 x[1] * x[2]
                               }),
-                              i.include.min = F, i.include.max = F) {
+                              i.include.min = FALSE, i.include.max = FALSE) {
   if (i.include.min) dif0 <- i.min else dif0 <- 0
   e.min <- i.min - dif0
   e.max <- i.max - dif0

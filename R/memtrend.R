@@ -35,7 +35,7 @@
 #' thresholds. A value of -1 indicates the program to use as many as possible. If there
 #' are less than this parameter, the program used all seasons avalaible.
 #'
-#' The \code{i.use.t} parameter allows to use the t-value (from a t distribution) instead 
+#' The \code{i.use.t} parameter allows to use the t-value (from a t distribution) instead
 #' of the z-value (from a normal distribution) for confidence intervals that rely on z/t-values.
 #' Useful when using less than 30 values to calculate confidence intervals.
 #'
@@ -84,8 +84,8 @@ memtrend <- function(i.flu,
                      i.type = 1,
                      i.level = 0.95,
                      i.type.boot = "norm",
-                     i.iter.boot = 10000, 
-					 i.use.t = F) {
+                     i.iter.boot = 10000,
+                     i.use.t = FALSE) {
   anios <- dim(i.flu$data)[2]
   semanas <- dim(i.flu$data)[1]
   datos.dif <- apply(i.flu$data, 2, diff)
@@ -96,8 +96,8 @@ memtrend <- function(i.flu,
   datos.mas <- datos.dif
   datos.menos[datos.dif < 0] <- NA
   datos.mas[datos.dif > 0] <- NA
-  limite.s <- iconfianza(datos = as.numeric(datos.menos), nivel = i.level, tipo = i.type, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 1, use.t = i.use.t)[1]
-  limite.i <- iconfianza(datos = as.numeric(datos.mas), nivel = i.level, tipo = i.type, ic = T, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 1, use.t = i.use.t)[3]
+  limite.s <- iconfianza(datos = as.numeric(datos.menos), nivel = i.level, tipo = i.type, ic = TRUE, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 1, use.t = i.use.t)[1]
+  limite.i <- iconfianza(datos = as.numeric(datos.mas), nivel = i.level, tipo = i.type, ic = TRUE, tipo.boot = i.type.boot, iteraciones.boot = i.iter.boot, colas = 1, use.t = i.use.t)[3]
   trend.thresholds <- matrix(c(limite.s, limite.i), ncol = 2)
   colnames(trend.thresholds) <- c("Ascending Threshold", "Descending Threshold")
   rownames(trend.thresholds) <- "Trend Thresholds"

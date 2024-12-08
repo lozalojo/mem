@@ -8,7 +8,7 @@ iconfianza.percentil.boot(
   datos,
   q = 0.5,
   nivel = 0.95,
-  ic = T,
+  ic = TRUE,
   tipo.boot = "norm",
   iteraciones.boot = 10000,
   colas = 2

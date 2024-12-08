@@ -77,7 +77,6 @@
 #' @export
 memevolution <- function(i.data, i.evolution.seasons = 10, i.evolution.method = "sequential", ...) {
   anios <- dim(i.data)[2]
-  semanas <- dim(i.data)[1]
   evolution.data <- numeric()
   evolution.seasons <- logical()
 
@@ -121,10 +120,10 @@ memevolution <- function(i.data, i.evolution.seasons = 10, i.evolution.method = 
       evolution.data <- rbind(evolution.data, evolution.data.i)
       evolution.seasons <- rbind(evolution.seasons, 1:anios %in% indices.modelo)
       rm("evolution.data.i")
-      evolution.seasons <- data.frame(evolution.seasons, row.names = NULL, stringsAsFactors = F)
+      evolution.seasons <- data.frame(evolution.seasons, row.names = NULL, stringsAsFactors = FALSE)
       names(evolution.seasons) <- names(i.data)
       rownames(evolution.seasons) <- c(names(i.data), "next")
-      evolution.data <- data.frame(evolution.data, row.names = NULL, stringsAsFactors = F)
+      evolution.data <- data.frame(evolution.data, row.names = NULL, stringsAsFactors = FALSE)
       names(evolution.data) <- c("number", "durationll", "duration", "durationul", "startll", "start", "startul", "percentagell", "percentage", "percentageul", "epidemic", "postepidemic", "medium", "high", "veryhigh")
       rownames(evolution.data) <- c(names(i.data), "next")
     } else {
@@ -143,10 +142,10 @@ memevolution <- function(i.data, i.evolution.seasons = 10, i.evolution.method = 
         evolution.seasons <- rbind(evolution.seasons, 1:anios %in% indices.modelo)
         rm("evolution.data.i")
       }
-      evolution.seasons <- data.frame(evolution.seasons, row.names = NULL, stringsAsFactors = F)
+      evolution.seasons <- data.frame(evolution.seasons, row.names = NULL, stringsAsFactors = FALSE)
       names(evolution.seasons) <- names(i.data)
       rownames(evolution.seasons) <- c(names(i.data)[3:anios], "next")
-      evolution.data <- data.frame(evolution.data, row.names = NULL, stringsAsFactors = F)
+      evolution.data <- data.frame(evolution.data, row.names = NULL, stringsAsFactors = FALSE)
       names(evolution.data) <- c("number", "durationll", "duration", "durationul", "startll", "start", "startul", "percentagell", "percentage", "percentageul", "epidemic", "postepidemic", "medium", "high", "veryhigh")
       rownames(evolution.data) <- c(names(i.data)[3:anios], "next")
     }

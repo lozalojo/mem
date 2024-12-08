@@ -4,7 +4,7 @@
 \alias{iconfianza.logx}
 \title{confidence interval for a point (using log transformation and geometric mean)}
 \usage{
-iconfianza.logx(datos, nivel = 0.95, ic = T, colas = 2, use.t = F)
+iconfianza.logx(datos, nivel = 0.95, ic = TRUE, colas = 2, use.t = FALSE)
 }
 \description{
 confidence interval for a point (using log transformation and geometric mean)

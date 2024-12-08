@@ -24,8 +24,8 @@ memmodel(
   i.n.max = -1,
   i.type.boot = "norm",
   i.iter.boot = 10000,
-  i.mem.info = T,
-  i.use.t = F
+  i.mem.info = TRUE,
+  i.use.t = FALSE
 )
 }
 \arguments{
@@ -140,7 +140,7 @@ Parameters \code{i.method} and \code{i.param} indicates how to find the optimal 
 of the epidemics. See \code{\link{memtiming}} for details on the values this parameters
 can have.
 
-The \code{i.use.t} parameter allows to use the t-value (from a t distribution) instead 
+The \code{i.use.t} parameter allows to use the t-value (from a t distribution) instead
 of the z-value (from a normal distribution) for confidence intervals that rely on z/t-values.
 Useful when using less than 30 values to calculate confidence intervals.
 

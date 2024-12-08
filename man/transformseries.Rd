@@ -50,7 +50,7 @@ Two waves (observed) is used when there are two waves per season. It divides the
 dataset in two using a mixture of two normal distributions. The expected option uses the
 same procedure but also substitutes all data with predicted values of the mixture fit.
 
-Moving Average has an additional parameter i.number for the number of observation to 
+Moving Average has an additional parameter i.number for the number of observation to
 calculate the average.
 }
 \examples{

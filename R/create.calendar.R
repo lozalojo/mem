@@ -31,10 +31,10 @@ create.calendar <- function(i.ini = as.POSIXct("1980-01-01"), i.fin = as.POSIXct
     select(yearepi, weekepi) %>%
     inner_join(temp3, by = c("yearepi", "weekepi")) %>%
     summarise(mindate = min(date), maxdate = max(date))
-  
+
   temp3 <- temp3 %>%
     filter(date >= temp4$mindate[1] & date <= temp4$maxdate[1])
-  
+
   temp4 <- temp3 %>%
     group_by(yearepi, weekepi) %>%
     summarise(fini = min(date), ffin = max(date))

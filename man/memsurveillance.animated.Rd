@@ -9,11 +9,11 @@ memsurveillance.animated(
   i.epidemic.thresholds = NA,
   i.intensity.thresholds = NA,
   i.output = ".",
-  i.animated.graph.file = T,
+  i.animated.graph.file = TRUE,
   i.animated.graph.file.name = "animated",
   i.fps = 2,
   i.loop = 0,
-  i.remove = T,
+  i.remove = TRUE,
   ...
 )
 }

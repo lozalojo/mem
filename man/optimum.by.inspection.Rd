@@ -7,12 +7,17 @@
 optimum.by.inspection(
   i.data,
   i.param.values = seq(1, 5, 0.1),
-  i.graph = F,
-  i.graph.file = F,
+  i.graph = FALSE,
+  i.graph.file = FALSE,
   i.graph.file.name = "",
   i.graph.title = "",
   i.graph.subtitle = "",
-  i.output = "."
+  i.output = ".",
+  i.labels.axis = c("Week", "Weekly rate"),
+  i.labels.periods = c("Pre", "Epidemic", "Post"),
+  i.labels.details = c("Sensitivity", "Specificity",
+    "First row represents real and second row observed pos/neg values"),
+  i.tolerance = 0.25
 )
 }
 \arguments{
@@ -20,7 +25,7 @@ optimum.by.inspection(
 
 \item{i.param.values}{values to use in the i.param value of \code{memtiming}.}
 
-\item{i.graph}{create a graph with the outputs (T/F).}
+\item{i.graph}{create a graph with the outputs (T/FALSE).}
 
 \item{i.graph.file}{write the graph to a file.}
 
@@ -31,6 +36,14 @@ optimum.by.inspection(
 \item{i.graph.subtitle}{subtitle of the graph.}
 
 \item{i.output}{output directory.}
+
+\item{i.labels.axis}{different labels used by output graphs}
+
+\item{i.labels.periods}{different labels used by output graphs}
+
+\item{i.labels.details}{different labels used by output graphs}
+
+\item{i.tolerance}{tolerance (in inches) when identifying points in the graph}
 }
 \value{
 \code{optimum.by.inspection} returns a list.

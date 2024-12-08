@@ -4,7 +4,7 @@
 \alias{transformseries.loess}
 \title{loess transformation}
 \usage{
-transformseries.loess(i.x, i.positive = F, ...)
+transformseries.loess(i.x, i.positive = FALSE, ...)
 }
 \description{
 loess transformation

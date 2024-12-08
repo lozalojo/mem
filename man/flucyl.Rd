@@ -42,7 +42,7 @@ The data set contains 8 surveillance seasons, from 2001/2002 to 2008/2009.
 }
 \examples{
 data(flucyl)
-plot(flucyl[,1],type="l")
+plot(flucyl[, 1], type = "l")
 }
 \references{
 Castilla y Leon Health Sentinel Network Reports (Informes de la Red Centinela Sanitaria

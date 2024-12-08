@@ -108,7 +108,7 @@ memtiming <- function(i.data,
                       i.n.values = 5,
                       i.method = 2,
                       i.param = 2.8,
-                      i.mem.info = T) {
+                      i.mem.info = TRUE) {
   if (!is.null(dim(i.data))) if (ncol(i.data) != 1) stop("Incorrect use of this function. Use memtiming() with a single season.")
   if (is.null(i.method)) i.method <- 2
   if (is.na(i.method)) i.method <- 2
@@ -118,7 +118,6 @@ memtiming <- function(i.data,
   datos <- fill.missing(as.vector(as.matrix(i.data)))
 
   curva.map <- calcular.map(datos)
-  # optimo.map<-calcular.optimo(curva.map,i.method,i.param)
   temp1 <- calcular.optimo(curva.map, i.method, i.param)
   optimo.map <- temp1$resultados
   curva.slope <- temp1$datos
@@ -126,9 +125,9 @@ memtiming <- function(i.data,
   epi.ini <- optimo.map[4]
   epi.fin <- optimo.map[5]
   n.datos <- length(datos)
-  if (is.na(epi.ini) & !is.na(epi.fin)) epi.ini <- 1
-  if (!is.na(epi.ini) & is.na(epi.fin)) epi.fin <- n.datos
-  if (is.na(epi.ini) & is.na(epi.fin)) {
+  if (is.na(epi.ini) && !is.na(epi.fin)) epi.ini <- 1
+  if (!is.na(epi.ini) && is.na(epi.fin)) epi.fin <- n.datos
+  if (is.na(epi.ini) && is.na(epi.fin)) {
     pre.epi.datos <- datos
     epi.datos <- NA
     post.epi.datos <- NA
@@ -201,10 +200,10 @@ plot.epidemic <- function(x, ...) {
   f.epi <- x$optimum.map[5]
   otick <- optimal.tickmarks(0, maxnvalores(x.data.fixed), 10)
   range.y <- c(otick$range[1], otick$range[2] + otick$by / 2)
-  opar <- par(mar = c(4, 3, 1, 2) + 0.1, mgp = c(3, 0.5, 0), xpd = T)
+  opar <- par(mar = c(4, 3, 1, 2) + 0.1, mgp = c(3, 0.5, 0), xpd = TRUE)
   matplot(1:semanas, x.data.fixed,
     type = "l", col = "#808080",
-    lty = c(1, 1), xaxt = "n", main = title.graph, ylim = range.y, axes = F, xlab = "", ylab = ""
+    lty = c(1, 1), xaxt = "n", main = title.graph, ylim = range.y, axes = FALSE, xlab = "", ylab = ""
   )
   # Axis
   if (!is.null(rownames(x$param.data))) {
@@ -213,14 +212,14 @@ plot.epidemic <- function(x, ...) {
     week.labels <- as.character(1:semanas)
   }
   axis(1,
-    at = seq(1, semanas, 2), tick = F,
+    at = seq(1, semanas, 2), tick = FALSE,
     labels = week.labels[seq(1, semanas, 2)], cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0"
   )
   axis(1,
-    at = seq(2, semanas, 2), tick = F,
+    at = seq(2, semanas, 2), tick = FALSE,
     labels = week.labels[seq(2, semanas, 2)], cex.axis = 0.7, line = 0.60, col.axis = "#404040", col = "#C0C0C0"
   )
-  axis(1, at = seq(1, semanas, 1), labels = F, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
+  axis(1, at = seq(1, semanas, 1), labels = FALSE, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
   mtext(1, text = "Week", line = 2, cex = 0.8, col = "#000040")
   axis(2, at = otick$tickmarks, lwd = 1, cex.axis = 0.6, col.axis = "#404040", col = "#C0C0C0")
   mtext(2, text = "Weekly rate", line = 1.3, cex = 0.8, col = "#000040")

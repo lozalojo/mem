@@ -5,7 +5,6 @@ calcular.optimo.original <- function(i.curva.map) {
   x <- i.curva.map[, 1]
   y <- i.curva.map[, 2]
   y.d <- diff(y)
-  # x.d<-x[-length(x)]
   x.d <- x[2:length(x)]
   y.s <- suavizado(y.d)
   x.n <- normalizar(x.d)

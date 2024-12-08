@@ -27,7 +27,7 @@ roc.analysis(
 
 \item{i.min.seasons}{minimum number of seasons to perform the analysis, default=6.}
 
-\item{i.graph}{create a graph with the outputs (T/F).}
+\item{i.graph}{create a graph with the outputs (TRUE/FALSE).}
 
 \item{i.graph.file}{write the graph to a file.}
 

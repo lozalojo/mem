@@ -8,7 +8,7 @@
 #' @param i.data Data frame of input data.
 #' @param i.param.values range of i.param values to test.
 #' @param i.min.seasons minimum number of seasons to perform the analysis, default=6.
-#' @param i.graph create a graph with the outputs (T/F).
+#' @param i.graph create a graph with the outputs (TRUE/FALSE).
 #' @param i.graph.file write the graph to a file.
 #' @param i.graph.file.name name of the output file.
 #' @param i.graph.title title of the graph.
@@ -224,7 +224,18 @@ roc.analysis <- function(i.data,
           mtext(2, text = "Value", line = 1.3, cex = 0.8, col = "#000040")
           mtext(3, text = i.graph.subtitle, cex = 0.8, col = "#000040")
           if (i.mem.info) mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
-          legend(x = "topright", y = NULL, inset = c(0, -0.05), xjust = 0, legend = etiquetas, bty = "n", lty = c(1, 1), lwd = c(1, 1), col = colores[c(1, 1)], pch = c(21, 21), pt.bg = colores[c(2, 3)], cex = 1, x.intersp = 0.5, y.intersp = 0.7, text.col = "#000000", ncol = 1)
+          legend(
+            x = "topright", y = NULL,
+            inset = c(0, -0.05),
+            xjust = 0,
+            legend = etiquetas,
+            bty = "n", lty = c(1, 1), lwd = c(1, 1),
+            col = colores[c(1, 1)],
+            pch = c(21, 21), pt.bg = colores[c(2, 3)],
+            cex = 1,
+            x.intersp = 0.5, y.intersp = 0.7,
+            text.col = "#000000", ncol = 1
+          )
         }
 
         if (any(!is.na(resultados$positive.predictive.value)) && any(!is.na(resultados$negative.predictive.value))) {
@@ -242,7 +253,18 @@ roc.analysis <- function(i.data,
           mtext(2, text = "Value", line = 1.3, cex = 0.8, col = "#000040")
           mtext(3, text = i.graph.subtitle, cex = 0.8, col = "#000040")
           if (i.mem.info) mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
-          legend(x = "topright", y = NULL, inset = c(0, -0.05), xjust = 0, legend = etiquetas, bty = "n", lty = c(1, 1), lwd = c(1, 1), col = colores[c(1, 1)], pch = c(21, 21), pt.bg = colores[c(2, 3)], cex = 1, x.intersp = 0.5, y.intersp = 0.7, text.col = "#000000", ncol = 1)
+          legend(
+            x = "topright", y = NULL,
+            inset = c(0, -0.05),
+            xjust = 0,
+            legend = etiquetas,
+            bty = "n", lty = c(1, 1), lwd = c(1, 1),
+            col = colores[c(1, 1)],
+            pch = c(21, 21), pt.bg = colores[c(2, 3)],
+            cex = 1,
+            x.intersp = 0.5, y.intersp = 0.7,
+            text.col = "#000000", ncol = 1
+          )
         }
         if (any(!is.na(resultados$percent.agreement)) && any(!is.na(resultados$matthews.correlation.coefficient))) {
           d.x <- resultados$value
@@ -259,7 +281,20 @@ roc.analysis <- function(i.data,
           mtext(2, text = "Value", line = 1.3, cex = 0.8, col = "#000040")
           mtext(3, text = i.graph.subtitle, cex = 0.8, col = "#000040")
           if (i.mem.info) mtext(4, text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""), line = 0.75, cex = 0.6, col = "#404040")
-          legend(x = "topright", y = NULL, inset = c(0, -0.05), xjust = 0, legend = etiquetas, bty = "n", lty = c(1, 1), lwd = c(1, 1), col = colores[c(1, 1)], pch = c(21, 21), pt.bg = colores[c(2, 3)], cex = 1, x.intersp = 0.5, y.intersp = 0.7, text.col = "#000000", ncol = 1)
+          legend(
+            x = "topright", y = NULL,
+            inset = c(0, -0.05),
+            xjust = 0,
+            legend = etiquetas,
+            bty = "n",
+            lty = c(1, 1), lwd = c(1, 1),
+            col = colores[c(1, 1)],
+            pch = c(21, 21),
+            pt.bg = colores[c(2, 3)],
+            cex = 1,
+            x.intersp = 0.5, y.intersp = 0.7,
+            text.col = "#000000", ncol = 1
+          )
         }
 
         if (any(!is.na(resultados$specificity)) && any(!is.na(resultados$sensitivity))) {

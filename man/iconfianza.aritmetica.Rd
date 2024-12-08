@@ -4,7 +4,7 @@
 \alias{iconfianza.aritmetica}
 \title{confidence interval for the arithmetic mean using the normal approximation}
 \usage{
-iconfianza.aritmetica(datos, nivel = 0.95, ic = T, colas = 2, use.t = F)
+iconfianza.aritmetica(datos, nivel = 0.95, ic = TRUE, colas = 2, use.t = FALSE)
 }
 \description{
 confidence interval for the arithmetic mean using the normal approximation

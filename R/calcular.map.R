@@ -16,7 +16,7 @@ calcular.map <- function(i.datos) {
     maxsumasemanas[s, 5] <- maxsumasemanas[s, 4] + s - 1
   }
   sumaanual <- sum(datos, na.rm = TRUE)
-  if (sumaanual==0) maxsumasemanas[, 2] <- 0 else maxsumasemanas[, 2] <- 100 * maxsumasemanas[, 3] / sumaanual
+  if (sumaanual == 0) maxsumasemanas[, 2] <- 0 else maxsumasemanas[, 2] <- 100 * maxsumasemanas[, 3] / sumaanual
   maxsumasemanas <- rbind(rep(0, 5), maxsumasemanas)
   return(maxsumasemanas)
 }

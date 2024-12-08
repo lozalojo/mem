@@ -8,9 +8,9 @@ iconfianza.percentil.kc(
   datos,
   q = 0.5,
   nivel = 0.95,
-  ic = T,
+  ic = TRUE,
   colas = 2,
-  use.t = F
+  use.t = FALSE
 )
 }
 \description{

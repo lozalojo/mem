@@ -7,6 +7,6 @@ minFixNA <- function(minputdata) {
   if (sum(!is.na(minputdata)) == 0) {
     return(NA)
   } else {
-    return(min(minputdata, na.rm = T))
+    return(min(minputdata, na.rm = TRUE))
   }
 }

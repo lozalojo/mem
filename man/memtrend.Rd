@@ -10,7 +10,7 @@ memtrend(
   i.level = 0.95,
   i.type.boot = "norm",
   i.iter.boot = 10000,
-  i.use.t = F
+  i.use.t = FALSE
 )
 }
 \arguments{
@@ -52,7 +52,7 @@ The \code{i.seasons} parameter indicates how many seasons are used for calculati
 thresholds. A value of -1 indicates the program to use as many as possible. If there
 are less than this parameter, the program used all seasons avalaible.
 
-The \code{i.use.t} parameter allows to use the t-value (from a t distribution) instead 
+The \code{i.use.t} parameter allows to use the t-value (from a t distribution) instead
 of the z-value (from a normal distribution) for confidence intervals that rely on z/t-values.
 Useful when using less than 30 values to calculate confidence intervals.
 

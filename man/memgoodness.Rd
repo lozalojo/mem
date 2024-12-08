@@ -29,9 +29,15 @@ memgoodness(
   i.detection.values = seq(1, 5, 0.1),
   i.weeks.above = 1,
   i.output = ".",
-  i.graph = F,
+  i.graph = FALSE,
   i.prefix = "",
-  i.min.seasons = 6
+  i.min.seasons = 6,
+  i.labels.axis = c("Week", "Weekly rate"),
+  i.labels.periods = c("Pre", "Epidemic", "Post"),
+  i.labels.intensities = c("Epidemic thr", "Medium thr", "High thr", "Very high thr"),
+  i.labels.details = c("algorithm", "threshold", "Method used",
+    "weeks above/below the threshold", "week(s) above the threshold", "Sensitivity",
+    "Specificity")
 )
 }
 \arguments{
@@ -88,6 +94,14 @@ memgoodness(
 \item{i.prefix}{prefix used for naming graphs.}
 
 \item{i.min.seasons}{minimum number of seasons to perform goodness, default=6.}
+
+\item{i.labels.axis}{different labels used by output graphs}
+
+\item{i.labels.periods}{different labels used by output graphs}
+
+\item{i.labels.intensities}{different labels used by output graphs}
+
+\item{i.labels.details}{different labels used by output graphs}
 }
 \value{
 \code{memgoodness} returns a list.

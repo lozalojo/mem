@@ -33,6 +33,10 @@
 #' @param i.graph whether the graphs must be written or not.
 #' @param i.prefix prefix used for naming graphs.
 #' @param i.min.seasons minimum number of seasons to perform goodness, default=6.
+#' @param i.labels.axis different labels used by output graphs
+#' @param i.labels.periods different labels used by output graphs
+#' @param i.labels.intensities different labels used by output graphs
+#' @param i.labels.details different labels used by output graphs
 #'
 #' @return
 #' \code{memgoodness} returns a list.
@@ -147,15 +151,19 @@ memgoodness <- function(i.data,
                         i.detection.values = seq(1.0, 5.0, 0.1),
                         i.weeks.above = 1,
                         i.output = ".",
-                        i.graph = F,
+                        i.graph = FALSE,
                         i.prefix = "",
-                        i.min.seasons = 6) {
+                        i.min.seasons = 6,
+                        i.labels.axis = c("Week", "Weekly rate"),
+                        i.labels.periods = c("Pre", "Epidemic", "Post"),
+                        i.labels.intensities = c("Epidemic thr", "Medium thr", "High thr", "Very high thr"),
+                        i.labels.details = c("algorithm", "threshold", "Method used", "weeks above/below the threshold", "week(s) above the threshold", "Sensitivity", "Specificity")) {
   if (is.null(dim(i.data))) {
     memgoodness.output <- NULL
     cat("Incorrect number of dimensions, input must be a data.frame.\n")
   } else {
     if (is.matrix(i.data)) i.data <- as.data.frame(i.data)
-    datos <- i.data[apply(i.data, 2, function(x) sum(x, na.rm = T) > 0)]
+    datos <- i.data[apply(i.data, 2, function(x) sum(x, na.rm = TRUE) > 0)]
     anios <- NCOL(datos)
     semanas <- dim(datos)[1]
     if (!(anios > 2)) {
@@ -221,7 +229,11 @@ memgoodness <- function(i.data,
             i.valores.parametro.deteccion = i.detection.values,
             i.output = i.output,
             i.graph = i.graph,
-            i.graph.name = paste(i.prefix, " Goodness ", i, sep = "")
+            i.graph.name = paste(i.prefix, " Goodness ", i, sep = ""),
+            i.labels.axis = i.labels.axis,
+            i.labels.periods = i.labels.periods,
+            i.labels.intensities = i.labels.intensities,
+            i.labels.details = i.labels.details
           )
           validacion[, i] <- validacion.i$indicadores.t
           rownames(validacion) <- rownames(validacion.i$indicadores.t)
@@ -243,7 +255,6 @@ memgoodness <- function(i.data,
           indices.modelo <- order(indices.1, indices.2)[2:(i.seasons + 1)]
           indices.modelo <- sort(indices.modelo[!is.na(indices.modelo)])
           indices.actual <- i
-          # cat(indices.actual,"\n")
           datos.actual <- datos[indices.actual]
           validacion.i <- calcular.indicadores(
             i.current = datos.actual,
@@ -256,12 +267,16 @@ memgoodness <- function(i.data,
             i.valores.parametro.deteccion = i.detection.values,
             i.output = i.output,
             i.graph = i.graph,
-            i.graph.name = paste(i.prefix, " Goodness ", i, sep = "")
+            i.graph.name = paste(i.prefix, " Goodness ", i, sep = ""),
+            i.labels.axis = i.labels.axis,
+            i.labels.periods = i.labels.periods,
+            i.labels.intensities = i.labels.intensities,
+            i.labels.details = i.labels.details
           )
           validacion[, i] <- validacion.i$indicadores.t
           rownames(validacion) <- rownames(validacion.i$indicadores.t)
           peak.i <- maxFixNA(datos.actual)
-          peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual], na.rm = T)])
+          peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual], na.rm = TRUE)])
           umbrales.i <- c(i.goodness.threshold.pre, i.goodness.intensity)
           if (is.na(umbrales.i[1])) umbrales.i[1] <- 0
           if (umbrales.i[1] > umbrales.i[2]) umbrales.i[2] <- umbrales.i[1] * 1.0000001
@@ -278,7 +293,6 @@ memgoodness <- function(i.data,
           indices.modelo <- order(indices.1, indices.2)[2:(i.seasons + 1)]
           indices.modelo <- sort(indices.modelo[!is.na(indices.modelo)])
           indices.actual <- i
-          # cat(indices.actual,"\n")
           datos.actual <- datos[indices.actual]
           datos.modelo <- memmodel(datos[indices.modelo],
             i.seasons = i.seasons,
@@ -309,12 +323,16 @@ memgoodness <- function(i.data,
             i.valores.parametro.deteccion = i.detection.values,
             i.output = i.output,
             i.graph = i.graph,
-            i.graph.name = paste(i.prefix, " Goodness ", i, sep = "")
+            i.graph.name = paste(i.prefix, " Goodness ", i, sep = ""),
+            i.labels.axis = i.labels.axis,
+            i.labels.periods = i.labels.periods,
+            i.labels.intensities = i.labels.intensities,
+            i.labels.details = i.labels.details
           )
           validacion[, i] <- validacion.i$indicadores.t
           rownames(validacion) <- rownames(validacion.i$indicadores.t)
           peak.i <- maxFixNA(datos.actual)
-          peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual], na.rm = T)])
+          peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual], na.rm = TRUE)])
           umbrales.i <- memintensity(datos.modelo)$intensity.thresholds
           if (is.na(umbrales.i[1])) umbrales.i[1] <- 0
           if (umbrales.i[1] > umbrales.i[2]) umbrales.i[2] <- umbrales.i[1] * 1.0000001
@@ -324,7 +342,7 @@ memgoodness <- function(i.data,
           rm("indices.modelo", "indices.actual", "datos.actual", "datos.modelo", "validacion.i", "peak.i", "peak.week.i", "umbrales.i", "level.i")
         }
       }
-      resultado <- apply(validacion, 1, sum, na.rm = T)
+      resultado <- apply(validacion, 1, sum, na.rm = TRUE)
       # sensibilidad
       resultado[7] <- resultado[3] / (resultado[3] + resultado[6])
       # especificidad
@@ -346,22 +364,27 @@ memgoodness <- function(i.data,
 
       resultado[is.nan(resultado)] <- NA
 
-      temp1 <- data.frame(Description = c("Baseline", "Low", "Medium", "High", "Very high"), Level = 1:5, stringsAsFactors = F)
-      maximos <- data.frame(t(maximos), stringsAsFactors = F)
+      temp1 <- data.frame(Description = c("Baseline", "Low", "Medium", "High", "Very high"), Level = 1:5, stringsAsFactors = FALSE)
+      maximos <- data.frame(t(maximos), stringsAsFactors = FALSE)
       names(maximos) <- c("Peak", "Peak week", "Epidemic threshold", "Medium threshold", "High threshold", "Very high threshold", "Level")
-      maximos$id <- 1:NROW(maximos)
-      maximos <- merge(maximos, temp1, by = "Level", all.x = T)
+      maximos$id <- seq_len(NROW(maximos))
+      maximos <- merge(maximos, temp1, by = "Level", all.x = TRUE)
       maximos <- maximos[order(maximos$id), ]
       rownames(maximos) <- maximos.seasons
       maximos$id <- NULL
       maximos <- maximos[c(2:7, 1, 8)]
 
-      temp2 <- data.frame(table(as.numeric(maximos[, 7]), exclude = c(NA, NaN)), stringsAsFactors = F)
+      temp2 <- data.frame(table(as.numeric(maximos[, 7]), exclude = c(NA, NaN)), stringsAsFactors = FALSE)
       names(temp2) <- c("Level", "Count")
-      temp3 <- merge(temp1, temp2, all.x = T)
+      temp3 <- merge(temp1, temp2, all.x = TRUE)
       temp3$Count[is.na(temp3$Count)] <- 0
       temp3$Percentage <- temp3$Count / sum(temp3$Count)
-      temp4 <- data.frame(Level = c(0, -1), Description = c("No data seasons", "Total seasons"), Count = c(NROW(maximos) - sum(temp3$Count), NROW(maximos)), Percentage = c((NROW(maximos) - sum(temp3$Count)) / NROW(maximos), 1), stringsAsFactors = F)
+      temp4 <- data.frame(
+        Level = c(0, -1),
+        Description = c("No data seasons", "Total seasons"),
+        Count = c(NROW(maximos) - sum(temp3$Count), NROW(maximos)),
+        Percentage = c((NROW(maximos) - sum(temp3$Count)) / NROW(maximos), 1), stringsAsFactors = FALSE
+      )
       maximos.resultados <- rbind(temp3, temp4)
 
       memgoodness.output <- list(
