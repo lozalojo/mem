@@ -34,6 +34,11 @@ transformseries.multiple <- function(i.data,
   p4 <- list()
   p5 <- list()
   # Check input parameters
+if (any(is.na(i.prefix)) | length(i.prefix)==0 | i.prefix==""){
+  prefix=""
+}else{
+  prefix=paste0(trimws(as.character(i.prefix[1]))," ")
+}
   if (length(i.intra.param) == 1) {
     if (!is.na(i.intra.param) && i.intra.param > 0) {
       param.1 <- i.intra.param
@@ -549,15 +554,15 @@ transformseries.multiple <- function(i.data,
   if (!is.na(i.output)) {
     outputdir <- file.path(getwd(), i.output)
     if (!dir.exists(outputdir)) dir.create(outputdir)
-    ggsave(paste0(i.prefix, " - 1.1. Original Vs Smooth.png"), p1[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
-    ggsave(paste0(i.prefix, " - 1.2. Data to be used.png"), p1[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(prefix, " 1.1. Original Vs Smooth.png"), p1[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(prefix, " 1.2. Data to be used.png"), p1[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
     # We plot each iteration to the stopping point and filter the results
-    for (j in 1:max.waves) ggsave(paste0(i.prefix, " - 2.", j, ". Iteration (unordered) ", j, ".png"), p2[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
-    if (NROW(results) > 0) for (j in 1:max.waves.dif) ggsave(paste0(i.prefix, " - 3.", j, ". Iteration (final) ", j, ".png"), p3[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
-    ggsave(paste0(i.prefix, "- 4.1. Merged epidemics separated.png"), p4[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
-    ggsave(paste0(i.prefix, "- 4.2. Merged epidemics separated plus cut points.png"), p4[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
-    ggsave(paste0(i.prefix, "- 5.1. Seasons separated.png"), p5[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
-    ggsave(paste0(i.prefix, "- 5.2. Seasons separated and MEM epidemics.png"), p5[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
+    for (j in 1:max.waves) ggsave(paste0(prefix, "2.", j, ". Iteration (unordered) ", j, ".png"), p2[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
+    if (NROW(results) > 0) for (j in 1:max.waves.dif) ggsave(paste0(prefix, "3.", j, ". Iteration (final) ", j, ".png"), p3[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(prefix, " 4.1. Merged epidemics separated.png"), p4[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(prefix, " 4.2. Merged epidemics separated plus cut points.png"), p4[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(prefix, " 5.1. Seasons separated.png"), p5[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
+    ggsave(paste0(prefix, " 5.2. Seasons separated and MEM epidemics.png"), p5[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
   }
   plots <- list(p1 = p1, p2 = p2, p3 = p3, p4 = p4, p5 = p5)
   list(data.final = data.final, data.united = data.united, data.plot.united = data.plot.united, cut.united = cut.united, season.desc = season.desc, results.original = results.original, results.final = results, plots = plots)
