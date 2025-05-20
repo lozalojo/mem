@@ -572,7 +572,7 @@ transformseries.multiple <- function(i.data,
     season.desc <- NA
   }
   if (!is.na(i.output)) {
-    outputdir <- file.path(getwd(), i.output)
+    outputdir <- file.path(i.output)
     if (!dir.exists(outputdir)) dir.create(outputdir)
     ggsave(paste0(prefix, "1.1. Original Vs Smooth.png"), p1[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
     ggsave(paste0(prefix, "1.2. Data to be used.png"), p1[[2]], width = 16, height = 9, dpi = 150, path = outputdir)

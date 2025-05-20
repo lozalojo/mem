@@ -140,7 +140,7 @@ transformseries.twowaves <- function(i.data,
     resultados.i$coeficiente <- resultados.i$rates.no.miss / resultados.i$normal
     resultados.i$week <- 1:n.weeks
     if (!is.na(i.output)) {
-      outputdir <- file.path(getwd(), i.output)
+      outputdir <- file.path(i.output)
       if (!dir.exists(outputdir)) dir.create(outputdir)
       normal1 <- NULL
       normal2 <- NULL
