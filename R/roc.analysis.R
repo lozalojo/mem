@@ -87,7 +87,7 @@ roc.analysis <- function(i.data,
     anios <- NCOL(datos)
     if (!(anios > 2)) {
       roc.analysis.output <- NULL
-      cat("Incorrect number of dimensions, at least thress seasons of data required.\n")
+      cat("Incorrect number of dimensions, at least three seasons of data required.\n")
     } else if (anios < i.min.seasons) {
       roc.analysis.output <- NULL
       cat("Not enough valid columns, minimum: ", i.min.seasons, "; valid: ", anios, ".\n", sep = "")

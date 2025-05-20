@@ -168,7 +168,7 @@ memgoodness <- function(i.data,
     semanas <- dim(datos)[1]
     if (!(anios > 2)) {
       memgoodness.output <- NULL
-      cat("Incorrect number of dimensions, at least thress seasons of data required.\n")
+      cat("Incorrect number of dimensions, at least three seasons of data required.\n")
     } else if (anios < i.min.seasons) {
       memgoodness.output <- NULL
       cat("Not enough valid columns, minimum: ", i.min.seasons, "; valid: ", anios, ".\n", sep = "")

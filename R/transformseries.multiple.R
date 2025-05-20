@@ -5,7 +5,7 @@
 #' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline aes labs %+% element_text geom_point guide_legend scale_colour_manual scale_x_continuous scale_y_continuous theme geom_segment geom_text unit arrow guides theme_light
 #' @importFrom stats smooth.spline predict median loess
 #' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join inner_join full_join pull slice summarise ungroup desc rename
-#' @importFrom tidyr spread
+#' @importFrom tidyr spread pivot_wider
 #' @importFrom utils tail head
 #' @importFrom purrr pluck
 #' @importFrom stats loess.control
@@ -21,6 +21,7 @@ transformseries.multiple <- function(i.data,
                                      i.prefix = "Multiple waves",
                                      i.force.smooth = FALSE,
                                      i.split.top = 3,
+                                     i.param = 2.8,
                                      i.p1titles = c("Series and smooth", "Data to be used", "Week", "Data"),
                                      i.p2titles = c("Iteration", "Week", "Data"),
                                      i.p3titles = c("Iteration", "Week", "Data"),
@@ -34,11 +35,11 @@ transformseries.multiple <- function(i.data,
   p4 <- list()
   p5 <- list()
   # Check input parameters
-if (any(is.na(i.prefix)) | length(i.prefix)==0 | i.prefix==""){
-  prefix=""
-}else{
-  prefix=paste0(trimws(as.character(i.prefix[1]))," ")
-}
+  if (any(is.na(i.prefix)) | length(i.prefix)==0 | i.prefix==""){
+    prefix=""
+  }else{
+    prefix=paste0(trimws(as.character(i.prefix[1]))," ")
+  }
   if (length(i.intra.param) == 1) {
     if (!is.na(i.intra.param) && i.intra.param > 0) {
       param.1 <- i.intra.param
@@ -185,7 +186,7 @@ if (any(is.na(i.prefix)) | length(i.prefix)==0 | i.prefix==""){
     results <- results %>%
       bind_rows(peradd.chosen) %>%
       dplyr::mutate(sumcum = cumsum(sum), totsum = sum(data.plus$rates.filled, na.rm = TRUE), cumsumper = ifelse(totsum == 0, 0, sumcum / totsum)) %>%
-      dplyr::mutate(difcumsumper = cumsumper - lag(cumsumper))
+      dplyr::mutate(difcumsumper = cumsumper - dplyr::lag(cumsumper))
     results$difcumsumper[1] <- results$cumsumper[1]
     data.plot <- data.plot %>%
       bind_rows(
@@ -331,7 +332,7 @@ if (any(is.na(i.prefix)) | length(i.prefix)==0 | i.prefix==""){
   temp1 <- results %>%
     dplyr::select(iteration, start, end, n, sum) %>%
     dplyr::arrange(start) %>%
-    dplyr::mutate(lend = lag(end), dif = (start - lend - 1), unite = (is.na(dif) | dif >= i.min.separation), sunite = cumsum(unite))
+    dplyr::mutate(lend = dplyr::lag(end), dif = (start - lend - 1), unite = (is.na(dif) | dif >= i.min.separation), sunite = cumsum(unite))
   results.united <- results %>%
     dplyr::mutate(iteration.old = iteration) %>%
     dplyr::inner_join(dplyr::select(temp1, iteration, sunite), by = "iteration") %>%
@@ -384,7 +385,7 @@ if (any(is.na(i.prefix)) | length(i.prefix)==0 | i.prefix==""){
         dplyr::select(iteration, start, end) %>%
         dplyr::arrange(start) %>%
         dplyr::ungroup() %>%
-        dplyr::mutate(from = 1 + lag(end), to = start) %>%
+        dplyr::mutate(from = 1 + dplyr::lag(end), to = start) %>%
         dplyr::slice(-1) %>%
         dplyr::select(from, to)
       cut.united <- data.frame()
@@ -482,11 +483,30 @@ if (any(is.na(i.prefix)) | length(i.prefix)==0 | i.prefix==""){
     names(season.desc) <- c("Season", "From", "To", "Duration")
     # See epidemic detected my mem algorithm
     data.united$epidemic <- NA
+    # See if i.param is defined as param, if it is 0, then optimize it
+    param <- i.param
+    if (any(is.null(param))) param <- 2.8
+    if (any(is.na(param))) param <- 2.8
+    if (any(param==0)){
+      temp1 <- data.united %>%
+        filter(!is.na(part)) %>%
+        arrange(n) %>%
+        group_by(season) %>%
+        mutate(week=1:n()) %>%
+        ungroup() %>%
+        select(season, week, rates.filled) %>%
+        pivot_wider(names_from = "season", values_from = "rates.filled") %>%
+        select(-week) %>%
+        as.data.frame()
+      rownames(temp1) <- as.character(1:NROW(temp1))
+      if (NCOL(temp1)>2) param <- as.numeric(roc.analysis(temp1, i.min.seasons = 3)$optimum["matthews"]) else param <- 2.8
+      rm(temp1)
+    }
     for (i in 1:n.parts) {
       temp1 <- data.united %>%
         filter(part == i) %>%
         pull(rates.filled) %>%
-        memtiming(...)
+        memtiming(i.param=param, ...)
       temp2 <- data.united %>%
         filter(part == i) %>%
         summarise(minn = min(n), maxn = max(n))
@@ -565,5 +585,5 @@ if (any(is.na(i.prefix)) | length(i.prefix)==0 | i.prefix==""){
     ggsave(paste0(prefix, "5.2. Seasons separated and MEM epidemics.png"), p5[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
   }
   plots <- list(p1 = p1, p2 = p2, p3 = p3, p4 = p4, p5 = p5)
-  list(data.final = data.final, data.united = data.united, data.plot.united = data.plot.united, cut.united = cut.united, season.desc = season.desc, results.original = results.original, results.final = results, plots = plots)
+  list(data.final = data.final, data.united = data.united, data.plot.united = data.plot.united, cut.united = cut.united, season.desc = season.desc, results.original = results.original, results.final = results, plots = plots, param.param = param)
 }

@@ -123,9 +123,9 @@ will be used as described in Conover, 1980, p. 112. Refer to EnvStats package fo
 more information.
 
 Option \code{4} uses two more parameters: \code{i.type.boot} indicates which bootstrap
-method to use. The values are the same of those of the \code{\link{boot.ci}} function.
+method to use. The values are the same of those of the \code{boot::boot.ci} function.
 Parameter \code{i.iter.boot} indicates the number of bootstrap samples to use. See
-\code{\link{boot}} for more information about this topic.
+\code{boot::boot} for more information about this topic.
 
 Parameters \code{i.level}, \code{i.level.threshold} and \code{i.level.curve} indicates,
 respectively, the level of the confidence intervals described above.

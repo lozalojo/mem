@@ -17,6 +17,7 @@ transformseries.multiple(
   i.prefix = "Multiple waves",
   i.force.smooth = FALSE,
   i.split.top = 3,
+  i.param = 2.8,
   i.p1titles = c("Series and smooth", "Data to be used", "Week", "Data"),
   i.p2titles = c("Iteration", "Week", "Data"),
   i.p3titles = c("Iteration", "Week", "Data"),
