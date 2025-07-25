@@ -4,7 +4,7 @@
 \alias{transformseries.spline}
 \title{spline transformation}
 \usage{
-transformseries.spline(i.x, i.positive = F, ...)
+transformseries.spline(i.x, i.positive = FALSE, ...)
 }
 \description{
 spline transformation

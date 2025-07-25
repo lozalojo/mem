@@ -23,8 +23,8 @@ memevolution(
 \value{
 \code{memevolution} returns a list.
 A list containing at least the following components:
-\itemize{
-  \item{evolution.data} {data for each value analysed.}
+\describe{
+  \item{evolution.data}{data for each value analysed.}
 }
 }
 \description{
@@ -50,13 +50,13 @@ this will affect the range of confidence intervals.
 
 There are four indicators:
 
-\itemize{
-\item Duration: Average duration of the epidemic and its confidence interval.
-\item Start: Average start of the epidemic and its confidence interval.
-\item Epidemic percentage: The sum of the values (cases/rates) in the epidemic period
-divided by the total sum of values of the whole surveillance period. It's a coverage percentage
-of the epidemic period. And its confidence interval.
-\item Thresholds: Pre-epidemic, post-epidemic and intensity thresholds.
+\describe{
+  \item{Duration}{Average duration of the epidemic and its confidence interval.}
+  \item{Start}{Average start of the epidemic and its confidence interval.}
+  \item{Epidemic percentage}{The sum of the values (cases/rates) in the epidemic period
+  divided by the total sum of values of the whole surveillance period. It's a coverage percentage
+  of the epidemic period. And its confidence interval.}
+  \item{Thresholds}{Pre-epidemic, post-epidemic and intensity thresholds.}
 }
 
 The confidence intervals for these indicators are calculated using the other CI and other CI.

@@ -8,11 +8,11 @@ iconfianza(
   datos,
   nivel = 0.95,
   tipo = 1,
-  ic = T,
+  ic = TRUE,
   tipo.boot = "normal",
   iteraciones.boot = 10000,
   colas = 2,
-  use.t = F
+  use.t = FALSE
 )
 }
 \description{

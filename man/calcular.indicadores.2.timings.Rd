@@ -8,13 +8,17 @@ calcular.indicadores.2.timings(
   i.current,
   i.timing.1,
   i.timing.2,
-  i.timing.absolute = F,
+  i.timing.absolute = FALSE,
   i.timing.labels,
   i.output = ".",
   i.graph.title = "",
-  i.graph.file = F,
+  i.graph.file = FALSE,
   i.graph.file.name = "",
-  i.mem.info = T
+  i.mem.info = TRUE,
+  i.labels.axis = c("Week", "Weekly rate"),
+  i.labels.periods = c("Pre", "Epidemic", "Post"),
+  i.labels.details = c("Sensitivity", "Specificity",
+    "First row represents real and second row observed pos/neg values")
 )
 }
 \description{

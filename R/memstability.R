@@ -11,9 +11,9 @@
 #' @return
 #' \code{memstability} returns a list.
 #' A list containing at least the following components:
-#' \itemize{
-#'   \item{stability.data} {data for each value analysed.}
-#'   \item{stability.seasons} {seasons used for each iteration.}
+#' \describe{
+#'   \item{stability.data}{data for each value analysed.}
+#'   \item{stability.seasons}{seasons used for each iteration.}
 #' }
 #'
 #' @details
@@ -55,7 +55,6 @@
 #' @export
 memstability <- function(i.data, ...) {
   anios <- dim(i.data)[2]
-  semanas <- dim(i.data)[1]
   stability.data <- numeric()
   stability.seasons <- logical()
 
@@ -78,10 +77,10 @@ memstability <- function(i.data, ...) {
       stability.seasons <- rbind(stability.seasons, 1:anios %in% indices.modelo)
       rm("stability.data.i")
     }
-    stability.data <- data.frame(stability.data, row.names = NULL, stringsAsFactors = F)
+    stability.data <- data.frame(stability.data, row.names = NULL, stringsAsFactors = FALSE)
     names(stability.data) <- c("number", "durationll", "duration", "durationul", "startll", "start", "startul", "percentagell", "percentage", "percentageul", "epidemic", "postepidemic", "medium", "high", "veryhigh")
     rownames(stability.data) <- stability.data$number
-    stability.seasons <- data.frame(stability.seasons, row.names = NULL, stringsAsFactors = F)
+    stability.seasons <- data.frame(stability.seasons, row.names = NULL, stringsAsFactors = FALSE)
     names(stability.seasons) <- names(i.data)
     rownames(stability.seasons) <- stability.data$number
     stability.data$number <- NULL

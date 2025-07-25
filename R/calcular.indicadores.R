@@ -9,14 +9,18 @@ calcular.indicadores <- function(i.current,
                                  i.umbral.pos = NA,
                                  i.intensidades,
                                  i.duracion.intensidad = 10,
-                                 i.equal = F,
+                                 i.equal = FALSE,
                                  i.metodo.calculo = "default",
                                  i.semanas.por.encima = 1,
                                  i.valores.parametro.deteccion = seq(0.1, 5.0, 0.1),
                                  i.output = ".",
-                                 i.graph = F,
+                                 i.graph = FALSE,
                                  i.graph.name = "",
-                                 i.mem.info = T) {
+                                 i.mem.info = TRUE,
+                                 i.labels.axis = c("Week", "Weekly rate"),
+                                 i.labels.periods = c("Pre", "Epidemic", "Post"),
+                                 i.labels.intensities = c("Epidemic thr", "Medium thr", "High thr", "Very high thr"),
+                                 i.labels.details = c("algorithm", "threshold", "Method used", "weeks above/below the threshold", "week(s) above the threshold", "Sensitivity", "Specificity")) {
   if (is.na(i.umbral.pre)) i.umbral.pre <- Inf
 
   semanas <- dim(i.current)[1]
@@ -29,18 +33,18 @@ calcular.indicadores <- function(i.current,
   if (is.na(umbral.pos)) umbral.pos <- i.umbral.pre
   duracion.media <- i.duracion.intensidad
   punto.maximo <- maxFixNA(i.current)
-  semana.punto.maximo <- min(numero.semana[i.current == punto.maximo], na.rm = T)
+  semana.punto.maximo <- min(numero.semana[i.current == punto.maximo], na.rm = TRUE)
   semanas.encima <- i.current[, 1] > umbral.pre
   suma.semanas.encima <- c(rep(NA, i.semanas.por.encima - 1), roll_sum(semanas.encima, i.semanas.por.encima))
-  if (any(suma.semanas.encima == i.semanas.por.encima, na.rm = T)) {
-    semana.inicio.umbral <- min((1:semanas)[suma.semanas.encima == i.semanas.por.encima], na.rm = T)
+  if (any(suma.semanas.encima == i.semanas.por.encima, na.rm = TRUE)) {
+    semana.inicio.umbral <- min((1:semanas)[suma.semanas.encima == i.semanas.por.encima], na.rm = TRUE)
   } else {
     semana.inicio.umbral <- NA
   }
   if (!is.na(semana.inicio.umbral)) {
     semanas.debajo <- i.current[, 1] < umbral.pos & semana.inicio.umbral < (1:semanas)
-    if (any(semanas.debajo, na.rm = T)) {
-      semana.fin.umbral <- min((1:semanas)[semanas.debajo], na.rm = T)
+    if (any(semanas.debajo, na.rm = TRUE)) {
+      semana.fin.umbral <- min((1:semanas)[semanas.debajo], na.rm = TRUE)
     } else {
       semana.fin.umbral <- NA
     }
@@ -106,7 +110,7 @@ calcular.indicadores <- function(i.current,
     resultado.2[is.na(i.current[, 1])] <- 0
   }
 
-  resultado.2 <- matrix(rep(resultado.2, n.parametros), nrow = n.parametros, byrow = T)
+  resultado.2 <- matrix(rep(resultado.2, n.parametros), nrow = n.parametros, byrow = TRUE)
 
   resultado.3 <- numeric()
   for (i in 1:n.parametros) {
@@ -114,14 +118,14 @@ calcular.indicadores <- function(i.current,
     resultado.3 <- rbind(resultado.3, resultado.3.1)
   }
 
-  true.pos.t <- sum(resultado.3 == "TP", na.rm = T)
-  true.pos <- apply(resultado.3 == "TP", 1, sum, na.rm = T)
-  false.neg.t <- sum(resultado.3 == "FN", na.rm = T)
-  false.neg <- apply(resultado.3 == "FN", 1, sum, na.rm = T)
-  false.pos.t <- sum(resultado.3 == "FP", na.rm = T)
-  false.pos <- apply(resultado.3 == "FP", 1, sum, na.rm = T)
-  true.neg.t <- sum(resultado.3 == "TN", na.rm = T)
-  true.neg <- apply(resultado.3 == "TN", 1, sum, na.rm = T)
+  true.pos.t <- sum(resultado.3 == "TP", na.rm = TRUE)
+  true.pos <- apply(resultado.3 == "TP", 1, sum, na.rm = TRUE)
+  false.neg.t <- sum(resultado.3 == "FN", na.rm = TRUE)
+  false.neg <- apply(resultado.3 == "FN", 1, sum, na.rm = TRUE)
+  false.pos.t <- sum(resultado.3 == "FP", na.rm = TRUE)
+  false.pos <- apply(resultado.3 == "FP", 1, sum, na.rm = TRUE)
+  true.neg.t <- sum(resultado.3 == "TN", na.rm = TRUE)
+  true.neg <- apply(resultado.3 == "TN", 1, sum, na.rm = TRUE)
 
   sensibilidad <- true.pos / (true.pos + false.neg)
   sensibilidad[is.nan(sensibilidad)] <- NA
@@ -152,7 +156,11 @@ calcular.indicadores <- function(i.current,
   neg.likehood.ratio.t <- NA
   if (!is.na(especificidad.t)) if (especificidad.t > 0) neg.likehood.ratio.t <- (1 - sensibilidad.t) / especificidad.t else neg.likehood.ratio.t <- NA
   if (true.pos.t + true.neg.t + false.pos.t + false.neg.t > 0) percent.agreement.t <- (true.pos.t + true.neg.t) / (true.pos.t + true.neg.t + false.pos.t + false.neg.t) else percent.agreement.t <- NA
-  if ((true.pos.t + false.pos.t) > 0 & (true.pos.t + false.neg.t) > 0 & (true.neg.t + false.pos.t) > 0 & (true.neg.t + false.neg.t) > 0) mcc.t <- (true.pos.t * true.neg.t - false.pos.t * false.neg.t) / (sqrt(true.pos.t + false.pos.t) * sqrt(true.pos.t + false.neg.t) * sqrt(true.neg.t + false.pos.t) * sqrt(true.neg.t + false.neg.t)) else mcc.t <- NA
+  if ((true.pos.t + false.pos.t) > 0 && (true.pos.t + false.neg.t) > 0 && (true.neg.t + false.pos.t) > 0 && (true.neg.t + false.neg.t) > 0) {
+    mcc.t <- (true.pos.t * true.neg.t - false.pos.t * false.neg.t) / (sqrt(true.pos.t + false.pos.t) * sqrt(true.pos.t + false.neg.t) * sqrt(true.neg.t + false.pos.t) * sqrt(true.neg.t + false.neg.t))
+  } else {
+    mcc.t <- NA
+  }
   youden.t <- sensibilidad.t + especificidad.t - 1
 
   semanas.not.na <- sum(!is.na(i.current))
@@ -181,11 +189,9 @@ calcular.indicadores <- function(i.current,
   )
 
   if (i.graph) {
-
     ######## Gr?fico
 
     limites.niveles <- as.vector(i.intensidades)
-    # nombres.niveles<-as.character(i.flu$epi.intervalos[,1])
     limites.niveles[limites.niveles < 0] <- 0
 
     # Datos para el grafico
@@ -201,13 +207,13 @@ calcular.indicadores <- function(i.current,
         umbrales.1 <- rep(umbral.pre, semana.inicio.umbral - 1)
         umbrales.2 <- rep(NA, max(duracion.media, semanas - semana.inicio.umbral + 2))
         intensidades.1 <- array(dim = c(max(semana.inicio.umbral - 2, 0), 3))
-        intensidades.2 <- matrix(rep(limites.niveles, max(duracion.media, semanas - semana.inicio.umbral + 2)), ncol = 3, byrow = T)
+        intensidades.2 <- matrix(rep(limites.niveles, max(duracion.media, semanas - semana.inicio.umbral + 2)), ncol = 3, byrow = TRUE)
       } else {
         # Iniciada y finalizada
         umbrales.1 <- rep(umbral.pre, semana.inicio.umbral - 1)
         umbrales.2 <- rep(NA, semana.fin.umbral - semana.inicio.umbral)
         intensidades.1 <- array(dim = c(max(semana.inicio.umbral - 2, 0), 3))
-        intensidades.2 <- matrix(rep(limites.niveles, semana.fin.umbral - semana.inicio.umbral + 2), ncol = 3, byrow = T)
+        intensidades.2 <- matrix(rep(limites.niveles, semana.fin.umbral - semana.inicio.umbral + 2), ncol = 3, byrow = TRUE)
       }
     }
     umbrales.3 <- rep(umbral.pos, semanas)
@@ -218,7 +224,7 @@ calcular.indicadores <- function(i.current,
     dgraf <- as.data.frame(cbind(i.current, umbrales, intensidades))
     names(dgraf) <- c("Rate", "Epidemic threshold", paste("Intensidad", 1:3))
 
-    etiquetas <- c("Weekly rates", "Epidemic thr", "Medium thr", "High thr", "Very high thr")
+    etiquetas <- c(i.labels.axis[2], i.labels.intensities)
     tipos <- c(1, 2, 2, 2, 2)
     anchos <- c(3, 2, 2, 2, 2)
     colores <- c("#808080", "#8c6bb1", "#88419d", "#810f7c", "#4d004b")
@@ -234,7 +240,11 @@ calcular.indicadores <- function(i.current,
     range.y.seq <- seq(0, ceiling(maximo.y / posicion.ticks) * posicion.ticks, posicion.ticks)
 
     for (i in 1:n.parametros) {
-      if (i.graph.name == "") graph.name <- paste("surveillance graph (", format(round(i.valores.parametro.deteccion[i], 1), digits = 3, nsmall = 1), ")", sep = "") else graph.name <- paste(i.graph.name, " (", format(round(i.valores.parametro.deteccion[i], 1), digits = 3, nsmall = 1), ")", sep = "")
+      if (i.graph.name == "") {
+        graph.name <- paste("surveillance graph (", format(round(i.valores.parametro.deteccion[i], 1), digits = 3, nsmall = 1), ")", sep = "")
+      } else {
+        graph.name <- paste(i.graph.name, " (", format(round(i.valores.parametro.deteccion[i], 1), digits = 3, nsmall = 1), ")", sep = "")
+      }
 
       png(
         filename = file.path(i.output, paste0(graph.name, ".png")),
@@ -242,55 +252,41 @@ calcular.indicadores <- function(i.current,
         bg = "white", res = 300, antialias = "none"
       )
       opar <- par(mar = c(4, 4, 1, 8) + 0.1, xpd = TRUE)
-      # ,mgp=c(3,0.5,0),xpd=T)
       # Grafico principal
       matplot(range.x,
         dgraf,
         type = "l",
         lty = tipos, lwd = anchos, col = colores,
-        xlab = "", ylab = "", axes = F,
+        xlab = "", ylab = "", axes = FALSE,
         ylim = range.y
       )
       # Puntos de la serie de tasas
-      # points(1:semanas,dgraf[,1],pch=19,type="p",col="#000000",cex=1)
       # pre
       puntos.1 <- i.current[, 1]
       puntos.1[!(resultado.1[i, ] == 1)] <- NA
-      # if (!is.na(optimos[i,1])) puntos.1[optimos[i,1]:semanas]<-NA
       points(puntos.1, pch = 19, type = "p", col = colores.epi[1], cex = 1.5)
       # epi
       puntos.2 <- i.current[, 1]
       puntos.2[!(resultado.1[i, ] == 2)] <- NA
-      # if (is.na(optimos[i,1])){
-      #   puntos.2[1:semanas]<-NA
-      # }else{
-      #   if (optimos[i,1]>1) puntos.2[1:(optimos[i,1]-1)]<-NA
-      #   if (!is.na(optimos[i,2])) puntos.2[optimos[i,2]:semanas]<-NA
-      # }
       points(puntos.2, pch = 19, type = "p", col = colores.epi[2], cex = 1.5)
       # post
       puntos.3 <- i.current[, 1]
       puntos.3[!(resultado.1[i, ] == 3)] <- NA
-      # if (is.na(optimos[i,1])){
-      #   puntos.3[1:semanas]<-NA
-      # }else{
-      #   if (is.na(optimos[i,2])) puntos.3[1:semanas]<-NA else puntos.3[1:(optimos[i,2]-1)]<-NA
-      # }
       points(puntos.3, pch = 19, type = "p", col = colores.epi[3], cex = 1.5)
       # Ejes
       axis(2, at = range.y.seq, lwd = 1, cex.axis = 0.6, col.axis = "#404040", col = "#C0C0C0", mgp = c(3, 0.5, 0))
-      mtext(2, text = "Weekly rate", line = 2, cex = 0.8, col = "#000040")
-      axis(1, pos = 0, at = seq(1, semanas, 1), labels = F, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
-      axis(1, at = seq(0.5, semanas + 0.5, 1), labels = F, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
+      mtext(2, text = i.labels.axis[2], line = 2, cex = 0.8, col = "#000040")
+      axis(1, pos = 0, at = seq(1, semanas, 1), labels = FALSE, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
+      axis(1, at = seq(0.5, semanas + 0.5, 1), labels = FALSE, cex.axis = 0.7, col.axis = "#404040", col = "#C0C0C0")
       axis(1,
-        at = seq(1, semanas, 2), tick = F, mgp = c(3, 0.5, 0),
+        at = seq(1, semanas, 2), tick = FALSE, mgp = c(3, 0.5, 0),
         labels = nombre.semana[seq(1, semanas, 2)], cex.axis = 0.6, col.axis = "#404040", col = "#C0C0C0"
       )
       axis(1,
-        at = seq(2, semanas, 2), tick = F, mgp = c(3, 0.5, 0),
+        at = seq(2, semanas, 2), tick = FALSE, mgp = c(3, 0.5, 0),
         labels = nombre.semana[seq(2, semanas, 2)], cex.axis = 0.6, line = 0.60, col.axis = "#404040", col = "#C0C0C0"
       )
-      mtext(1, text = "Week", line = 2.5, cex = 0.8, col = "#000040")
+      mtext(1, text = i.labels.axis[1], line = 2.5, cex = 0.8, col = "#000040")
       if (i.mem.info) {
         mtext(4,
           text = paste("mem R library - Jose E. Lozano - https://github.com/lozalojo/mem", sep = ""),
@@ -325,7 +321,7 @@ calcular.indicadores <- function(i.current,
       text(text.x, text.y, text.l, pos = text.p, col = text.c, cex = text.s)
 
       # Etiquetas de la leyenda
-      etiquetas.leyenda <- c("Pre", "Epidemic", "Post", etiquetas)
+      etiquetas.leyenda <- c(i.labels.periods, etiquetas)
       tipos.leyenda <- c(1, 1, 1, tipos)
       anchos.leyenda <- c(1, 1, 1, anchos)
       colores.leyenda <- c("#C0C0C0", "#C0C0C0", "#C0C0C0", colores)
@@ -374,25 +370,29 @@ calcular.indicadores <- function(i.current,
       text(text.xy$x, text.xy$y, text.l, col = text.c, cex = text.s)
 
       if (!(i.metodo.calculo == "alternative")) {
-        text.method <- paste0("* Method used: ", i.metodo.calculo, " (weeks above/below the threshold)")
+        text.method <- paste0("* ", i.labels.details[3], ": ", i.metodo.calculo, " (", i.labels.details[4], ")")
       } else {
-        text.method <- paste0("* Method used: ", i.metodo.calculo, " (", i.semanas.por.encima, " week above the threshold)")
+        text.method <- paste0("* ", i.labels.details[3], ": ", i.metodo.calculo, " (", i.semanas.por.encima, " ", i.labels.details[5], ")")
       }
 
-      text(semanas, -3.5 * posicion.ticks / 2, pos = 2, label = paste("Sensitivity: ", format(round(sensibilidad[i], 2), nsmall = 2, align = "right"), ", Specificity: ", format(round(especificidad[i], 2), nsmall = 2, align = "right"), sep = ""), cex = 0.5)
+      text(semanas, -3.5 * posicion.ticks / 2,
+        pos = 2,
+        label = paste(i.labels.details[6], ": ", format(round(sensibilidad[i], 2), nsmall = 2, align = "right"), ", ", i.labels.details[7], ": ", format(round(especificidad[i], 2), nsmall = 2, align = "right"), sep = ""),
+        cex = 0.5
+      )
       text(1, -3.5 * posicion.ticks / 2, pos = 4, label = text.method, cex = 0.5)
 
       axis(2,
         at = seq(-2.5, -1.5, 1) * posicion.ticks / 2,
-        labels = c("threshold *", paste("algorithm (", format(round(i.valores.parametro.deteccion[i], 1), digits = 3, nsmall = 1), ")", sep = "")),
-        tick = F,
+        labels = c(paste0(i.labels.details[2], " *"), paste(i.labels.details[1], " (", format(round(i.valores.parametro.deteccion[i], 1), digits = 3, nsmall = 1), ")", sep = "")),
+        tick = FALSE,
         las = 1,
         lwd = 1,
         cex.axis = 0.6, col.axis = "#404040", col = "#C0C0C0", mgp = c(3, 0, 0)
       )
 
       # Etiquetas de la leyenda
-      etiquetas.leyenda <- c("Pre", "Epidemic", "Post")
+      etiquetas.leyenda <- i.labels.periods
       tipos.leyenda <- c(0, 0, 0)
       anchos.leyenda <- c(0, 0, 0)
 
@@ -403,7 +403,6 @@ calcular.indicadores <- function(i.current,
       legend("bottomright",
         inset = c(-0.18, 0.025),
         x.intersp = -1,
-        # legend=rev(etiquetas.leyenda),
         legend = etiquetas.leyenda,
         bty = "n",
         lty = rev(tipos.leyenda),

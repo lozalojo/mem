@@ -33,16 +33,20 @@
 #' @param i.graph whether the graphs must be written or not.
 #' @param i.prefix prefix used for naming graphs.
 #' @param i.min.seasons minimum number of seasons to perform goodness, default=6.
+#' @param i.labels.axis different labels used by output graphs
+#' @param i.labels.periods different labels used by output graphs
+#' @param i.labels.intensities different labels used by output graphs
+#' @param i.labels.details different labels used by output graphs
 #'
 #' @return
 #' \code{memgoodness} returns a list.
 #' A list containing at least the following components:
-#' \itemize{
-#'   \item{validity.data} {data for each value analysed.}
-#'   \item{results} {Total weeks, non-missing weeks, true positives, false positives
+#' \describe{
+#'   \item{validity.data}{data for each value analysed.}
+#'   \item{results}{Total weeks, non-missing weeks, true positives, false positives
 #' true negatives, false negatives, sensitivity, specificity .}
-#'   \item{peaks} {distribution of the levels of intensity of the peaks.}
-#'   \item{peaks.data} {Peak value, week of the peak value, epidemic and intensity thresholds and intensity level of each season analysed.}
+#'   \item{peaks}{distribution of the levels of intensity of the peaks.}
+#'   \item{peaks.data}{Peak value, week of the peak value, epidemic and intensity thresholds and intensity level of each season analysed.}
 #' }
 #'
 #' @details
@@ -62,11 +66,11 @@
 #' threshold. This is used as the observed data: an observed positive outcome (week value above
 #' the threshold), and observed negative outcome (week value below the threshold).
 #' \item Each week has a real and an observed outcome, so it can be classified in:
-#' \itemize{
-#' \item True positives (TP): real positive, observed positive: values of the epidemic period above the threshold.
-#' \item True negatives (TN): real negative, observed negative: values of the non-epidemic period below the threshold.
-#' \item False positives (FP): real negative, observed positive: values of the non-epidemic period above the threshold.
-#' \item False negatives (FN): real positive, observed negative: values of the epidemic period below the threshold.
+#' \describe{
+#'   \item{True positives (TP)}{real positive, observed positive: values of the epidemic period above the threshold.}
+#'   \item{True negatives (TN)}{real negative, observed negative: values of the non-epidemic period below the threshold.}
+#'   \item{False positives (FP)}{real negative, observed positive: values of the non-epidemic period above the threshold.}
+#'   \item{False negatives (FN)}{real positive, observed negative: values of the epidemic period below the threshold.}
 #' }
 #' \item The process is repeated for each season in the dataset (each iteration a different value
 #' until all seasons have been processed).
@@ -77,14 +81,14 @@
 #' There are two ways of deciding the set of seasons used to calculate the pre-epidemic threshold in each
 #' iteration and it is determined by the \code{i.goodness.method}.
 #'
-#' \itemize{
-#' \item cross: For each value, the surrounding seasons (after or before the current value) are selected up
+#' \describe{
+#'   \item{cross}{For each value, the surrounding seasons (after or before the current value) are selected up
 #' to the number of Max. seasons (parameter of the Model box). To calculate the thresholds for season 2010/2011,
-#' data from 2005/2006 to 2009/2010 and from 2011/20012 to 2015/2016 will be taken.
-#' \item sequential: Only preceding seasons are used (before the current value) up to the number of Max. seasons.
-#' To calculate the thresholds for season 2010/2011, data from 2000/2001 to 2009/2010 are taken.
-#' \item threshold: The pre/post epidemic and intensity thresholds are fixed values for all the seasons and
-#' are compared with the epidemic as determined by MEM algorithm.
+#' data from 2005/2006 to 2009/2010 and from 2011/20012 to 2015/2016 will be taken.}
+#'   \item{sequential}{Only preceding seasons are used (before the current value) up to the number of Max. seasons.
+#' To calculate the thresholds for season 2010/2011, data from 2000/2001 to 2009/2010 are taken.}
+#'   \item{threshold}{The pre/post epidemic and intensity thresholds are fixed values for all the seasons and
+#' are compared with the epidemic as determined by MEM algorithm.}
 #' }
 #'
 #' The \code{i.calculation.method} is used to determine when the alert based on the epidemic threshold.
@@ -147,20 +151,24 @@ memgoodness <- function(i.data,
                         i.detection.values = seq(1.0, 5.0, 0.1),
                         i.weeks.above = 1,
                         i.output = ".",
-                        i.graph = F,
+                        i.graph = FALSE,
                         i.prefix = "",
-                        i.min.seasons = 6) {
+                        i.min.seasons = 6,
+                        i.labels.axis = c("Week", "Weekly rate"),
+                        i.labels.periods = c("Pre", "Epidemic", "Post"),
+                        i.labels.intensities = c("Epidemic thr", "Medium thr", "High thr", "Very high thr"),
+                        i.labels.details = c("algorithm", "threshold", "Method used", "weeks above/below the threshold", "week(s) above the threshold", "Sensitivity", "Specificity")) {
   if (is.null(dim(i.data))) {
     memgoodness.output <- NULL
     cat("Incorrect number of dimensions, input must be a data.frame.\n")
   } else {
     if (is.matrix(i.data)) i.data <- as.data.frame(i.data)
-    datos <- i.data[apply(i.data, 2, function(x) sum(x, na.rm = T) > 0)]
+    datos <- i.data[apply(i.data, 2, function(x) sum(x, na.rm = TRUE) > 0)]
     anios <- NCOL(datos)
     semanas <- dim(datos)[1]
     if (!(anios > 2)) {
       memgoodness.output <- NULL
-      cat("Incorrect number of dimensions, at least thress seasons of data required.\n")
+      cat("Incorrect number of dimensions, at least three seasons of data required.\n")
     } else if (anios < i.min.seasons) {
       memgoodness.output <- NULL
       cat("Not enough valid columns, minimum: ", i.min.seasons, "; valid: ", anios, ".\n", sep = "")
@@ -221,7 +229,11 @@ memgoodness <- function(i.data,
             i.valores.parametro.deteccion = i.detection.values,
             i.output = i.output,
             i.graph = i.graph,
-            i.graph.name = paste(i.prefix, " Goodness ", i, sep = "")
+            i.graph.name = paste(i.prefix, " Goodness ", i, sep = ""),
+            i.labels.axis = i.labels.axis,
+            i.labels.periods = i.labels.periods,
+            i.labels.intensities = i.labels.intensities,
+            i.labels.details = i.labels.details
           )
           validacion[, i] <- validacion.i$indicadores.t
           rownames(validacion) <- rownames(validacion.i$indicadores.t)
@@ -243,7 +255,6 @@ memgoodness <- function(i.data,
           indices.modelo <- order(indices.1, indices.2)[2:(i.seasons + 1)]
           indices.modelo <- sort(indices.modelo[!is.na(indices.modelo)])
           indices.actual <- i
-          # cat(indices.actual,"\n")
           datos.actual <- datos[indices.actual]
           validacion.i <- calcular.indicadores(
             i.current = datos.actual,
@@ -256,12 +267,16 @@ memgoodness <- function(i.data,
             i.valores.parametro.deteccion = i.detection.values,
             i.output = i.output,
             i.graph = i.graph,
-            i.graph.name = paste(i.prefix, " Goodness ", i, sep = "")
+            i.graph.name = paste(i.prefix, " Goodness ", i, sep = ""),
+            i.labels.axis = i.labels.axis,
+            i.labels.periods = i.labels.periods,
+            i.labels.intensities = i.labels.intensities,
+            i.labels.details = i.labels.details
           )
           validacion[, i] <- validacion.i$indicadores.t
           rownames(validacion) <- rownames(validacion.i$indicadores.t)
           peak.i <- maxFixNA(datos.actual)
-          peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual], na.rm = T)])
+          peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual], na.rm = TRUE)])
           umbrales.i <- c(i.goodness.threshold.pre, i.goodness.intensity)
           if (is.na(umbrales.i[1])) umbrales.i[1] <- 0
           if (umbrales.i[1] > umbrales.i[2]) umbrales.i[2] <- umbrales.i[1] * 1.0000001
@@ -278,7 +293,6 @@ memgoodness <- function(i.data,
           indices.modelo <- order(indices.1, indices.2)[2:(i.seasons + 1)]
           indices.modelo <- sort(indices.modelo[!is.na(indices.modelo)])
           indices.actual <- i
-          # cat(indices.actual,"\n")
           datos.actual <- datos[indices.actual]
           datos.modelo <- memmodel(datos[indices.modelo],
             i.seasons = i.seasons,
@@ -309,12 +323,16 @@ memgoodness <- function(i.data,
             i.valores.parametro.deteccion = i.detection.values,
             i.output = i.output,
             i.graph = i.graph,
-            i.graph.name = paste(i.prefix, " Goodness ", i, sep = "")
+            i.graph.name = paste(i.prefix, " Goodness ", i, sep = ""),
+            i.labels.axis = i.labels.axis,
+            i.labels.periods = i.labels.periods,
+            i.labels.intensities = i.labels.intensities,
+            i.labels.details = i.labels.details
           )
           validacion[, i] <- validacion.i$indicadores.t
           rownames(validacion) <- rownames(validacion.i$indicadores.t)
           peak.i <- maxFixNA(datos.actual)
-          peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual], na.rm = T)])
+          peak.week.i <- as.numeric(row.names(datos.actual)[min((1:semanas)[peak.i == datos.actual], na.rm = TRUE)])
           umbrales.i <- memintensity(datos.modelo)$intensity.thresholds
           if (is.na(umbrales.i[1])) umbrales.i[1] <- 0
           if (umbrales.i[1] > umbrales.i[2]) umbrales.i[2] <- umbrales.i[1] * 1.0000001
@@ -324,7 +342,7 @@ memgoodness <- function(i.data,
           rm("indices.modelo", "indices.actual", "datos.actual", "datos.modelo", "validacion.i", "peak.i", "peak.week.i", "umbrales.i", "level.i")
         }
       }
-      resultado <- apply(validacion, 1, sum, na.rm = T)
+      resultado <- apply(validacion, 1, sum, na.rm = TRUE)
       # sensibilidad
       resultado[7] <- resultado[3] / (resultado[3] + resultado[6])
       # especificidad
@@ -346,22 +364,27 @@ memgoodness <- function(i.data,
 
       resultado[is.nan(resultado)] <- NA
 
-      temp1 <- data.frame(Description = c("Baseline", "Low", "Medium", "High", "Very high"), Level = 1:5, stringsAsFactors = F)
-      maximos <- data.frame(t(maximos), stringsAsFactors = F)
+      temp1 <- data.frame(Description = c("Baseline", "Low", "Medium", "High", "Very high"), Level = 1:5, stringsAsFactors = FALSE)
+      maximos <- data.frame(t(maximos), stringsAsFactors = FALSE)
       names(maximos) <- c("Peak", "Peak week", "Epidemic threshold", "Medium threshold", "High threshold", "Very high threshold", "Level")
-      maximos$id <- 1:NROW(maximos)
-      maximos <- merge(maximos, temp1, by = "Level", all.x = T)
+      maximos$id <- seq_len(NROW(maximos))
+      maximos <- merge(maximos, temp1, by = "Level", all.x = TRUE)
       maximos <- maximos[order(maximos$id), ]
       rownames(maximos) <- maximos.seasons
       maximos$id <- NULL
       maximos <- maximos[c(2:7, 1, 8)]
 
-      temp2 <- data.frame(table(as.numeric(maximos[, 7]), exclude = c(NA, NaN)), stringsAsFactors = F)
+      temp2 <- data.frame(table(as.numeric(maximos[, 7]), exclude = c(NA, NaN)), stringsAsFactors = FALSE)
       names(temp2) <- c("Level", "Count")
-      temp3 <- merge(temp1, temp2, all.x = T)
+      temp3 <- merge(temp1, temp2, all.x = TRUE)
       temp3$Count[is.na(temp3$Count)] <- 0
       temp3$Percentage <- temp3$Count / sum(temp3$Count)
-      temp4 <- data.frame(Level = c(0, -1), Description = c("No data seasons", "Total seasons"), Count = c(NROW(maximos) - sum(temp3$Count), NROW(maximos)), Percentage = c((NROW(maximos) - sum(temp3$Count)) / NROW(maximos), 1), stringsAsFactors = F)
+      temp4 <- data.frame(
+        Level = c(0, -1),
+        Description = c("No data seasons", "Total seasons"),
+        Count = c(NROW(maximos) - sum(temp3$Count), NROW(maximos)),
+        Percentage = c((NROW(maximos) - sum(temp3$Count)) / NROW(maximos), 1), stringsAsFactors = FALSE
+      )
       maximos.resultados <- rbind(temp3, temp4)
 
       memgoodness.output <- list(

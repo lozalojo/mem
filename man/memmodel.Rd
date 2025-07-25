@@ -24,7 +24,8 @@ memmodel(
   i.n.max = -1,
   i.type.boot = "norm",
   i.iter.boot = 10000,
-  i.mem.info = T
+  i.mem.info = TRUE,
+  i.use.t = FALSE
 )
 }
 \arguments{
@@ -65,22 +66,24 @@ memmodel(
 \item{i.iter.boot}{Number of bootstrap iterations.}
 
 \item{i.mem.info}{include information about the package in the graph.}
+
+\item{i.use.t}{Whether to use t-values (t distribution) instead of z-values (normal distribution).}
 }
 \value{
 \code{memmodel} returns an object of class \code{mem}.
 An object of class \code{mem} is a list containing at least the following components:
-\itemize{
-  \item{i.data} {input data}
-  \item{pre.post.intervals} {Pre/post confidence intervals (Threhold is the upper limit
+\describe{
+  \item{i.data}{input data}
+  \item{pre.post.intervals}{Pre/post confidence intervals (Threhold is the upper limit
   of the confidence interval).}
-  \item{ci.length} {Mean epidemic length confidence interval.}
-  \item{ci.percent} {Mean covered percentage confidence interval.}
-  \item{mean.length} {Mean length.}
-  \item{moving.epidemics} {Moving epidemic rates.}
-  \item{mean.start} {Mean epidemic start.}
-  \item{epi.intervals} {Epidemic levels of intensity.}
-  \item{typ.curve} {Typical epidemic curve.}
-  \item{n.max} {Effective number of pre epidemic values.}
+  \item{ci.length}{Mean epidemic length confidence interval.}
+  \item{ci.percent}{Mean covered percentage confidence interval.}
+  \item{mean.length}{Mean length.}
+  \item{moving.epidemics}{Moving epidemic rates.}
+  \item{mean.start}{Mean epidemic start.}
+  \item{epi.intervals}{Epidemic levels of intensity.}
+  \item{typ.curve}{Typical epidemic curve.}
+  \item{n.max}{Effective number of pre epidemic values.}
 }
 }
 \description{
@@ -105,13 +108,13 @@ calculate confidence intervals along the process.
 
 All three parameters must be a number between \code{1} and \code{6}:
 
-\itemize{
-\item{1} {Arithmetic mean and mean confidence interval.}
-\item{2} {Geometric mean and mean confidence interval.}
-\item{3} {Median and the Nyblom/normal aproximation confidence interval.}
-\item{4} {Median and bootstrap confidence interval.}
-\item{5} {Arithmetic mean and point confidence interval (standard deviations).}
-\item{6} {Geometric mean and point confidence interval (standard deviations).}
+\describe{
+\item{1}{Arithmetic mean and mean confidence interval.}
+\item{2}{Geometric mean and mean confidence interval.}
+\item{3}{Median and the Nyblom/normal aproximation confidence interval.}
+\item{4}{Median and bootstrap confidence interval.}
+\item{5}{Arithmetic mean and point confidence interval (standard deviations).}
+\item{6}{Geometric mean and point confidence interval (standard deviations).}
 }
 
 Option \code{3} uses the Hettmansperger and Sheather (1986) and Nyblom (1992) method,
@@ -120,9 +123,9 @@ will be used as described in Conover, 1980, p. 112. Refer to EnvStats package fo
 more information.
 
 Option \code{4} uses two more parameters: \code{i.type.boot} indicates which bootstrap
-method to use. The values are the same of those of the \code{\link{boot.ci}} function.
+method to use. The values are the same of those of the \code{boot::boot.ci} function.
 Parameter \code{i.iter.boot} indicates the number of bootstrap samples to use. See
-\code{\link{boot}} for more information about this topic.
+\code{boot::boot} for more information about this topic.
 
 Parameters \code{i.level}, \code{i.level.threshold} and \code{i.level.curve} indicates,
 respectively, the level of the confidence intervals described above.
@@ -130,16 +133,20 @@ respectively, the level of the confidence intervals described above.
 The \code{i.n.max} parameter indicates how many pre epidemic values to use to calculate
 the threshold. A value of -1 indicates the program to use an appropiate number of points
 depending on the number of seasons provided as input. \code{i.tails} tells the program
-to use {1} or {2} tailed confidence intervals when calculating the threshold (1 is
+to use 1 or 2 tailed confidence intervals when calculating the threshold (1 is
 recommended).
 
 Parameters \code{i.method} and \code{i.param} indicates how to find the optimal timing
 of the epidemics. See \code{\link{memtiming}} for details on the values this parameters
 can have.
 
+The \code{i.use.t} parameter allows to use the t-value (from a t distribution) instead
+of the z-value (from a normal distribution) for confidence intervals that rely on z/t-values.
+Useful when using less than 30 values to calculate confidence intervals.
+
 It is important to know how to arrange information in order to use with memapp. The key points are:
 
-\itemize{
+\enumerate{
 \item One single epidemic wave each season.
 \item Never delete a rate inside an epidemic.
 \item Accommodate week 53.
@@ -164,7 +171,7 @@ contains one year, the weeks will go from 1st to 52nd.
 Note: If there is no column with week names, the application will name the weeks numbering from 1 to
 the number of rows.
 
-\itemize{
+\enumerate{
 \item In the northern hemisphere countries, the surveillance period usually goes from
 week 40 to 20 of the following year (notation: season 2016/2017).
 \item In the southern hemisphere countries, the surveillance period usually goes from

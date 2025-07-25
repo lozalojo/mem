@@ -4,10 +4,11 @@
 calcular.optimo.derivada <- function(i.curva.map) {
   x <- i.curva.map[, 1]
   y <- i.curva.map[, 2]
-  y.s <- loess(y ~ x)$fitted
+  dloess <- data.frame(x = x, y = y)
+  y.s <- loess(y ~ x, dloess)$fitted
   y.d <- diff(y.s)
   y.d2 <- diff(y.d)
-  x.d2 <- 1:(length(y.d2))
+  x.d2 <- seq_len(length(y.d2))
   y.d2.s <- sign(y.d2)
   cambio.signo <- abs(diff(y.d2.s))
   if (any(cambio.signo != 0)) {

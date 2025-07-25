@@ -13,8 +13,8 @@ optimal.tickmarks(
     {
      x[1] * x[2]
  }),
-  i.include.min = F,
-  i.include.max = F
+  i.include.min = FALSE,
+  i.include.max = FALSE
 )
 }
 \description{

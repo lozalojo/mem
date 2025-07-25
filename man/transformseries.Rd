@@ -25,16 +25,16 @@ row a week.
 
 Transformation options:
 
-\itemize{
-\item{1} {No transformation}
-\item{2} {Odd}
-\item{3} {Fill missing data}
-\item{4} {Smoothing regression}
-\item{5} {Two waves (observed)}
-\item{6} {Two waves (expected)}
-\item{7} {Loess}
-\item{8} {Spline}
-\item{9} {Moving Average}
+\describe{
+\item{1}{No transformation}
+\item{2}{Odd}
+\item{3}{Fill missing data}
+\item{4}{Smoothing regression}
+\item{5}{Two waves (observed)}
+\item{6}{Two waves (expected)}
+\item{7}{Loess}
+\item{8}{Spline}
+\item{9}{Moving Average}
 }
 
 Fill missings sustitute missing values with predicted values from a loess regression fit.
@@ -50,7 +50,7 @@ Two waves (observed) is used when there are two waves per season. It divides the
 dataset in two using a mixture of two normal distributions. The expected option uses the
 same procedure but also substitutes all data with predicted values of the mixture fit.
 
-Moving Average has an additional parameter i.number for the number of observation to 
+Moving Average has an additional parameter i.number for the number of observation to
 calculate the average.
 }
 \examples{

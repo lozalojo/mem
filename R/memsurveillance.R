@@ -120,30 +120,30 @@ memsurveillance <- function(i.current,
                             i.epidemic.thresholds = NA,
                             i.intensity.thresholds = NA,
                             i.mean.length = 10,
-                            i.force.length = F,
+                            i.force.length = FALSE,
                             i.output = ".",
                             i.graph.title = "",
                             i.graph.subtitle = "",
-                            i.graph.file = T,
+                            i.graph.file = TRUE,
                             i.graph.file.name = "",
                             i.week.report = NA,
-                            i.equal = F,
-                            i.pos.epidemic = F,
-                            i.no.epidemic = F,
-                            i.no.intensity = F,
+                            i.equal = FALSE,
+                            i.pos.epidemic = FALSE,
+                            i.no.epidemic = FALSE,
+                            i.no.intensity = FALSE,
                             i.epidemic.start = NA,
                             i.range.x = c(40, 20),
-                            i.range.x.53 = F,
+                            i.range.x.53 = FALSE,
                             i.range.y = NA,
-                            i.no.labels = F,
-                            i.start.end.marks = T,
-                            i.mem.info = T) {
+                            i.no.labels = FALSE,
+                            i.start.end.marks = TRUE,
+                            i.mem.info = TRUE) {
   if (is.null(dim(i.current))) stop("Incorrect number of dimensions, input must be a data.frame.") else if (!(ncol(i.current) == 1)) stop("Incorrect number of dimensions, only one season required.")
 
-  if (!is.numeric(i.epidemic.thresholds) | length(i.epidemic.thresholds) == 1) i.epidemic.thresholds <- rep(NA, 2)
-  if (!is.numeric(i.intensity.thresholds) | length(i.intensity.thresholds) == 1) i.intensity.thresholds <- rep(NA, 3)
+  if (!is.numeric(i.epidemic.thresholds) || length(i.epidemic.thresholds) == 1) i.epidemic.thresholds <- rep(NA, 2)
+  if (!is.numeric(i.intensity.thresholds) || length(i.intensity.thresholds) == 1) i.intensity.thresholds <- rep(NA, 3)
   # Esquema de las semanas
-  if (!is.numeric(i.range.x) | length(i.range.x) != 2) i.range.x <- c(40, 20)
+  if (!is.numeric(i.range.x) || length(i.range.x) != 2) i.range.x <- c(40, 20)
   if (i.range.x.53) esquema.temporadas.1 <- 53 else esquema.temporadas.1 <- 52
   if (i.range.x[1] == i.range.x[2]) i.range.x[2] <- i.range.x[1] - 1
   if (i.range.x[1] < i.range.x[2]) {
@@ -163,16 +163,16 @@ memsurveillance <- function(i.current,
   names(current.season) <- "rates"
   current.season$nombre.semana <- rownames(i.current)
   rownames(current.season) <- NULL
-  current.season <- merge(esquema.semanas, current.season, by = "nombre.semana", all.x = T)
+  current.season <- merge(esquema.semanas, current.season, by = "nombre.semana", all.x = TRUE)
   current.season <- current.season[order(current.season$numero.semana), ]
   rownames(current.season) <- NULL
 
   # limitamos a la semana del informe (i.week.report)
-  if (!is.na(i.week.report) & any(i.week.report == as.numeric(esquema.semanas$nombre.semana))) {
+  if (!is.na(i.week.report) && any(i.week.report == as.numeric(esquema.semanas$nombre.semana))) {
     semana.report <- ((1:semanas)[i.week.report == as.numeric(esquema.semanas$nombre.semana)])[1]
-    if (!is.na(semana.report) & semana.report < semanas) current.season$rates[(semana.report + 1):semanas] <- NA
+    if (!is.na(semana.report) && semana.report < semanas) current.season$rates[(semana.report + 1):semanas] <- NA
   } else {
-    if (all(is.na(current.season$rates))) semana.report <- semanas else semana.report <- max((1:semanas)[!is.na(current.season$rates)], na.rm = T)
+    if (all(is.na(current.season$rates))) semana.report <- semanas else semana.report <- max((1:semanas)[!is.na(current.season$rates)], na.rm = TRUE)
   }
 
   # Preparacion de datos necesarios
@@ -182,11 +182,11 @@ memsurveillance <- function(i.current,
 
   # Si el inicio forzado de la epidemia es posterior a la semana del informe, quitamos
   if (!is.na(i.epidemic.start)) semana.inicio.forzado <- ((1:semanas)[i.epidemic.start == as.numeric(esquema.semanas$nombre.semana)])[1] else semana.inicio.forzado <- NA
-  if (any(current.season$rates > umbral.pre, na.rm = T)) semana.inicio.real <- min((1:semanas)[current.season$rates > umbral.pre], na.rm = T) else semana.inicio.real <- NA
+  if (any(current.season$rates > umbral.pre, na.rm = TRUE)) semana.inicio.real <- min((1:semanas)[current.season$rates > umbral.pre], na.rm = TRUE) else semana.inicio.real <- NA
   if (!is.na(semana.inicio.forzado)) {
     if (semana.inicio.forzado > semana.report) semana.inicio.forzado <- NA
   }
-  if (!is.na(semana.inicio.forzado) & !is.na(semana.inicio.real)) {
+  if (!is.na(semana.inicio.forzado) && !is.na(semana.inicio.real)) {
     if (semana.inicio.forzado == semana.inicio.real) semana.inicio.forzado <- NA
   }
   if (!is.na(semana.inicio.forzado)) {
@@ -198,20 +198,13 @@ memsurveillance <- function(i.current,
   week.peak <- which.max(current.season$rates)
 
   if (!is.na(semana.inicio)) {
-    # if (!is.na(semana.inicio.real)){
-    #   # semana.fin.1<-(1:semanas)[current.season$rates<umbral.pos & semana.inicio.real<(1:semanas)]
-    #   punto.de.busqueda<-max(semana.inicio,semana.inicio.real,na.rm=T)
-    #   semana.fin.1<-(1:semanas)[current.season$rates<umbral.pos & punto.de.busqueda<(1:semanas)]
-    # }else{
-    #   semana.fin.1<-(1:semanas)[current.season$rates<umbral.pos & semana.inicio<(1:semanas)]
-    # }
     if (i.force.length) {
       semana.fin <- semana.inicio + i.mean.length
       if (semana.fin > semanas) semana.fin <- NA
     } else {
-      punto.de.busqueda <- max(semana.inicio, semana.inicio.real, week.peak, na.rm = T)
+      punto.de.busqueda <- max(semana.inicio, semana.inicio.real, week.peak, na.rm = TRUE)
       semana.fin.1 <- (1:semanas)[current.season$rates < umbral.pos & punto.de.busqueda < (1:semanas)]
-      if (any(semana.fin.1, na.rm = T)) semana.fin <- min(semana.fin.1, na.rm = T) else semana.fin <- NA
+      if (any(semana.fin.1, na.rm = TRUE)) semana.fin <- min(semana.fin.1, na.rm = TRUE) else semana.fin <- NA
     }
   } else {
     semana.fin <- NA
@@ -221,7 +214,6 @@ memsurveillance <- function(i.current,
     semana.fin <- NA
   }
   limites.niveles <- as.vector(i.intensity.thresholds)
-  # nombres.niveles<-as.character(i.flu$epi.intervals[,1])
   limites.niveles[limites.niveles < 0] <- 0
 
   # Datos para el grafico
@@ -238,7 +230,7 @@ memsurveillance <- function(i.current,
       umbrales.2 <- rep(NA, max(duracion.media, semana.report - semana.inicio + 1))
       if (!i.no.intensity) {
         intensidades.1 <- array(dim = c(semana.inicio - 1, 3))
-        intensidades.2 <- matrix(rep(limites.niveles, max(duracion.media, semana.report - semana.inicio + 1)), ncol = 3, byrow = T)
+        intensidades.2 <- matrix(rep(limites.niveles, max(duracion.media, semana.report - semana.inicio + 1)), ncol = 3, byrow = TRUE)
       } else {
         intensidades.1 <- array(dim = c(semana.inicio - 1, 3))
         intensidades.2 <- array(dim = c(max(duracion.media, semana.report - semana.inicio + 1), 3))
@@ -249,7 +241,7 @@ memsurveillance <- function(i.current,
       umbrales.2 <- rep(NA, semana.fin - semana.inicio)
       if (!i.no.intensity) {
         intensidades.1 <- array(dim = c(semana.inicio - 1, 3))
-        intensidades.2 <- matrix(rep(limites.niveles, semana.fin - semana.inicio), ncol = 3, byrow = T)
+        intensidades.2 <- matrix(rep(limites.niveles, semana.fin - semana.inicio), ncol = 3, byrow = TRUE)
       } else {
         intensidades.1 <- array(dim = c(semana.inicio - 1, 3))
         intensidades.2 <- array(dim = c(semana.fin - semana.inicio, 3))
@@ -279,13 +271,13 @@ memsurveillance <- function(i.current,
     )
   }
 
-  opar <- par(mar = c(5, 3, 3, 3) + 0.1, mgp = c(3, 0.5, 0), xpd = T)
+  opar <- par(mar = c(5, 3, 3, 3) + 0.1, mgp = c(3, 0.5, 0), xpd = TRUE)
   # Grafico principal
   matplot(1:semanas,
     dgraf,
     type = "l",
     lty = tipos, lwd = anchos, col = colores,
-    xlab = "", ylab = "", axes = F,
+    xlab = "", ylab = "", axes = FALSE,
     ylim = range.y, main = i.graph.title
   )
   # Puntos de la serie de tasas
@@ -294,21 +286,25 @@ memsurveillance <- function(i.current,
   # if (is.na(semana.inicio.forzado) & i.start.end.marks){
   if (i.start.end.marks) {
     if (!is.na(semana.inicio)) points(x = semana.inicio, y = current.season$rates[semana.inicio], pch = 1, bg = "#FFFFFF", col = "#FF0000", lwd = 7)
-    if (!is.na(semana.fin) & i.pos.epidemic) {
-      if (is.na(current.season$rates[semana.fin])) points(x = semana.fin, y = 0, pch = 13, bg = "#FFFFFF", col = "#40FF40", lwd = 7) else points(x = semana.fin, y = current.season$rates[semana.fin], pch = 1, bg = "#FFFFFF", col = "#40FF40", lwd = 7)
+    if (!is.na(semana.fin) && i.pos.epidemic) {
+      if (is.na(current.season$rates[semana.fin])) {
+        points(x = semana.fin, y = 0, pch = 13, bg = "#FFFFFF", col = "#40FF40", lwd = 7)
+      } else {
+        points(x = semana.fin, y = current.season$rates[semana.fin], pch = 1, bg = "#FFFFFF", col = "#40FF40", lwd = 7)
+      }
     }
   }
   # Ejes
   axis(1,
     at = seq(1, semanas, 1),
-    labels = F,
+    labels = FALSE,
     cex.axis = 0.7,
     col.axis = "#404040",
     col = "#C0C0C0"
   )
   axis(1,
     at = seq(1, semanas, 2),
-    tick = F,
+    tick = FALSE,
     labels = esquema.semanas$nombre.semana[seq(1, semanas, 2)],
     cex.axis = 0.7,
     col.axis = "#404040",
@@ -316,7 +312,7 @@ memsurveillance <- function(i.current,
   )
   axis(1,
     at = seq(2, semanas, 2),
-    tick = F,
+    tick = FALSE,
     labels = esquema.semanas$nombre.semana[seq(2, semanas, 2)],
     cex.axis = 0.7,
     line = 0.75,
@@ -358,7 +354,7 @@ memsurveillance <- function(i.current,
       text.s <- rep(1, 5)
       text.c <- colores[c(2:5, 2)]
       quitar.columnas <- numeric()
-      if (!i.pos.epidemic | is.na(semana.fin)) quitar.columnas <- c(quitar.columnas, 5)
+      if (!i.pos.epidemic || is.na(semana.fin)) quitar.columnas <- c(quitar.columnas, 5)
       if (i.no.intensity) quitar.columnas <- c(quitar.columnas, 2:4)
       if (length(quitar.columnas) > 0) {
         text.x <- text.x[-quitar.columnas]
@@ -379,10 +375,10 @@ memsurveillance <- function(i.current,
   puntos.leyenda <- c(1, 1, rep(NA, 5))
   bg.leyenda <- c("#FFFFFF", "#FFFFFF", rep(NA, 5))
   quitar.columnas <- numeric()
-  if (!i.start.end.marks | !is.na(semana.inicio.forzado)) quitar.columnas <- c(quitar.columnas, 1:2)
-  if (!i.pos.epidemic | is.na(semana.fin) | is.na(i.epidemic.thresholds[2])) quitar.columnas <- c(quitar.columnas, 1)
+  if (!i.start.end.marks || !is.na(semana.inicio.forzado)) quitar.columnas <- c(quitar.columnas, 1:2)
+  if (!i.pos.epidemic || is.na(semana.fin) || is.na(i.epidemic.thresholds[2])) quitar.columnas <- c(quitar.columnas, 1)
   if (is.na(semana.inicio)) quitar.columnas <- c(quitar.columnas, 2)
-  if (i.no.epidemic | is.na(i.epidemic.thresholds[1])) quitar.columnas <- c(quitar.columnas, 4)
+  if (i.no.epidemic || is.na(i.epidemic.thresholds[1])) quitar.columnas <- c(quitar.columnas, 4)
   if (i.no.intensity) quitar.columnas <- c(quitar.columnas, 5:7)
   quitar.columnas <- c(quitar.columnas, (5:7)[is.na(i.intensity.thresholds)])
   if (length(quitar.columnas) > 0) {
@@ -393,12 +389,10 @@ memsurveillance <- function(i.current,
     puntos.leyenda <- puntos.leyenda[-quitar.columnas]
     bg.leyenda <- bg.leyenda[-quitar.columnas]
   }
-  if (is.na(semana.inicio) | is.na(semana.fin)) {
+  if (is.na(semana.inicio) || is.na(semana.fin)) {
     xa <- "topright"
     ya <- NULL
   } else {
-    # ya<-otick$range[2]
-    # if ((semana.inicio-1)<=(semanas-semana.fin)) xa<-semana.fin+1 else xa<-1
     if (semana.fin < 0.80 * semanas) xa <- "topright" else xa <- "topleft"
     ya <- NULL
   }
@@ -419,7 +413,6 @@ memsurveillance <- function(i.current,
   )
   par(opar)
   if (i.graph.file) dev.off()
-  # if (i.graph.file) cat("graph created: ",getwd(),"/",i.output,"/",graph.name,".tiff","\n",sep="")
 
   n.season.scheme <- dim(current.season)[1]
   season.scheme <- rep(0, n.season.scheme)

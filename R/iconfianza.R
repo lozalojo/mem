@@ -1,7 +1,7 @@
 #' generic confidence interval calculation function
 #'
 #' @keywords internal
-iconfianza <- function(datos, nivel = 0.95, tipo = 1, ic = T, tipo.boot = "normal", iteraciones.boot = 10000, colas = 2, use.t = F) {
+iconfianza <- function(datos, nivel = 0.95, tipo = 1, ic = TRUE, tipo.boot = "normal", iteraciones.boot = 10000, colas = 2, use.t = FALSE) {
   datos[datos == -Inf] <- NA
   datos[datos == Inf] <- NA
   iconfres <- rep(NA, 3)

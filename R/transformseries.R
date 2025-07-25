@@ -18,16 +18,16 @@
 #'
 #' Transformation options:
 #'
-#' \itemize{
-#' \item{1} {No transformation}
-#' \item{2} {Odd}
-#' \item{3} {Fill missing data}
-#' \item{4} {Smoothing regression}
-#' \item{5} {Two waves (observed)}
-#' \item{6} {Two waves (expected)}
-#' \item{7} {Loess}
-#' \item{8} {Spline}
-#' \item{9} {Moving Average}
+#' \describe{
+#' \item{1}{No transformation}
+#' \item{2}{Odd}
+#' \item{3}{Fill missing data}
+#' \item{4}{Smoothing regression}
+#' \item{5}{Two waves (observed)}
+#' \item{6}{Two waves (expected)}
+#' \item{7}{Loess}
+#' \item{8}{Spline}
+#' \item{9}{Moving Average}
 #' }
 #'
 #' Fill missings sustitute missing values with predicted values from a loess regression fit.
@@ -43,7 +43,7 @@
 #' dataset in two using a mixture of two normal distributions. The expected option uses the
 #' same procedure but also substitutes all data with predicted values of the mixture fit.
 #'
-#' Moving Average has an additional parameter i.number for the number of observation to 
+#' Moving Average has an additional parameter i.number for the number of observation to
 #' calculate the average.
 #'
 #' @examples
@@ -82,15 +82,15 @@ transformseries <- function(i.data, i.transformation = 1, ...) {
     if (i.transformation == 1) {
       i.data.transf <- i.data
     } else if (i.transformation == 2) {
-      i.data.transf <- data.frame(apply(i.data, 2, transformseries.odd), stringsAsFactors = F)
+      i.data.transf <- data.frame(apply(i.data, 2, transformseries.odd), stringsAsFactors = FALSE)
       names(i.data.transf) <- names(i.data)
       rownames(i.data.transf) <- rownames(i.data)
     } else if (i.transformation == 3) {
-      i.data.transf <- data.frame(apply(i.data, 2, fill.missing), stringsAsFactors = F)
+      i.data.transf <- data.frame(apply(i.data, 2, fill.missing), stringsAsFactors = FALSE)
       names(i.data.transf) <- names(i.data)
       rownames(i.data.transf) <- rownames(i.data)
     } else if (i.transformation == 4) {
-      i.data.transf <- data.frame(apply(i.data, 2, suavizado, ...), stringsAsFactors = F)
+      i.data.transf <- data.frame(apply(i.data, 2, suavizado, ...), stringsAsFactors = FALSE)
       names(i.data.transf) <- names(i.data)
       rownames(i.data.transf) <- rownames(i.data)
     } else if (i.transformation == 5) {
@@ -100,15 +100,15 @@ transformseries <- function(i.data, i.transformation = 1, ...) {
       i.data.transf <- transformseries.twowaves(i.data, ...)$data.expected
       rownames(i.data.transf) <- rownames(i.data)
     } else if (i.transformation == 7) {
-      i.data.transf <- data.frame(apply(i.data, 2, transformseries.loess, ...), stringsAsFactors = F)
+      i.data.transf <- data.frame(apply(i.data, 2, transformseries.loess, ...), stringsAsFactors = FALSE)
       names(i.data.transf) <- names(i.data)
       rownames(i.data.transf) <- rownames(i.data)
     } else if (i.transformation == 8) {
-      i.data.transf <- data.frame(apply(i.data, 2, transformseries.spline, ...), stringsAsFactors = F)
+      i.data.transf <- data.frame(apply(i.data, 2, transformseries.spline, ...), stringsAsFactors = FALSE)
       names(i.data.transf) <- names(i.data)
       rownames(i.data.transf) <- rownames(i.data)
     } else if (i.transformation == 9) {
-      i.data.transf <- data.frame(apply(i.data, 2, transformseries.moving.average, ...), stringsAsFactors = F)
+      i.data.transf <- data.frame(apply(i.data, 2, transformseries.moving.average, ...), stringsAsFactors = FALSE)
       names(i.data.transf) <- names(i.data)
       rownames(i.data.transf) <- rownames(i.data)
     } else {

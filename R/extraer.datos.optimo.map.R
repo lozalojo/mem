@@ -2,7 +2,6 @@
 #'
 #' @keywords internal
 extraer.datos.optimo.map <- function(i.epi) {
-  # i.epi<-optimo
   resultado <- as.data.frame(i.epi[[1]]$optimum.map)
   m <- ncol(resultado)
   n <- length(names(i.epi))

@@ -4,7 +4,7 @@
 \alias{iconfianza.x}
 \title{confidence interval for a point (using arithmetic mean)}
 \usage{
-iconfianza.x(datos, nivel = 0.95, ic = T, colas = 2, use.t = F)
+iconfianza.x(datos, nivel = 0.95, ic = TRUE, colas = 2, use.t = FALSE)
 }
 \description{
 confidence interval for a point (using arithmetic mean)

@@ -15,8 +15,15 @@ transformseries.multiple(
   i.min.separation = 1,
   i.output = NA,
   i.prefix = "Multiple waves",
-  i.force.smooth = F,
+  i.force.smooth = FALSE,
   i.split.top = 3,
+  i.param = 2.8,
+  i.p1titles = c("Series and smooth", "Data to be used", "Week", "Data"),
+  i.p2titles = c("Iteration", "Week", "Data"),
+  i.p3titles = c("Iteration", "Week", "Data"),
+  i.p4titles = c("Merged epidemics", "separation", "Iteration", "Week", "Data"),
+  i.p5titles = c("Series separated in artificial seasons",
+    "Series separated and MEM epidemics", "Week", "Data"),
   ...
 )
 }

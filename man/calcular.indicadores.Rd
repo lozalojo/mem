@@ -10,14 +10,20 @@ calcular.indicadores(
   i.umbral.pos = NA,
   i.intensidades,
   i.duracion.intensidad = 10,
-  i.equal = F,
+  i.equal = FALSE,
   i.metodo.calculo = "default",
   i.semanas.por.encima = 1,
   i.valores.parametro.deteccion = seq(0.1, 5, 0.1),
   i.output = ".",
-  i.graph = F,
+  i.graph = FALSE,
   i.graph.name = "",
-  i.mem.info = T
+  i.mem.info = TRUE,
+  i.labels.axis = c("Week", "Weekly rate"),
+  i.labels.periods = c("Pre", "Epidemic", "Post"),
+  i.labels.intensities = c("Epidemic thr", "Medium thr", "High thr", "Very high thr"),
+  i.labels.details = c("algorithm", "threshold", "Method used",
+    "weeks above/below the threshold", "week(s) above the threshold", "Sensitivity",
+    "Specificity")
 )
 }
 \description{

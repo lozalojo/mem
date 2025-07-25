@@ -33,5 +33,5 @@
 #' \url{https://www.saludcastillayleon.es/profesionales/es/centinelas}
 #' @examples
 #' data(flucylraw)
-#' plot(flucylraw$rates,type="l")
+#' plot(flucylraw$rates, type = "l")
 NULL
