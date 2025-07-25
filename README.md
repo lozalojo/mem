@@ -2,13 +2,13 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/lozalojo/mem/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/lozalojo/mem/actions/workflows/R-CMD-check.yaml)
-<!-- badges: end -->
 [![Coverage Status](https://img.shields.io/codecov/c/github/lozalojo/mem/master.svg)](https://codecov.io/github/lozalojo/mem?branch=master)
 [![DOI](https://zenodo.org/badge/47120918.svg)](https://zenodo.org/badge/latestdoi/47120918)
 [![monthly](http://cranlogs.r-pkg.org/badges/mem)](https://www.rpackages.io/package/mem)
 [![total](http://cranlogs.r-pkg.org/badges/grand-total/mem)](https://www.rpackages.io/package/mem)
 [![CRAN](http://www.r-pkg.org/badges/version/mem?color=009999)](https://cran.r-project.org/package=mem)
 [![License](https://img.shields.io/badge/license-GPL%20%28%3E=%202%29-lightgrey.svg?style=flat)](http://www.gnu.org/licenses/gpl-2.0.html)
+<!-- badges: end -->
 
 ## Overview
 
