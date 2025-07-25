@@ -174,48 +174,58 @@ transformseries.multiple <- function(i.data,
   data.temp <- data.plus
   minimum.value <- max(0, min(data.temp$rates.filled, na.rm = TRUE) - max(data.temp$rates.filled, na.rm = TRUE) / 10)
   data.temp$rates.filled <- data.temp$rates.filled - minimum.value
-  for (j in 1:max.waves) {
+  current.waves = 1
+  while(current.waves <= max.waves){
     peradd <- as.data.frame(matrix(unlist(sapply(1:max.epidemic.duration, percentage.added, i.data = data.temp$rates.filled)), ncol = 6, byrow = TRUE), stringsAsFactors = FALSE)
     names(peradd) <- c("percentage", "start", "end", "duration", "sum", "max")
     n.chosen <- max(1, head((1:max.epidemic.duration)[peradd$percentage < (param.1 / 100)], 1) - 1)
-    peradd.chosen <- data.frame(iteration = j, percentage.added(data.temp$rates.filled, n.chosen))
+    peradd.chosen <- data.frame(iteration = current.waves, percentage.added(data.temp$rates.filled, n.chosen))
     peradd.chosen$sum.original <- sum(data.plus$rates.filled[peradd.chosen$start:peradd.chosen$end], na.rm = TRUE)
     peradd.chosen$mean <- peradd.chosen$sum / peradd.chosen$n
     peradd.chosen$mean.original <- peradd.chosen$sum.original / peradd.chosen$n
-    sum <- cumsumper <- totsum <- difcumsumper <- sumcum <- NULL
-    results <- results %>%
-      bind_rows(peradd.chosen) %>%
-      dplyr::mutate(sumcum = cumsum(sum), totsum = sum(data.plus$rates.filled, na.rm = TRUE), cumsumper = ifelse(totsum == 0, 0, sumcum / totsum)) %>%
-      dplyr::mutate(difcumsumper = cumsumper - dplyr::lag(cumsumper))
-    results$difcumsumper[1] <- results$cumsumper[1]
-    data.plot <- data.plot %>%
-      bind_rows(
-        data.frame(iteration = j, x = peradd.chosen$start:peradd.chosen$end, y = data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end], stringsAsFactors = FALSE) %>%
-          inner_join(results %>%
-            select(iteration, difcumsumper, n), by = "iteration") %>%
-          mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n))
-      )
-    label <- percentage <- NULL
-    last.point <- data.plot %>%
-      group_by(iteration) %>%
-      arrange(x) %>%
-      slice(1) %>%
-      ungroup() %>%
-      bind_rows(data.plot %>%
+    peradd.chosen$razonconcavidad <- conv_meas(x = peradd.chosen$start:peradd.chosen$end, y = data.plus$rates.filled[peradd.chosen$start:peradd.chosen$end])
+    print(paste(data.plus$rates.filled[peradd.chosen$start:peradd.chosen$end], collapse=","))
+    print(peradd.chosen$razonconcavidad)
+    print(peradd)
+    if (!is.nan(peradd.chosen$razonconcavidad) & peradd.chosen$razonconcavidad > 1){
+      sum <- cumsumper <- totsum <- difcumsumper <- sumcum <- NULL
+      results <- results %>%
+        bind_rows(peradd.chosen) %>%
+        dplyr::mutate(sumcum = cumsum(sum), totsum = sum(data.plus$rates.filled, na.rm = TRUE), cumsumper = ifelse(totsum == 0, 0, sumcum / totsum)) %>%
+        dplyr::mutate(difcumsumper = cumsumper - dplyr::lag(cumsumper))
+      results$difcumsumper[1] <- results$cumsumper[1]
+      data.plot <- data.plot %>%
+        bind_rows(
+          data.frame(iteration = current.waves, x = peradd.chosen$start:peradd.chosen$end, y = data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end], stringsAsFactors = FALSE) %>%
+            inner_join(results %>%
+                         select(iteration, difcumsumper, n), by = "iteration") %>%
+            mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n))
+        )
+      label <- percentage <- NULL
+      last.point <- data.plot %>%
         group_by(iteration) %>%
-        arrange(-x) %>%
+        arrange(x) %>%
         slice(1) %>%
-        ungroup()) %>%
-      group_by(iteration) %>%
-      arrange(y) %>%
-      slice(1) %>%
-      ungroup() %>%
-      inner_join(results %>%
-        select(iteration, percentage), by = "iteration") %>%
-      mutate(label = sprintf("%3.2f", 100 * percentage))
-    data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end] <- NA
+        ungroup() %>%
+        bind_rows(data.plot %>%
+                    group_by(iteration) %>%
+                    arrange(-x) %>%
+                    slice(1) %>%
+                    ungroup()) %>%
+        group_by(iteration) %>%
+        arrange(y) %>%
+        slice(1) %>%
+        ungroup() %>%
+        inner_join(results %>%
+                     select(iteration, percentage), by = "iteration") %>%
+        mutate(label = sprintf("%3.2f", 100 * percentage))
+      data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end] <- -Inf
+      current.waves<-current.waves+1
+    }else{
+      data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end][which.min(data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end])] <- -Inf
+    }
   }
-  rm(data.temp)
+  rm(data.temp, current.waves)
   data.plot <- data.plot %>%
     mutate(y = y + minimum.value)
   last.point <- last.point %>%
