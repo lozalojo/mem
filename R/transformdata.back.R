@@ -47,7 +47,7 @@
 #' @keywords influenza
 #'
 #' @export
-# @importFrom stats aggregate
+#' @importFrom stats aggregate
 #' @importFrom tidyr extract gather
 #' @importFrom dplyr %>% filter group_by summarise arrange
 transformdata.back <- function(i.data, i.name = "rates", i.cutoff.original = NA, i.range.x.final = NA, i.fun = mean) {
