@@ -146,7 +146,7 @@ Useful when using less than 30 values to calculate confidence intervals.
 
 It is important to know how to arrange information in order to use with memapp. The key points are:
 
-\itemize{
+\enumerate{
 \item One single epidemic wave each season.
 \item Never delete a rate inside an epidemic.
 \item Accommodate week 53.
@@ -171,7 +171,7 @@ contains one year, the weeks will go from 1st to 52nd.
 Note: If there is no column with week names, the application will name the weeks numbering from 1 to
 the number of rows.
 
-\itemize{
+\enumerate{
 \item In the northern hemisphere countries, the surveillance period usually goes from
 week 40 to 20 of the following year (notation: season 2016/2017).
 \item In the southern hemisphere countries, the surveillance period usually goes from

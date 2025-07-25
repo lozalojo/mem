@@ -135,11 +135,11 @@ with values from the season selected in the first step and see if values are abo
 threshold. This is used as the observed data: an observed positive outcome (week value above
 the threshold), and observed negative outcome (week value below the threshold).
 \item Each week has a real and an observed outcome, so it can be classified in:
-\itemize{
-\item True positives (TP): real positive, observed positive: values of the epidemic period above the threshold.
-\item True negatives (TN): real negative, observed negative: values of the non-epidemic period below the threshold.
-\item False positives (FP): real negative, observed positive: values of the non-epidemic period above the threshold.
-\item False negatives (FN): real positive, observed negative: values of the epidemic period below the threshold.
+\describe{
+  \item{True positives (TP)}{real positive, observed positive: values of the epidemic period above the threshold.}
+  \item{True negatives (TN)}{real negative, observed negative: values of the non-epidemic period below the threshold.}
+  \item{False positives (FP)}{real negative, observed positive: values of the non-epidemic period above the threshold.}
+  \item{False negatives (FN)}{real positive, observed negative: values of the epidemic period below the threshold.}
 }
 \item The process is repeated for each season in the dataset (each iteration a different value
 until all seasons have been processed).
@@ -150,14 +150,14 @@ negative predictive value, percent agreement and the Matthews correlation coeffi
 There are two ways of deciding the set of seasons used to calculate the pre-epidemic threshold in each
 iteration and it is determined by the \code{i.goodness.method}.
 
-\itemize{
-\item cross: For each value, the surrounding seasons (after or before the current value) are selected up
+\describe{
+  \item{cross}{For each value, the surrounding seasons (after or before the current value) are selected up
 to the number of Max. seasons (parameter of the Model box). To calculate the thresholds for season 2010/2011,
-data from 2005/2006 to 2009/2010 and from 2011/20012 to 2015/2016 will be taken.
-\item sequential: Only preceding seasons are used (before the current value) up to the number of Max. seasons.
-To calculate the thresholds for season 2010/2011, data from 2000/2001 to 2009/2010 are taken.
-\item threshold: The pre/post epidemic and intensity thresholds are fixed values for all the seasons and
-are compared with the epidemic as determined by MEM algorithm.
+data from 2005/2006 to 2009/2010 and from 2011/20012 to 2015/2016 will be taken.}
+  \item{sequential}{Only preceding seasons are used (before the current value) up to the number of Max. seasons.
+To calculate the thresholds for season 2010/2011, data from 2000/2001 to 2009/2010 are taken.}
+  \item{threshold}{The pre/post epidemic and intensity thresholds are fixed values for all the seasons and
+are compared with the epidemic as determined by MEM algorithm.}
 }
 
 The \code{i.calculation.method} is used to determine when the alert based on the epidemic threshold.
