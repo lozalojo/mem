@@ -1,6 +1,5 @@
 # The Moving Epidemic Method R Package
 
-[![Travis-CI Build Status](https://travis-ci.org/lozalojo/mem.svg?branch=master)](https://travis-ci.org/lozalojo/mem)
 [![Coverage Status](https://img.shields.io/codecov/c/github/lozalojo/mem/master.svg)](https://codecov.io/github/lozalojo/mem?branch=master)
 [![DOI](https://zenodo.org/badge/47120918.svg)](https://zenodo.org/badge/latestdoi/47120918)
 [![monthly](http://cranlogs.r-pkg.org/badges/mem)](https://www.rpackages.io/package/mem)
