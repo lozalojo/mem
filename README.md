@@ -2,7 +2,7 @@
 
 <!-- badges: start -->
 [![R-CMD-check](https://github.com/lozalojo/mem/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/lozalojo/mem/actions/workflows/R-CMD-check.yaml)
-[![Coverage Status](https://img.shields.io/codecov/c/github/lozalojo/mem/master.svg)](https://codecov.io/github/lozalojo/mem?branch=master)
+[![Coverage Status](https://codecov.io/gh/lozalojo/mem/graph/badge.svg)](https://app.codecov.io/gh/lozalojo/mem)
 [![DOI](https://zenodo.org/badge/47120918.svg)](https://zenodo.org/badge/latestdoi/47120918)
 [![monthly](http://cranlogs.r-pkg.org/badges/mem)](https://www.rpackages.io/package/mem)
 [![total](http://cranlogs.r-pkg.org/badges/grand-total/mem)](https://www.rpackages.io/package/mem)

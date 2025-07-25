@@ -5,7 +5,7 @@ on:
     branches: [master, development]
   pull_request:
 
-name: R check
+name: R-check
 
 permissions: read-all
 
