@@ -4,7 +4,7 @@
 \alias{fill.missing}
 \title{fills in missing values inside the season with smoothing regression}
 \usage{
-fill.missing(i.datos)
+\method{fill}{missing}(i.datos)
 }
 \description{
 fills in missing values inside the season with smoothing regression
