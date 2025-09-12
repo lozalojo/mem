@@ -177,14 +177,15 @@ transformseries.multiple <- function(i.data,
   data.temp$rates.filled <- data.temp$rates.filled - minimum.value
   convrate <- NULL
   for (j in 1:max.waves) {
-    peradd <- as.data.frame(matrix(unlist(sapply(1:max.epidemic.duration, percentage.added, i.data = data.temp$rates.filled)), ncol = 7, byrow = TRUE), stringsAsFactors = FALSE)
-    names(peradd) <- c("percentage", "start", "end", "duration", "sum", "max", "convrate")
+    peradd <- as.data.frame(matrix(unlist(sapply(1:max.epidemic.duration, percentage.added, i.data = data.temp$rates.filled, i.force.concave=i.force.concave)), ncol = 7, byrow = TRUE), stringsAsFactors = FALSE)
+    names(peradd) <- c("percentage", "start", "end", "n", "sum", "max", "convrate")
     if (i.force.concave){
-      n.chosen <- max(1, tail((1:max.epidemic.duration)[peradd$percentage >= (param.1 / 100) & peradd$convrate>1], 1), na.rm=T)
+      n.chosen <- max(1, tail((1:max.epidemic.duration)[peradd$percentage >= (param.1 / 100) & !is.na(peradd$convrate) & peradd$convrate>1], 1), na.rm=T)
     }else{
       n.chosen <- max(1, tail((1:max.epidemic.duration)[peradd$percentage >= (param.1 / 100)], 1), na.rm=T)
     }
-    peradd.chosen <- data.frame(iteration = j, percentage.added(data.temp$rates.filled, n.chosen))
+    # peradd.chosen <- data.frame(iteration = j, percentage.added(data.temp$rates.filled, n.chosen, i.force.concave=i.force.concave))
+    peradd.chosen <- data.frame(iteration = j, peradd[n.chosen,])
     peradd.chosen$sum.original <- sum(data.plus$rates.filled[peradd.chosen$start:peradd.chosen$end], na.rm = TRUE)
     peradd.chosen$mean <- peradd.chosen$sum / peradd.chosen$n
     peradd.chosen$mean.original <- peradd.chosen$sum.original / peradd.chosen$n
@@ -234,7 +235,7 @@ transformseries.multiple <- function(i.data,
   data.temp$rates.filled <- data.temp$rates.filled - minimum.value
   data.plot.top <- data.frame()
   for (j in seq_len(NROW(results))) {
-    starendt <- percentage.added(data.temp$rates.filled[results$start[j]:results$end[j]], split.top)
+    starendt <- percentage.added(data.temp$rates.filled[results$start[j]:results$end[j]], split.top, i.force.concave=i.force.concave)
     topiterations <- topiterations %>%
       bind_rows(data.frame(iteration = j, startt = results$start[j] + starendt$start - 1, endt = min(results$end[j], results$start[j] + starendt$start - 1 + split.top - 1)))
     data.plot.top <- data.plot.top %>%
@@ -466,7 +467,7 @@ transformseries.multiple <- function(i.data,
       xmax <- min(max(temp1$n), xmax)
       temp1$rates.filled[temp1$n < xmin] <- NA
       temp1$rates.filled[temp1$n > xmax] <- NA
-      temp3 <- percentage.added(temp1$rates.filled, max.season.duration)
+      temp3 <- percentage.added(temp1$rates.filled, max.season.duration, i.force.concave=i.force.concave)
       temp4 <- c(
         rep(NA, temp3$start - 1),
         rep(k, temp3$end - temp3$start + 1),
@@ -548,7 +549,7 @@ transformseries.multiple <- function(i.data,
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
       labs(title = i.p5titles[2], x = i.p5titles[3], y = i.p5titles[4]) +
-      geom_segment(data = temp1, aes(x = cut1, xend = cut2, y = temp3, yend = temp3), color = "#0000CC", alpha = 0.75, size = 1, arrow = arrow(ends = "both", type = "closed", angle = "90", length = unit(5, "points"))) +
+      geom_segment(data = temp1, aes(x = cut1, xend = cut2, y = temp3, yend = temp3), color = "#0000CC", alpha = 0.75, linewidth = 1, arrow = arrow(ends = "both", type = "closed", angle = "90", length = unit(5, "points"))) +
       geom_text(data = temp1, aes(x = cut3, y = temp2, label = season), color = "#0066CC", alpha = 0.75, vjust = 1) +
       # geom_vline(data=temp1, aes(xintercept=cut1), color="#FF0000", alpha=0.5) +
       # geom_vline(data=temp1, aes(xintercept=cut2), color="#40FF40", alpha=0.5) +
