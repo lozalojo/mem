@@ -13,13 +13,12 @@ percentage.added <- function(i.data, i.n, i.force.concave=T) {
   # deno <- sum(i.data[rs.max:(rs.max + n - 1)])
   # convrate <- conv_meas(x = rs.max:(rs.max + n - 1), y = i.data[rs.max:(rs.max + n - 1)])
   covr <- isconcave <- rs <- NULL
-    adata <- data.frame(rs=roll_sum(i.data, n), covr=roll_convrate(i.data, n), start=1:(ldata-n+1), end=n:ldata) %>%
-      mutate(isconcave=ifelse(!is.na(covr) & covr>1,1,0))
   if (i.force.concave){
-    adata <- adata %>%
+    adata <- data.frame(rs=roll_sum(i.data, n), covr=roll_convrate(i.data, n), start=1:(ldata-n+1), end=n:ldata) %>%
+      mutate(isconcave=ifelse(!is.na(covr) & covr>1,1,0)) %>%
       arrange(-isconcave, -rs)
   }else{
-    adata <- adata %>%
+    adata <- data.frame(rs=roll_sum(i.data, n), covr=NA, start=1:(ldata-n+1), end=n:ldata, isconcave=NA) %>%
       arrange(-rs)
   }
   rs.ini <- adata$start[1]

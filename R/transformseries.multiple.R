@@ -22,7 +22,7 @@ transformseries.multiple <- function(i.data,
                                      i.force.smooth = FALSE,
                                      i.split.top = 3,
                                      i.param = 2.8,
-                                     i.force.concave = F,
+                                     i.force.concave = TRUE,
                                      i.p1titles = c("Series and smooth", "Data to be used", "Week", "Data"),
                                      i.p2titles = c("Iteration", "Week", "Data"),
                                      i.p3titles = c("Iteration", "Week", "Data"),
@@ -59,6 +59,7 @@ transformseries.multiple <- function(i.data,
   } else {
     param.2 <- 2 * 10 / NCOL(i.data)
   }
+  #cat("Usando parametros ", param.1," y ", param.2, " con separacion ", i.min.separation, ", Conv: ",i.force.concave, ", Smooth: ",i.force.smooth,"\n")
   solpalette <- c("#268bd2", "#b58900", "#cb4b16", "#dc322f", "#d33682", "#6c71c4", "#2aa198", "#859900")
   if (is.na(i.max.epidemic.duration) || i.max.epidemic.duration == 0) max.epidemic.duration <- NROW(i.data) else max.epidemic.duration <- i.max.epidemic.duration
   if (is.na(i.max.season.duration) || i.max.season.duration == 0) max.season.duration <- NROW(i.data) else max.season.duration <- i.max.season.duration
@@ -200,7 +201,8 @@ transformseries.multiple <- function(i.data,
         data.frame(iteration = j, x = peradd.chosen$start:peradd.chosen$end, y = data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end], stringsAsFactors = FALSE) %>%
           inner_join(results %>%
             select(iteration, difcumsumper, n, convrate), by = "iteration") %>%
-          mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, " con: ", sprintf("%3.2f", convrate)))
+          mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+          select(-dummy1)
       )
     label <- percentage <- NULL
     last.point <- data.plot %>%
@@ -266,7 +268,7 @@ transformseries.multiple <- function(i.data,
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
       labs(title = paste0(i.p2titles[1], " #", j), x = i.p2titles[2], y = i.p2titles[3]) +
-      guides(color = guide_legend(title = paste0(i.p2titles[1], " (Lim: ", sprintf("%3.2f", param.2), ")"))) +
+      guides(color = guide_legend(title = paste0(i.p2titles[1], " (intra (1): ", sprintf("%3.2f", param.1),", inter (2): ", sprintf("%3.2f", param.2), ")"))) +
       theme_light() +
       theme(plot.title = element_text(hjust = 0.5))
   }
@@ -291,19 +293,22 @@ transformseries.multiple <- function(i.data,
     select(-iteration, -iteration.label) %>%
     arrange(iteration2, x) %>%
     rename(iteration = iteration2) %>%
-    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, " con: ", sprintf("%3.2f", convrate)))
+    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+    select(-dummy1)
   last.point <- last.point %>%
     inner_join(reorderedit, by = "iteration") %>%
     select(-iteration, -iteration.label) %>%
     arrange(iteration2) %>%
     rename(iteration = iteration2) %>%
-    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, " con: ", sprintf("%3.2f", convrate)))
+    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+    select(-dummy1)
   data.plot.top <- data.plot.top %>%
     inner_join(reorderedit, by = "iteration") %>%
     select(-iteration, -iteration.label) %>%
     arrange(iteration2, x) %>%
     rename(iteration = iteration2) %>%
-    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, " con: ", sprintf("%3.2f", convrate)))
+    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+    select(-dummy1)
   if (NROW(results) > 0) {
     for (j in seq_len(NROW(results))) {
       data.plot.j <- data.plot %>%
@@ -324,7 +329,7 @@ transformseries.multiple <- function(i.data,
         scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
         scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
         labs(title = paste0(i.p3titles[1], " #", j), x = i.p3titles[2], y = i.p3titles[3]) +
-        guides(color = guide_legend(title = paste0(i.p3titles[1], " (Lim: ", sprintf("%3.2f", param.2), ")"))) +
+        guides(color = guide_legend(title = paste0(i.p3titles[1], " (intra (1): ", sprintf("%3.2f", param.1),", inter (2): ", sprintf("%3.2f", param.2), ")"))) +
         theme_light() +
         theme(plot.title = element_text(hjust = 0.5))
     }
@@ -585,6 +590,7 @@ transformseries.multiple <- function(i.data,
     ggsave(paste0(prefix, "1.2. Data to be used.png"), p1[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
     # We plot each iteration to the stopping point and filter the results
     for (j in 1:max.waves) ggsave(paste0(prefix, "2.", j, ". Iteration (unordered) ", j, ".png"), p2[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
+    for (j in 1:max.waves) ggsave(paste0(prefix, "2.", j, ". Iteration (ordered) ", j, ".png"), p3[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
     if (NROW(results) > 0) for (j in 1:max.waves.dif) ggsave(paste0(prefix, "3.", j, ". Iteration (final) ", j, ".png"), p3[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
     ggsave(paste0(prefix, "4.1. Merged epidemics separated.png"), p4[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
     ggsave(paste0(prefix, "4.2. Merged epidemics separated plus cut points.png"), p4[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
