@@ -3,7 +3,7 @@
 #' @keywords internal
 #'
 #' @importFrom RcppRoll roll_sum
-percentage.added <- function(i.data, i.n, i.force.concave=F) {
+percentage.added <- function(i.data, i.n, i.force.concave=T) {
   if (i.n > length(i.data)) n <- length(i.data) else n <- i.n
   i.data[is.na(i.data)] <- 0
   ldata <- length(i.data)
@@ -17,7 +17,7 @@ percentage.added <- function(i.data, i.n, i.force.concave=F) {
       mutate(isconcave=ifelse(!is.na(covr) & covr>1,1,0))
   if (i.force.concave){
     adata <- adata %>%
-      arrange(-isconcave, -rs)  
+      arrange(-isconcave, -rs)
   }else{
     adata <- adata %>%
       arrange(-rs)
