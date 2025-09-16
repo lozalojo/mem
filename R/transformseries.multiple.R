@@ -22,6 +22,7 @@ transformseries.multiple <- function(i.data,
                                      i.force.smooth = FALSE,
                                      i.split.top = 3,
                                      i.param = 2.8,
+                                     i.force.concave = TRUE,
                                      i.p1titles = c("Series and smooth", "Data to be used", "Week", "Data"),
                                      i.p2titles = c("Iteration", "Week", "Data"),
                                      i.p3titles = c("Iteration", "Week", "Data"),
@@ -58,6 +59,7 @@ transformseries.multiple <- function(i.data,
   } else {
     param.2 <- 2 * 10 / NCOL(i.data)
   }
+  #cat("Usando parametros ", param.1," y ", param.2, " con separacion ", i.min.separation, ", Conv: ",i.force.concave, ", Smooth: ",i.force.smooth,"\n")
   solpalette <- c("#268bd2", "#b58900", "#cb4b16", "#dc322f", "#d33682", "#6c71c4", "#2aa198", "#859900")
   if (is.na(i.max.epidemic.duration) || i.max.epidemic.duration == 0) max.epidemic.duration <- NROW(i.data) else max.epidemic.duration <- i.max.epidemic.duration
   if (is.na(i.max.season.duration) || i.max.season.duration == 0) max.season.duration <- NROW(i.data) else max.season.duration <- i.max.season.duration
@@ -151,9 +153,9 @@ transformseries.multiple <- function(i.data,
   axis.y.labels <- axis.y.otick$tickmarks
   n <- rates.orig <- rates.smooth <- NULL
   p1[[1]] <- ggplot(data.plus) +
-    geom_line(aes(x = n, y = rates.orig), color = "#0066CC", linetype = 1, size = 0.75) +
+    geom_line(aes(x = n, y = rates.orig), color = "#0066CC", linetype = 1, linewidth = 0.75) +
     geom_point(aes(x = n, y = rates.orig), color = "#0066CC", size = 1.5) +
-    geom_line(aes(x = n, y = rates.smooth), color = "#CC0066", linetype = 1, size = 0.75) +
+    geom_line(aes(x = n, y = rates.smooth), color = "#CC0066", linetype = 1, linewidth = 0.75) +
     geom_point(aes(x = n, y = rates.smooth), color = "#CC0066", size = 1.5) +
     scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
     scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
@@ -161,7 +163,7 @@ transformseries.multiple <- function(i.data,
     theme_light() +
     theme(plot.title = element_text(hjust = 0.5))
   p1[[2]] <- ggplot(data.plus) +
-    geom_line(aes(x = n, y = rates.filled), color = "#004000", linetype = 1, size = 0.75) +
+    geom_line(aes(x = n, y = rates.filled), color = "#004000", linetype = 1, linewidth = 0.75) +
     geom_point(aes(x = n, y = rates.filled), color = "#004000", size = 1.5) +
     scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
     scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
@@ -174,11 +176,17 @@ transformseries.multiple <- function(i.data,
   data.temp <- data.plus
   minimum.value <- max(0, min(data.temp$rates.filled, na.rm = TRUE) - max(data.temp$rates.filled, na.rm = TRUE) / 10)
   data.temp$rates.filled <- data.temp$rates.filled - minimum.value
+  convrate <- NULL
   for (j in 1:max.waves) {
-    peradd <- as.data.frame(matrix(unlist(sapply(1:max.epidemic.duration, percentage.added, i.data = data.temp$rates.filled)), ncol = 6, byrow = TRUE), stringsAsFactors = FALSE)
-    names(peradd) <- c("percentage", "start", "end", "duration", "sum", "max")
-    n.chosen <- max(1, head((1:max.epidemic.duration)[peradd$percentage < (param.1 / 100)], 1) - 1)
-    peradd.chosen <- data.frame(iteration = j, percentage.added(data.temp$rates.filled, n.chosen))
+    peradd <- as.data.frame(matrix(unlist(sapply(1:max.epidemic.duration, percentage.added, i.data = data.temp$rates.filled, i.force.concave=i.force.concave)), ncol = 7, byrow = TRUE), stringsAsFactors = FALSE)
+    names(peradd) <- c("percentage", "start", "end", "n", "sum", "max", "convrate")
+    if (i.force.concave){
+      n.chosen <- max(1, tail((1:max.epidemic.duration)[peradd$percentage >= (param.1 / 100) & !is.na(peradd$convrate) & peradd$convrate>1], 1), na.rm=T)
+    }else{
+      n.chosen <- max(1, tail((1:max.epidemic.duration)[peradd$percentage >= (param.1 / 100)], 1), na.rm=T)
+    }
+    # peradd.chosen <- data.frame(iteration = j, percentage.added(data.temp$rates.filled, n.chosen, i.force.concave=i.force.concave))
+    peradd.chosen <- data.frame(iteration = j, peradd[n.chosen,])
     peradd.chosen$sum.original <- sum(data.plus$rates.filled[peradd.chosen$start:peradd.chosen$end], na.rm = TRUE)
     peradd.chosen$mean <- peradd.chosen$sum / peradd.chosen$n
     peradd.chosen$mean.original <- peradd.chosen$sum.original / peradd.chosen$n
@@ -192,8 +200,9 @@ transformseries.multiple <- function(i.data,
       bind_rows(
         data.frame(iteration = j, x = peradd.chosen$start:peradd.chosen$end, y = data.temp$rates.filled[peradd.chosen$start:peradd.chosen$end], stringsAsFactors = FALSE) %>%
           inner_join(results %>%
-            select(iteration, difcumsumper, n), by = "iteration") %>%
-          mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n))
+            select(iteration, difcumsumper, n, convrate), by = "iteration") %>%
+          mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+          select(-dummy1)
       )
     label <- percentage <- NULL
     last.point <- data.plot %>%
@@ -228,7 +237,7 @@ transformseries.multiple <- function(i.data,
   data.temp$rates.filled <- data.temp$rates.filled - minimum.value
   data.plot.top <- data.frame()
   for (j in seq_len(NROW(results))) {
-    starendt <- percentage.added(data.temp$rates.filled[results$start[j]:results$end[j]], split.top)
+    starendt <- percentage.added(data.temp$rates.filled[results$start[j]:results$end[j]], split.top, i.force.concave=i.force.concave)
     topiterations <- topiterations %>%
       bind_rows(data.frame(iteration = j, startt = results$start[j] + starendt$start - 1, endt = min(results$end[j], results$start[j] + starendt$start - 1 + split.top - 1)))
     data.plot.top <- data.plot.top %>%
@@ -249,7 +258,7 @@ transformseries.multiple <- function(i.data,
       filter(iteration <= j)
     n <- rates.filled <- x <- y <- iteration.label <- NULL
     p2[[j]] <- ggplot() +
-      geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
+      geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", linewidth = 1) +
       geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
       geom_point(data = data.plot.j, aes(x = x, y = y, color = factor(iteration.label)), size = 4) +
       geom_point(data = last.point.j, aes(x = x, y = y), color = "#FFFFFF", size = 2) +
@@ -259,7 +268,7 @@ transformseries.multiple <- function(i.data,
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
       labs(title = paste0(i.p2titles[1], " #", j), x = i.p2titles[2], y = i.p2titles[3]) +
-      guides(color = guide_legend(title = paste0(i.p2titles[1], " (Lim: ", sprintf("%3.2f", param.2), ")"))) +
+      guides(color = guide_legend(title = paste0(i.p2titles[1], " (intra (1): ", sprintf("%3.2f", param.1),", inter (2): ", sprintf("%3.2f", param.2), ")"))) +
       theme_light() +
       theme(plot.title = element_text(hjust = 0.5))
   }
@@ -284,19 +293,22 @@ transformseries.multiple <- function(i.data,
     select(-iteration, -iteration.label) %>%
     arrange(iteration2, x) %>%
     rename(iteration = iteration2) %>%
-    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n))
+    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+    select(-dummy1)
   last.point <- last.point %>%
     inner_join(reorderedit, by = "iteration") %>%
     select(-iteration, -iteration.label) %>%
     arrange(iteration2) %>%
     rename(iteration = iteration2) %>%
-    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n))
+    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+    select(-dummy1)
   data.plot.top <- data.plot.top %>%
     inner_join(reorderedit, by = "iteration") %>%
     select(-iteration, -iteration.label) %>%
     arrange(iteration2, x) %>%
     rename(iteration = iteration2) %>%
-    mutate(iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n))
+    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+    select(-dummy1)
   if (NROW(results) > 0) {
     for (j in seq_len(NROW(results))) {
       data.plot.j <- data.plot %>%
@@ -307,7 +319,7 @@ transformseries.multiple <- function(i.data,
         filter(iteration <= j)
       n <- rates.filled <- x <- y <- iteration.label <- NULL
       p3[[j]] <- ggplot() +
-        geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
+        geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", linewidth = 1) +
         geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
         geom_point(data = data.plot.j, aes(x = x, y = y, color = factor(iteration.label)), size = 4) +
         geom_point(data = last.point.j, aes(x = x, y = y), color = "#FFFFFF", size = 2) +
@@ -317,7 +329,7 @@ transformseries.multiple <- function(i.data,
         scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
         scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
         labs(title = paste0(i.p3titles[1], " #", j), x = i.p3titles[2], y = i.p3titles[3]) +
-        guides(color = guide_legend(title = paste0(i.p3titles[1], " (Lim: ", sprintf("%3.2f", param.2), ")"))) +
+        guides(color = guide_legend(title = paste0(i.p3titles[1], " (intra (1): ", sprintf("%3.2f", param.1),", inter (2): ", sprintf("%3.2f", param.2), ")"))) +
         theme_light() +
         theme(plot.title = element_text(hjust = 0.5))
     }
@@ -365,7 +377,7 @@ transformseries.multiple <- function(i.data,
   if (n.parts > 0) {
     n <- rates.filled <- x <- y <- NULL
     p4[[1]] <- ggplot() +
-      geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
+      geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", linewidth = 1) +
       geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
       geom_point(data = data.plot.united, aes(x = x, y = y, color = factor(iteration)), size = 4) +
       geom_point(data = data.plot.top.united, aes(x = x, y = y), color = "#000000", size = 1.5) +
@@ -433,7 +445,7 @@ transformseries.multiple <- function(i.data,
       select(-ok, -nparte)
     n <- rates.filled <- x <- y <- NULL
     p4[[2]] <- ggplot() +
-      geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1) +
+      geom_line(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", linewidth = 1) +
       geom_point(data = data.plus, aes(x = n, y = rates.filled), color = "#A0A0A0", size = 1.5) +
       geom_point(data = data.plot.united, aes(x = x, y = y, color = factor(iteration)), size = 4) +
       geom_point(data = data.plot.top.united, aes(x = x, y = y), color = "#000000", size = 1.5) +
@@ -460,7 +472,7 @@ transformseries.multiple <- function(i.data,
       xmax <- min(max(temp1$n), xmax)
       temp1$rates.filled[temp1$n < xmin] <- NA
       temp1$rates.filled[temp1$n > xmax] <- NA
-      temp3 <- percentage.added(temp1$rates.filled, max.season.duration)
+      temp3 <- percentage.added(temp1$rates.filled, max.season.duration, i.force.concave=i.force.concave)
       temp4 <- c(
         rep(NA, temp3$start - 1),
         rep(k, temp3$end - temp3$start + 1),
@@ -521,7 +533,7 @@ transformseries.multiple <- function(i.data,
       summarise(cut1 = min(n), cut2 = max(n), cut3 = mean(n))
     n <- rates.filled <- rates.filled.original <- x <- y <- cut1 <- cut2 <- cut3 <- epidemic <- NULL
     p5[[1]] <- ggplot() +
-      geom_line(data = data.united, aes(x = n, y = rates.filled.original), color = "#A0A0A0", size = 1) +
+      geom_line(data = data.united, aes(x = n, y = rates.filled.original), color = "#A0A0A0", linewidth = 1) +
       geom_point(data = data.united, aes(x = n, y = rates.filled.original), color = "#A0A0A0", size = 1.5, alpha = 0.75) +
       geom_point(data = data.united, aes(x = n, y = rates.filled), color = "#FFB401", size = 4, alpha = 0.75) +
       geom_point(data = data.plot.united, aes(x = x, y = y), color = "#800080", size = 4, alpha = 0.75) +
@@ -535,14 +547,14 @@ transformseries.multiple <- function(i.data,
     temp2 <- axis.y.range[1]
     temp3 <- axis.y.range[1]
     p5[[2]] <- ggplot() +
-      geom_line(data = data.united, aes(x = n, y = rates.filled.original), color = "#A0A0A0", size = 1) +
+      geom_line(data = data.united, aes(x = n, y = rates.filled.original), color = "#A0A0A0", linewidth = 1) +
       geom_point(data = data.united, aes(x = n, y = rates.filled.original), color = "#A0A0A0", size = 1.5, alpha = 0.75) +
       geom_point(data = subset(data.united, !is.na(epidemic)), aes(x = n, y = rates.filled.original, color = factor(epidemic, levels = 1:3, labels = c("Pre", "Epidemic", "Post"))), size = 4, alpha = 0.75) +
       scale_colour_manual(values = c("#00C000", "#800080", "#FFB401"), guide = guide_legend(nrow = 3)) +
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
       labs(title = i.p5titles[2], x = i.p5titles[3], y = i.p5titles[4]) +
-      geom_segment(data = temp1, aes(x = cut1, xend = cut2, y = temp3, yend = temp3), color = "#0000CC", alpha = 0.75, size = 1, arrow = arrow(ends = "both", type = "closed", angle = "90", length = unit(5, "points"))) +
+      geom_segment(data = temp1, aes(x = cut1, xend = cut2, y = temp3, yend = temp3), color = "#0000CC", alpha = 0.75, linewidth = 1, arrow = arrow(ends = "both", type = "closed", angle = "90", length = unit(5, "points"))) +
       geom_text(data = temp1, aes(x = cut3, y = temp2, label = season), color = "#0066CC", alpha = 0.75, vjust = 1) +
       # geom_vline(data=temp1, aes(xintercept=cut1), color="#FF0000", alpha=0.5) +
       # geom_vline(data=temp1, aes(xintercept=cut2), color="#40FF40", alpha=0.5) +
@@ -578,6 +590,7 @@ transformseries.multiple <- function(i.data,
     ggsave(paste0(prefix, "1.2. Data to be used.png"), p1[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
     # We plot each iteration to the stopping point and filter the results
     for (j in 1:max.waves) ggsave(paste0(prefix, "2.", j, ". Iteration (unordered) ", j, ".png"), p2[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
+    for (j in 1:max.waves) ggsave(paste0(prefix, "2.", j, ". Iteration (ordered) ", j, ".png"), p3[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
     if (NROW(results) > 0) for (j in 1:max.waves.dif) ggsave(paste0(prefix, "3.", j, ". Iteration (final) ", j, ".png"), p3[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
     ggsave(paste0(prefix, "4.1. Merged epidemics separated.png"), p4[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
     ggsave(paste0(prefix, "4.2. Merged epidemics separated plus cut points.png"), p4[[2]], width = 16, height = 9, dpi = 150, path = outputdir)

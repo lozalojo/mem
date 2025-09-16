@@ -4,7 +4,7 @@
 \alias{percentage.added}
 \title{For use with transformseries.multiple}
 \usage{
-percentage.added(i.data, i.n)
+percentage.added(i.data, i.n, i.force.concave = T)
 }
 \description{
 For use with transformseries.multiple
