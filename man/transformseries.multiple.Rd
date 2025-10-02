@@ -12,6 +12,7 @@ transformseries.multiple(
   i.waves.range = NA,
   i.intra.param = 3,
   i.inter.param = 2,
+  i.inter.method = 1,
   i.min.separation = 1,
   i.output = NA,
   i.prefix = "Multiple waves",

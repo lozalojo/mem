@@ -16,6 +16,7 @@ transformseries.multiple <- function(i.data,
                                      i.waves.range = NA,
                                      i.intra.param = 3,
                                      i.inter.param = 2,
+                                     i.inter.method = 1,
                                      i.min.separation = 1,
                                      i.output = NA,
                                      i.prefix = "Multiple waves",
@@ -118,7 +119,7 @@ transformseries.multiple <- function(i.data,
     arrange(year, week)
   data <- temp4 %>%
     dplyr::arrange(yrweek) %>%
-    dplyr::mutate(n = seq_len(n())) %>%
+    dplyr::mutate(n = seq_len(dplyr::n())) %>%
     dplyr::select(-season, -year, -week) %>%
     mutate(mrate = temp1, mratej = pmax(0, jitter(mrate, factor = 1, amount = median(as.numeric(as.matrix(i.data)), na.rm = TRUE) / 5)), y = ifelse(is.na(rates), mratej, rates)) %>%
     select(-mrate, -mratej)
@@ -190,7 +191,7 @@ transformseries.multiple <- function(i.data,
     peradd.chosen$sum.original <- sum(data.plus$rates.filled[peradd.chosen$start:peradd.chosen$end], na.rm = TRUE)
     peradd.chosen$mean <- peradd.chosen$sum / peradd.chosen$n
     peradd.chosen$mean.original <- peradd.chosen$sum.original / peradd.chosen$n
-    sum <- cumsumper <- totsum <- difcumsumper <- sumcum <- NULL
+    sum <- cumsumper <- totsum <- difcumsumper <- sumcum <- difcumsum <- NULL
     results <- results %>%
       bind_rows(peradd.chosen) %>%
       dplyr::mutate(sumcum = cumsum(sum), totsum = sum(data.plus$rates.filled, na.rm = TRUE), cumsumper = ifelse(totsum == 0, 0, sumcum / totsum)) %>%
@@ -287,7 +288,8 @@ transformseries.multiple <- function(i.data,
     arrange(iteration2) %>%
     rename(iteration = iteration2) %>%
     mutate(sumcum = cumsum(sum)) %>%
-    mutate(cumsumper = sumcum / totsum)
+    mutate(cumsumper = sumcum / totsum) %>%
+    mutate(difcumsum = sum/sumcum)
   data.plot <- data.plot %>%
     inner_join(reorderedit, by = "iteration") %>%
     select(-iteration, -iteration.label) %>%
@@ -336,7 +338,11 @@ transformseries.multiple <- function(i.data,
   }
   results.original <- results
   # The stopping point is determined by param.2
-  if (is.na(waves)) max.waves.dif <- max(min.waves, min(results$iteration[results$difcumsumper < (param.2 / 100)][1] - 1, max.waves, na.rm = TRUE), ra.rm = TRUE) else max.waves.dif <- waves
+  if (i.inter.method == 1){
+    if (is.na(waves)) max.waves.dif <- max(min.waves, min(results$iteration[results$difcumsumper < (param.2 / 100)][1] - 1, max.waves, na.rm = TRUE), ra.rm = TRUE) else max.waves.dif <- waves
+  }else{
+    if (is.na(waves)) max.waves.dif <- max(min.waves, min(results$iteration[results$difcumsum < (i.inter.param / 100)][1] - 1, max.waves, na.rm = TRUE), ra.rm = TRUE) else max.waves.dif <- waves
+  }
   results <- results %>%
     filter(iteration <= max.waves.dif)
   # I join epidemics with a separation lower than i.min.separation
