@@ -4,7 +4,7 @@
 #'
 #' @importFrom ggplot2 ggplot ggsave geom_area geom_line geom_vline aes labs %+% element_text geom_point guide_legend scale_colour_manual scale_x_continuous scale_y_continuous theme geom_segment geom_text unit arrow guides theme_light
 #' @importFrom stats smooth.spline predict median loess
-#' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join inner_join full_join pull slice summarise ungroup desc rename
+#' @importFrom dplyr %>% arrange mutate select filter group_by bind_rows if_else left_join inner_join full_join pull slice summarise ungroup desc rename join_by
 #' @importFrom tidyr spread pivot_wider
 #' @importFrom utils tail head
 #' @importFrom purrr pluck
@@ -269,7 +269,7 @@ transformseries.multiple <- function(i.data,
       scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
       scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
       labs(title = paste0(i.p2titles[1], " #", j), x = i.p2titles[2], y = i.p2titles[3]) +
-      guides(color = guide_legend(title = paste0(i.p2titles[1], " (intra (1): ", sprintf("%3.2f", param.1),", inter (2): ", sprintf("%3.2f", param.2), ")"))) +
+      guides(color = guide_legend(title = paste0(i.p2titles[1], " (intra (1): ", sprintf("%3.2f", param.1),", inter (2/total): ", sprintf("%3.2f", param.2), ")"))) +
       theme_light() +
       theme(plot.title = element_text(hjust = 0.5))
   }
@@ -295,21 +295,27 @@ transformseries.multiple <- function(i.data,
     select(-iteration, -iteration.label) %>%
     arrange(iteration2, x) %>%
     rename(iteration = iteration2) %>%
-    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+    left_join(results %>%
+                select(iteration, difcumsum), by = join_by(iteration)) %>%
+    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per/total: ", sprintf("%3.2f", 100 * difcumsumper), ", Per/last: ", sprintf("%3.2f", 100 * difcumsum), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
     select(-dummy1)
   last.point <- last.point %>%
     inner_join(reorderedit, by = "iteration") %>%
     select(-iteration, -iteration.label) %>%
     arrange(iteration2) %>%
     rename(iteration = iteration2) %>%
-    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+    left_join(results %>%
+                select(iteration, difcumsum), by = join_by(iteration)) %>%
+    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per/total: ", sprintf("%3.2f", 100 * difcumsumper), ", Per/last: ", sprintf("%3.2f", 100 * difcumsum), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
     select(-dummy1)
   data.plot.top <- data.plot.top %>%
     inner_join(reorderedit, by = "iteration") %>%
     select(-iteration, -iteration.label) %>%
     arrange(iteration2, x) %>%
     rename(iteration = iteration2) %>%
-    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per: ", sprintf("%3.2f", 100 * difcumsumper), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+    left_join(results %>%
+                select(iteration, difcumsum), by = join_by(iteration)) %>%
+    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per/total: ", sprintf("%3.2f", 100 * difcumsumper), ", Per/last: ", sprintf("%3.2f", 100 * difcumsum), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
     select(-dummy1)
   if (NROW(results) > 0) {
     for (j in seq_len(NROW(results))) {
@@ -331,7 +337,7 @@ transformseries.multiple <- function(i.data,
         scale_x_continuous(breaks = axis.x.ticks, limits = axis.x.range, labels = axis.x.labels) +
         scale_y_continuous(breaks = axis.y.ticks, limits = axis.y.range, labels = axis.y.labels) +
         labs(title = paste0(i.p3titles[1], " #", j), x = i.p3titles[2], y = i.p3titles[3]) +
-        guides(color = guide_legend(title = paste0(i.p3titles[1], " (intra (1): ", sprintf("%3.2f", param.1),", inter (2): ", sprintf("%3.2f", param.2), ")"))) +
+        guides(color = guide_legend(title = paste0(i.p3titles[1], " (intra (1): ", sprintf("%3.2f", param.1),", inter (2/total): ", sprintf("%3.2f", param.2),", inter (2/last): ", sprintf("%3.2f", i.inter.param), ")"))) +
         theme_light() +
         theme(plot.title = element_text(hjust = 0.5))
     }
@@ -595,8 +601,8 @@ transformseries.multiple <- function(i.data,
     ggsave(paste0(prefix, "1.1. Original Vs Smooth.png"), p1[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
     ggsave(paste0(prefix, "1.2. Data to be used.png"), p1[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
     # We plot each iteration to the stopping point and filter the results
-    for (j in 1:max.waves) ggsave(paste0(prefix, "2.", j, ". Iteration (unordered) ", j, ".png"), p2[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
-    for (j in 1:max.waves) ggsave(paste0(prefix, "2.", j, ". Iteration (ordered) ", j, ".png"), p3[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
+    for (j in 1:max.waves) ggsave(paste0(prefix, "2.1.", j, ". Iteration (unordered) ", j, ".png"), p2[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
+    for (j in 1:max.waves) ggsave(paste0(prefix, "2.2.", j, ". Iteration (ordered) ", j, ".png"), p3[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
     if (NROW(results) > 0) for (j in 1:max.waves.dif) ggsave(paste0(prefix, "3.", j, ". Iteration (final) ", j, ".png"), p3[[j]], width = 16, height = 9, dpi = 150, path = outputdir)
     ggsave(paste0(prefix, "4.1. Merged epidemics separated.png"), p4[[1]], width = 16, height = 9, dpi = 150, path = outputdir)
     ggsave(paste0(prefix, "4.2. Merged epidemics separated plus cut points.png"), p4[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
