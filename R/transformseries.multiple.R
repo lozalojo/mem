@@ -297,7 +297,7 @@ transformseries.multiple <- function(i.data,
     rename(iteration = iteration2) %>%
     left_join(results %>%
                 select(iteration, difcumsum), by = join_by(iteration)) %>%
-    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per/total: ", sprintf("%3.2f", 100 * difcumsumper), ", Per/last: ", sprintf("%3.2f", 100 * difcumsum), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per/total: ", sprintf("%3.2f", 100 * difcumsumper), ", Per/last: ", sprintf("%3.2f", 100 * difcumsum), ", n: ", n, ifelse(dummy1,paste0(", con: ", sprintf("%3.2f", convrate)),""))) %>%
     select(-dummy1)
   last.point <- last.point %>%
     inner_join(reorderedit, by = "iteration") %>%
@@ -306,7 +306,7 @@ transformseries.multiple <- function(i.data,
     rename(iteration = iteration2) %>%
     left_join(results %>%
                 select(iteration, difcumsum), by = join_by(iteration)) %>%
-    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per/total: ", sprintf("%3.2f", 100 * difcumsumper), ", Per/last: ", sprintf("%3.2f", 100 * difcumsum), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per/total: ", sprintf("%3.2f", 100 * difcumsumper), ", Per/last: ", sprintf("%3.2f", 100 * difcumsum), ", n: ", n, ifelse(dummy1,paste0(", con: ", sprintf("%3.2f", convrate)),""))) %>%
     select(-dummy1)
   data.plot.top <- data.plot.top %>%
     inner_join(reorderedit, by = "iteration") %>%
@@ -315,7 +315,7 @@ transformseries.multiple <- function(i.data,
     rename(iteration = iteration2) %>%
     left_join(results %>%
                 select(iteration, difcumsum), by = join_by(iteration)) %>%
-    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per/total: ", sprintf("%3.2f", 100 * difcumsumper), ", Per/last: ", sprintf("%3.2f", 100 * difcumsum), " n: ", n, ifelse(dummy1,paste0(" con: ", sprintf("%3.2f", convrate)),""))) %>%
+    mutate(dummy1=i.force.concave, iteration.label = paste0("Iter: ", sprintf("%02d", iteration), ", Per/total: ", sprintf("%3.2f", 100 * difcumsumper), ", Per/last: ", sprintf("%3.2f", 100 * difcumsum), ", n: ", n, ifelse(dummy1,paste0(", con: ", sprintf("%3.2f", convrate)),""))) %>%
     select(-dummy1)
   if (NROW(results) > 0) {
     for (j in seq_len(NROW(results))) {
@@ -508,10 +508,25 @@ transformseries.multiple <- function(i.data,
     # See epidemic detected my mem algorithm
     data.united$epidemic <- NA
     # See if i.param is defined as param, if it is 0, then optimize it
-    param <- i.param
-    if (any(is.null(param))) param <- 2.8
-    if (any(is.na(param))) param <- 2.8
-    if (any(param==0)){
+    # param <- i.param
+    # if (any(is.null(param))) param <- 2.8
+    # if (any(is.na(param))) param <- 2.8
+    # if (any(param==0)){
+    #   temp1 <- data.united %>%
+    #     filter(!is.na(part)) %>%
+    #     arrange(n) %>%
+    #     group_by(season) %>%
+    #     mutate(week=1:n()) %>%
+    #     ungroup() %>%
+    #     select(season, week, rates.filled) %>%
+    #     pivot_wider(names_from = "season", values_from = "rates.filled") %>%
+    #     select(-week) %>%
+    #     as.data.frame()
+    #   rownames(temp1) <- as.character(1:NROW(temp1))
+    #   if (NCOL(temp1)>2) param <- as.numeric(roc.analysis(temp1, i.min.seasons = 3)$optimum["matthews"]) else param <- 2.8
+    #   rm(temp1)
+    # }
+    if (any(is.null(i.param)) | any(is.na(i.param)) | any(i.param==0)){
       temp1 <- data.united %>%
         filter(!is.na(part)) %>%
         arrange(n) %>%
@@ -525,6 +540,8 @@ transformseries.multiple <- function(i.data,
       rownames(temp1) <- as.character(1:NROW(temp1))
       if (NCOL(temp1)>2) param <- as.numeric(roc.analysis(temp1, i.min.seasons = 3)$optimum["matthews"]) else param <- 2.8
       rm(temp1)
+    }else{
+      param <- i.param[1]
     }
     for (i in 1:n.parts) {
       temp1 <- data.united %>%

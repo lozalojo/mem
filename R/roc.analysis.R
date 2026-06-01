@@ -43,7 +43,7 @@
 #'   i.param.values = seq(2.6, 2.8, 0.1),
 #'   i.detection.values = seq(2.6, 2.8, 0.1)
 #' )
-#' epi.roc$results
+#' epi.roc$optimum
 #' @author Jose E. Lozano \email{lozalojo@@gmail.com}
 #'
 #' @references

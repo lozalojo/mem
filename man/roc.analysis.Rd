@@ -74,7 +74,7 @@ epi.roc <- roc.analysis(flucyl,
   i.param.values = seq(2.6, 2.8, 0.1),
   i.detection.values = seq(2.6, 2.8, 0.1)
 )
-epi.roc$results
+epi.roc$optimum
 }
 \references{
 Vega T, Lozano JE, Ortiz de Lejarazu R, Gutierrez Perez M. Modelling influenza epidemic - can we

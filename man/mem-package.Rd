@@ -19,5 +19,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Jose E. Lozano \email{lozalojo@gmail.com}
 
+Authors:
+\itemize{
+  \item Jose E. Lozano \email{lozalojo@gmail.com}
+}
+
 }
 \keyword{internal}
