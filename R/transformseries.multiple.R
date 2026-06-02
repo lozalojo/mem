@@ -538,9 +538,16 @@ transformseries.multiple <- function(i.data,
         select(-week) %>%
         as.data.frame()
       rownames(temp1) <- as.character(1:NROW(temp1))
-      if (NCOL(temp1)>2) param <- as.numeric(roc.analysis(temp1, i.min.seasons = 3)$optimum["matthews"]) else param <- 2.8
+      if (NCOL(temp1)>2){
+        param.roc <- roc.analysis(temp1, i.min.seasons = 3)
+        param <- as.numeric(param.roc$optimum["matthews"])
+      }else{
+        param.roc <- list()
+        param <- 2.8 
+      }
       rm(temp1)
     }else{
+      param.roc <- list()
       param <- i.param[1]
     }
     for (i in 1:n.parts) {
@@ -627,5 +634,6 @@ transformseries.multiple <- function(i.data,
     ggsave(paste0(prefix, "5.2. Seasons separated and MEM epidemics.png"), p5[[2]], width = 16, height = 9, dpi = 150, path = outputdir)
   }
   plots <- list(p1 = p1, p2 = p2, p3 = p3, p4 = p4, p5 = p5)
-  list(data.final = data.final, data.united = data.united, data.plot.united = data.plot.united, cut.united = cut.united, season.desc = season.desc, results.original = results.original, results.final = results, plots = plots, param.param = param)
+  list(data.final = data.final, data.united = data.united, data.plot.united = data.plot.united, cut.united = cut.united, season.desc = season.desc, 
+       results.original = results.original, results.final = results, plots = plots, param.param = param, param.roc = param.roc)
 }

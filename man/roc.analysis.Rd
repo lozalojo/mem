@@ -7,7 +7,7 @@
 roc.analysis(
   i.data,
   i.param.values = seq(1, 5, 0.1),
-  i.min.seasons = 6,
+  i.min.seasons = 3,
   i.graph = FALSE,
   i.graph.file = FALSE,
   i.graph.file.name = "",
