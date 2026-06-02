@@ -545,7 +545,7 @@ transformseries.multiple <- function(i.data,
         as.data.frame()
       rownames(temp1) <- as.character(1:NROW(temp1))
       if (NCOL(temp1)>2){
-        param.roc <- roc.analysis(temp1, i.min.seasons = 3, i.param.values = param.values)
+        param.roc <- roc.analysis(temp1, i.min.seasons = 3, i.param.values = param.values, i.detection.values = param.values)
         param <- as.numeric(param.roc$optimum["matthews"])
       }else{
         param.roc <- list()
