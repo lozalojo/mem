@@ -23,6 +23,7 @@ transformseries.multiple <- function(i.data,
                                      i.force.smooth = FALSE,
                                      i.split.top = 3,
                                      i.param = 2.8,
+                                     i.param.values = seq(1.0, 5.0, 0.1),
                                      i.force.concave = TRUE,
                                      i.p1titles = c("Series and smooth", "Data to be used", "Week", "Data"),
                                      i.p2titles = c("Iteration", "Week", "Data"),
@@ -526,6 +527,11 @@ transformseries.multiple <- function(i.data,
     #   if (NCOL(temp1)>2) param <- as.numeric(roc.analysis(temp1, i.min.seasons = 3)$optimum["matthews"]) else param <- 2.8
     #   rm(temp1)
     # }
+    if (any(is.null(i.param.values)) | any(is.na(i.param.values))){
+      param.values <- seq(1.0, 5.0, 0.1)
+    } else {
+      param.values <- i.param.values
+    }
     if (any(is.null(i.param)) | any(is.na(i.param)) | any(i.param==0)){
       temp1 <- data.united %>%
         filter(!is.na(part)) %>%
@@ -539,7 +545,7 @@ transformseries.multiple <- function(i.data,
         as.data.frame()
       rownames(temp1) <- as.character(1:NROW(temp1))
       if (NCOL(temp1)>2){
-        param.roc <- roc.analysis(temp1, i.min.seasons = 3)
+        param.roc <- roc.analysis(temp1, i.min.seasons = 3, i.param.values = param.values)
         param <- as.numeric(param.roc$optimum["matthews"])
       }else{
         param.roc <- list()
