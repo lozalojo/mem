@@ -370,7 +370,7 @@ memmodel <- function(i.data,
 
       esquema.temporadas[, anios + 2, ] <- 3
       esquema.temporadas[1:(diferencia.global + inicio.medio - 1), anios + 2, ] <- 1
-      esquema.temporadas[(diferencia.global + inicio.medio):(diferencia.global + inicio.medio + duracion.media - 1), anios + 2, ] <- 2
+      esquema.temporadas[(diferencia.global + inicio.medio):(min(longitud.esquema,diferencia.global + inicio.medio + duracion.media - 1)), anios + 2, ] <- 2
 
       ## Temporadas moviles
 
