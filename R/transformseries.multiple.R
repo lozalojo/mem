@@ -24,7 +24,9 @@ transformseries.multiple <- function(i.data,
                                      i.split.top = 3,
                                      i.param = 2.8,
                                      i.param.values = seq(1.0, 5.0, 0.1),
+                                     i.param.method = "matthews",
                                      i.force.concave = TRUE,
+                                     i.extent.data = FALSE,
                                      i.p1titles = c("Series and smooth", "Data to be used", "Week", "Data"),
                                      i.p2titles = c("Iteration", "Week", "Data"),
                                      i.p3titles = c("Iteration", "Week", "Data"),
@@ -95,36 +97,72 @@ transformseries.multiple <- function(i.data,
     }
   }
   # Prepare the data
-  # This value is for missing values, its the median of the lowest values
-  temp1 <- i.data %>%
-    as.matrix() %>%
-    as.numeric() %>%
-    sort() %>%
-    head(floor(NCOL(i.data) * NROW(i.data) * 2 * param.2 / 100)) %>%
-    median(na.rm = TRUE)
-  yrweek <- season <- year <- week <- rates <- mrate <- mratej <- NULL
-  # I create the dataset for analysis, i fill missing values outside the epidemic period with the
-  # values I've just calculated before (median values outside epidemic) with a little jitter
-  temp2 <- i.data %>%
-    apply(2, fill.missing) %>%
-    as.data.frame() %>%
-    transformdata.back(i.range.x.final = c(1, 53)) %>%
-    pluck("data")
-  temp3 <- expand.grid(year = min(temp2$year):max(temp2$year), week = 1:52)
-  temp4 <- temp2 %>%
-    full_join(temp3, by = c("year", "week")) %>%
-    mutate(
-      season = ifelse(is.na(season), paste(year, year, sep = "/"), season),
-      yrweek = ifelse(is.na(yrweek), year * 100 + week, yrweek)
-    ) %>%
-    arrange(year, week)
-  data <- temp4 %>%
-    dplyr::arrange(yrweek) %>%
-    dplyr::mutate(n = seq_len(dplyr::n())) %>%
-    dplyr::select(-season, -year, -week) %>%
-    mutate(mrate = temp1, mratej = pmax(0, jitter(mrate, factor = 1, amount = median(as.numeric(as.matrix(i.data)), na.rm = TRUE) / 5)), y = ifelse(is.na(rates), mratej, rates)) %>%
-    select(-mrate, -mratej)
-  rm(temp1, temp2, temp3, temp4)
+  if (i.extent.data){
+    # Fill missings inside, and assigning a median of the lowest values for tails, with a little amount of jitter
+    temp1 <- i.data %>%
+      as.matrix() %>%
+      as.numeric() %>%
+      sort() %>%
+      head(floor(NCOL(i.data) * NROW(i.data) * 2 * param.2 / 100)) %>%
+      median(na.rm = TRUE)
+    yrweek <- season <- year <- week <- rates <- mrate <- mratej <- NULL
+    temp2 <- i.data %>%
+      apply(2, fill.missing) %>%
+      as.data.frame() %>%
+      transformdata.back(i.range.x.final = c(1, 53)) %>%
+      pluck("data")
+    temp3 <- expand.grid(year = min(temp2$year):max(temp2$year), week = 1:52)
+    temp4 <- temp2 %>%
+      full_join(temp3, by = c("year", "week")) %>%
+      mutate(
+        season = ifelse(is.na(season), paste(year, year, sep = "/"), season),
+        yrweek = ifelse(is.na(yrweek), year * 100 + week, yrweek)
+      ) %>%
+      arrange(year, week)
+    temp5 <- i.data %>%
+      as.data.frame() %>%
+      transformdata.back(i.range.x.final = c(1, 53)) %>%
+      pluck("data") %>%
+      select(yrweek, rates)
+    data <- temp4 %>%
+      dplyr::arrange(yrweek) %>%
+      dplyr::mutate(n = seq_len(dplyr::n())) %>%
+      dplyr::select(-season, -year, -week) %>%
+      mutate(mrate = temp1, 
+             mratej = pmax(0, jitter(mrate, factor = 1, amount = median(as.numeric(as.matrix(i.data)), na.rm = TRUE) / 5)), 
+             y = ifelse(is.na(rates), mratej, rates)) %>%
+      select(-mrate, -mratej, -rates) %>%
+      left_join(temp5, by = join_by(yrweek))
+    rm(temp1, temp2, temp3, temp4, temp5)
+  }else{
+    yrweek <- season <- year <- week <- rates <- NULL
+    temp1 <- i.data %>%
+      apply(2, fill.missing) %>%
+      as.data.frame() %>%
+      transformdata.back(i.range.x.final = c(1, 53)) %>%
+      pluck("data")
+    temp2 <- expand.grid(year = min(temp1$year):max(temp1$year), week = 1:52)
+    temp3 <- temp1 %>%
+      full_join(temp2, by = c("year", "week")) %>%
+      mutate(
+        season = ifelse(is.na(season), paste(year, year, sep = "/"), season),
+        yrweek = ifelse(is.na(yrweek), year * 100 + week, yrweek)
+      ) %>%
+      arrange(year, week)
+    temp4 <- which(!is.na(temp3$rates))
+    temp5 <- i.data %>%
+      as.data.frame() %>%
+      transformdata.back(i.range.x.final = c(1, 53)) %>%
+      pluck("data") %>%
+      select(yrweek, rates)
+    data <- temp3[seq(min(temp4), max(temp4)),] %>%
+      dplyr::arrange(yrweek) %>%
+      dplyr::mutate(n = seq_len(dplyr::n())) %>%
+      dplyr::select(-season, -year, -week) %>%
+      rename(y = rates) %>%
+      left_join(temp5, by = join_by(yrweek))
+    rm(temp1, temp2, temp3, temp4, temp5)
+  }
   # Add smoothed data and create data.plus
   model.smooth <- loess(y ~ n, data, span = 0.05, control = loess.control(surface = "direct"))
   p.model.smooth <- predict(model.smooth, newdata = data$n)
@@ -503,7 +541,7 @@ transformseries.multiple <- function(i.data,
     season.desc <- data.united %>%
       dplyr::filter(!is.na(part)) %>%
       dplyr::group_by(season) %>%
-      dplyr::summarise(from = min(yrweek), to = max(yrweek), duration = n()) %>%
+      dplyr::summarise(from = min(yrweek), to = max(yrweek), duration = dplyr::n()) %>%
       as.data.frame()
     names(season.desc) <- c("Season", "From", "To", "Duration")
     # See epidemic detected my mem algorithm
@@ -532,12 +570,17 @@ transformseries.multiple <- function(i.data,
     } else {
       param.values <- i.param.values
     }
+    if (any(is.null(i.param.method)) | any(is.na(i.param.method))){
+      param.method <- "matthews"
+    } else {
+      param.method <- i.param.method[1]
+    }    
     if (any(is.null(i.param)) | any(is.na(i.param)) | any(i.param==0)){
       temp1 <- data.united %>%
         filter(!is.na(part)) %>%
         arrange(n) %>%
         group_by(season) %>%
-        mutate(week=1:n()) %>%
+        mutate(week=seq_len(dplyr::n())) %>%
         ungroup() %>%
         select(season, week, rates.filled) %>%
         pivot_wider(names_from = "season", values_from = "rates.filled") %>%
@@ -546,7 +589,7 @@ transformseries.multiple <- function(i.data,
       rownames(temp1) <- as.character(1:NROW(temp1))
       if (NCOL(temp1)>2){
         param.roc <- roc.analysis(temp1, i.min.seasons = 3, i.param.values = param.values, i.detection.values = param.values)
-        param <- as.numeric(param.roc$optimum["matthews"])
+        param <- as.numeric(param.roc$optimum[param.method])
       }else{
         param.roc <- list()
         param <- 2.8 
@@ -607,7 +650,7 @@ transformseries.multiple <- function(i.data,
       dplyr::filter(!is.na(part)) %>%
       dplyr::arrange(yrweek) %>%
       dplyr::group_by(season) %>%
-      dplyr::mutate(week = seq_len(n())) %>%
+      dplyr::mutate(week = seq_len(dplyr::n())) %>%
       dplyr::ungroup() %>%
       dplyr::select(season, week, rates.orig) %>%
       tidyr::spread(season, rates.orig) %>%
@@ -641,5 +684,6 @@ transformseries.multiple <- function(i.data,
   }
   plots <- list(p1 = p1, p2 = p2, p3 = p3, p4 = p4, p5 = p5)
   list(data.final = data.final, data.united = data.united, data.plot.united = data.plot.united, cut.united = cut.united, season.desc = season.desc, 
-       results.original = results.original, results.final = results, plots = plots, param.param = param, param.roc = param.roc)
+       results.original = results.original, results.final = results, plots = plots, param.param = param, param.roc = param.roc, param.values = param.values, param.method = param.method,
+	   param.force.concave = i.force.concave, param.extent.data = i.extent.data)
 }
