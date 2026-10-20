@@ -111,13 +111,15 @@ calcular.indicadores <- function(i.current,
   }
 
   resultado.2 <- matrix(rep(resultado.2, n.parametros), nrow = n.parametros, byrow = TRUE)
+  row.names(resultado.2) <- format(round(i.valores.parametro.deteccion,1), nsmall = 1)
 
   resultado.3 <- numeric()
   for (i in 1:n.parametros) {
     resultado.3.1 <- apply(rbind(resultado.1[i, ], resultado.2[i, ]), 2, comparar.metodos)
     resultado.3 <- rbind(resultado.3, resultado.3.1)
   }
-
+  row.names(resultado.3) <- format(round(i.valores.parametro.deteccion,1), nsmall = 1)
+  
   true.pos.t <- sum(resultado.3 == "TP", na.rm = TRUE)
   true.pos <- apply(resultado.3 == "TP", 1, sum, na.rm = TRUE)
   false.neg.t <- sum(resultado.3 == "FN", na.rm = TRUE)
@@ -363,11 +365,11 @@ calcular.indicadores <- function(i.current,
       )
 
       text.xy <- expand.grid(x = seq(1, semanas, 1), y = seq(-2.5, -1.5, 1) * posicion.ticks / 2)
-      text.l <- c(resultado.3, rep(NA, semanas))
+      text.l <- c(resultado.3[i,], rep("", semanas))
       text.p <- rep(1, semanas * 2)
       text.s <- rep(0.25, semanas * 2)
       text.c <- rep("#FFFFFF", semanas * 2)
-      text(text.xy$x, text.xy$y, text.l, col = text.c, cex = text.s)
+      text(text.xy$x, text.xy$y, text.l, col = text.c, cex = text.s, font = 2)
 
       if (!(i.metodo.calculo == "alternative")) {
         text.method <- paste0("* ", i.labels.details[3], ": ", i.metodo.calculo, " (", i.labels.details[4], ")")
